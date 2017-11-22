@@ -1,6 +1,6 @@
 TRZCore
 ===================
-Main mod files and required library for all my mods.
+Main required library for all my mods.
 
 # Mod Page
 [Curse-Forge]()
