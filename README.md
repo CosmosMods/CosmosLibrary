@@ -17,7 +17,7 @@ This repo does not have a licence. This means that by default, it is All Rights 
 - Re-distribute the mod under a different name & author.
 - Post redirected links to the mod/code that use advertising/money-making sites like ad.fly.
 
-### Mod Page
+## Mod Page
 [Curse-Forge]()
 
 2016-17 @ TheRealZeher | TRZ | All Rights Reserved.
