@@ -1,0 +1,16 @@
+[
+{
+  "modid": "trzcore",
+  "name": "TRZ Core",
+  "description": "Main required library for all TheRealZeher mods.",
+  "version": "2.0.0r",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["TheRealZeher"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
