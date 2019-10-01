@@ -1,0 +1,21 @@
+#en_us
+
+#Item_tooltip
+info.hold.name=Hold
+info.shift.name=Shift
+info.fordetails.name=for more details.
+info.tooltip.energy.name=An item that stores energy.
+info.currentpower.name=Current Power: 
+info.maxpower.name=Max Power: 
+
+info.tooltip.fluid.name=A block that stores a fluid.
+
+
+#Tool_tooltip
+info.pickaxe.name=Pickaxe that uses energy
+info.pickaxe.powerinfo.name=Power Left
+
+#GUI_NAME
+gui.button.side.output_to=Output
+gui.button.side.input_from=Input
+gui.button.side.none=None
