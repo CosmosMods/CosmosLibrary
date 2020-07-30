@@ -1,49 +1,54 @@
 package com.zeher.zeherlib;
 
-import com.zeher.zeherlib.api.interfaces.IProxy;
-import com.zeher.zeherlib.network.proxy.ProxyCommon;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-
-@Mod(modid = ZeherLib.MOD_ID, name = ZeherLib.MOD_NAME, version = ZeherLib.MOD_VERSION, dependencies = Reference.DEPENDENCY.FORGE_DEP)
-public class ZeherLib {
+/**
+ * @author TheRealZeher
+ */
+@Mod("zeherlib")
+public final class ZeherLib {
 
 	public static final String MOD_ID = "zeherlib";
-	public static final String MOD_NAME = "ZeherLib";
-	public static final String MOD_VERSION = "4.1.24";
-	public static final String MOD_VERSION_MAX = "4.2.0";
-	public static final String MOD_DEPENDENCIES = Reference.DEPENDENCY.FORGE_DEP;
 	
-	public static final String VERSION_GROUP = "required-after:" + MOD_ID + "@[" + MOD_VERSION + "," + MOD_VERSION_MAX + "];";
+	// Directly reference a log4j logger.
+    public static final Logger LOGGER = LogManager.getLogger();
+    public static final String LOGGER_PREFIX = "< " + MOD_ID + " >: ";
+    
+    public ZeherLib() {
+    	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+    }
 	
-	
-	@Instance(MOD_ID)
-	public static ZeherLib INSTANCE;
-	
-	@SidedProxy(clientSide = "com.zeher.zeherlib.network.proxy.ProxyClient", serverSide = "com.zeher.zeherlib.network.proxy.ProxyCommon")
-	public static ProxyCommon COMMON_PROXY;
-	public static IProxy IPROXY;
-	
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
-		COMMON_PROXY.preInit();
+	public void commonSetup(FMLCommonSetupEvent event){
+		LOGGER.info(LOGGER_PREFIX + "[FMLCommonSetupEvent] PreInit...");
 	}
 	
-	@EventHandler
-	public void init(FMLInitializationEvent event){
-		COMMON_PROXY.init();
-	}
+	@SubscribeEvent
+    public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
+		LOGGER.info(LOGGER_PREFIX + "[FMLServerAboutToStartEvent] Server about to start...");
+    }
 	
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event){
-		COMMON_PROXY.postInit();
-	}
+	@SubscribeEvent
+    public void onServerStarting(FMLServerStartingEvent event) {
+		LOGGER.info(LOGGER_PREFIX + "[FMLServerStartingEvent] Server starting...");
+    }
 	
+	@SubscribeEvent
+    public void onServerStarted(FMLServerStartedEvent event) {
+		LOGGER.info(LOGGER_PREFIX + "[FMLServerStartedEvent] Server started...");
+    }
+	
+	@SubscribeEvent
+    public void onServerStopping(FMLServerStoppingEvent event) {
+		LOGGER.info(LOGGER_PREFIX + "[FMLServerStoppingEvent] Server stopping...");
+    }
 }
