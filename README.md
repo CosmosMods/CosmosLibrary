@@ -1,4 +1,4 @@
-TRZLib
+Cosmos-Library
 ===================
 Main required library for all my mods. Currently using Forge for Minecraft 1.14.4.
 
@@ -18,6 +18,6 @@ This repo does not have a licence. This means that by default, it is All Rights 
 - Post redirected links to the mod/code that use advertising/money-making sites like ad.fly.
 
 ## Mod Page
-[Curse-Forge](https://minecraft.curseforge.com/projects/trzlib)
+[Curse-Forge](https://minecraft.curseforge.com/projects/cosmos-library)
 
 2020 @ TheRealZeher | TRZ | All Rights Reserved.
