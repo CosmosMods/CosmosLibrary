@@ -1,16 +1,16 @@
 package com.tcn.cosmoslibrary.impl.enums;
 
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.IStringSerializable;
 
 public enum EnumSideState implements IStringSerializable {
 
-	INTERFACE_NORMAL(0, "interface_normal", "side_state.interface_normal.name", 0x0000FF, TextHelper.LIGHT_GRAY),
-	INTERFACE_OUTPUT(1, "interface_output", "side_state.interface_output.name", 0x00FF00, TextHelper.GREEN),
-	INTERFACE_INPUT(2, "interface_input", "side_state.interface_input.name", 0x2ECCFA, TextHelper.LIGHT_BLUE),
-	DISABLED(3, "disabled", "side_state.disabled.name", 0xFF0000, TextHelper.GRAY);
+	INTERFACE_NORMAL(0, "interface_normal", "side_state.interface_normal.name", 0x0000FF, ChatColour.LIGHT_GRAY),
+	INTERFACE_OUTPUT(1, "interface_output", "side_state.interface_output.name", 0x00FF00, ChatColour.GREEN),
+	INTERFACE_INPUT(2, "interface_input", "side_state.interface_input.name", 0x2ECCFA, ChatColour.LIGHT_BLUE),
+	DISABLED(3, "disabled", "side_state.disabled.name", 0xFF0000, ChatColour.GRAY);
 
 	private final int index;
 	private final String basic_name;

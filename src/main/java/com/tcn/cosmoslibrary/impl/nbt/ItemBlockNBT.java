@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 import com.tcn.cosmoslibrary.impl.enums.EnumSideState;
 
 import net.minecraft.block.Block;
@@ -75,32 +75,32 @@ public class ItemBlockNBT extends BlockItem {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		
-		if (!TextHelper.isShiftKeyDown(Minecraft.getInstance())) {
-			tooltip.add(new StringTextComponent(TextHelper.getInfoText(this.info)));
+		if (!ChatColour.isShiftKeyDown(Minecraft.getInstance())) {
+			tooltip.add(new StringTextComponent(ChatColour.getInfoText(this.info)));
 			
-			if (TextHelper.displayShiftForDetail) {
-				tooltip.add(new StringTextComponent(TextHelper.shiftForMoreDetails()));
+			if (ChatColour.displayShiftForDetail) {
+				tooltip.add(new StringTextComponent(ChatColour.shiftForMoreDetails()));
 			}
 		} else {
-			tooltip.add(new StringTextComponent(TextHelper.getDescOneText(shift_desc_one)));
+			tooltip.add(new StringTextComponent(ChatColour.getDescOneText(shift_desc_one)));
 			
 			if (this.shift_desc_two != null) {
-				tooltip.add(new StringTextComponent(TextHelper.getDescTwoText(shift_desc_two)));
+				tooltip.add(new StringTextComponent(ChatColour.getDescTwoText(shift_desc_two)));
 			}
 			
 			if (this.shift_desc_three != null) {
-				tooltip.add(new StringTextComponent(TextHelper.getDescThreeText(shift_desc_three)));
+				tooltip.add(new StringTextComponent(ChatColour.getDescThreeText(shift_desc_three)));
 			}
 			
 			if (this.limitation != null) {
-				tooltip.add(new StringTextComponent(TextHelper.getLimitationText(limitation)));
+				tooltip.add(new StringTextComponent(ChatColour.getLimitationText(limitation)));
 			}
-			tooltip.add(new StringTextComponent(TextHelper.shiftForLessDetails()));
+			tooltip.add(new StringTextComponent(ChatColour.shiftForLessDetails()));
 		}
 		
 		if (stack.hasTag()) {
-			if (!TextHelper.isControlKeyDown(Minecraft.getInstance())) {
-				tooltip.add(new StringTextComponent(TextHelper.ctrlForMoreDetails()));
+			if (!ChatColour.isControlKeyDown(Minecraft.getInstance())) {
+				tooltip.add(new StringTextComponent(ChatColour.ctrlForMoreDetails()));
 			} else {
 				if (stack.hasTag()) {
 					CompoundNBT tag = stack.getTag();
@@ -113,7 +113,7 @@ public class ItemBlockNBT extends BlockItem {
 						//if(compound_tag.hasKey("energy")) {
 							int energy = compound_tag.getInt("energy");
 							
-							tooltip.add(new StringTextComponent(TextHelper.GRAY + "Energy Stored: " + TextHelper.LIGHT_GRAY + "["+ energy + "] " + TextHelper.PURPLE + "RF"));
+							tooltip.add(new StringTextComponent(ChatColour.GRAY + "Energy Stored: " + ChatColour.LIGHT_GRAY + "["+ energy + "] " + ChatColour.PURPLE + "RF"));
 							
 						//}
 						
@@ -123,22 +123,22 @@ public class ItemBlockNBT extends BlockItem {
 							NonNullList<ItemStack> list_ = NonNullList.<ItemStack>withSize(size, ItemStack.EMPTY);
 							ItemStackHelper.loadAllItems(tag.getCompound("nbt_data"), list_);
 							
-							tooltip.add(new StringTextComponent(TextHelper.GRAY + "   > [ Items: { Items } ]: "));
+							tooltip.add(new StringTextComponent(ChatColour.GRAY + "   > [ Items: { Items } ]: "));
 							
 							if (list_.size() > 6) {
 								for (int j = 0; j < 6; j++) {
 									if (list_.get(j)!= null){
 										if (list_.get(j).getItem() != Item.getItemFromBlock(Blocks.AIR)) {
-											tooltip.add(new StringTextComponent(TextHelper.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.format(list_.get(j).getItem().getDisplayName(list_.get(j)).toString()) + " )"));
+											tooltip.add(new StringTextComponent(ChatColour.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.format(list_.get(j).getItem().getDisplayName(list_.get(j)).toString()) + " )"));
 										}
 									}
 								}
-								tooltip.add(new StringTextComponent(TextHelper.GRAY + "     - ( & " + (list_.size() - 5) + " stack(s) more... )"));
+								tooltip.add(new StringTextComponent(ChatColour.GRAY + "     - ( & " + (list_.size() - 5) + " stack(s) more... )"));
 							} else {
 								for (int j = 0; j < list_.size(); j++) {
 									if (list_.get(j)!= null){
 										if (list_.get(j).getItem() != Item.getItemFromBlock(Blocks.AIR)) {
-											tooltip.add(new StringTextComponent(TextHelper.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.format(list_.get(j).getItem().getDisplayName(list_.get(j)).toString()) + " )"));
+											tooltip.add(new StringTextComponent(ChatColour.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.format(list_.get(j).getItem().getDisplayName(list_.get(j)).toString()) + " )"));
 										}
 									}
 								}
@@ -157,18 +157,18 @@ public class ItemBlockNBT extends BlockItem {
 								text_colours[c.getIndex()] = EnumSideState.getStateFromIndex(index).getTextColour();
 							}
 							
-							tooltip.add(new StringTextComponent(TextHelper.LIGHT_BLUE + "   > " + TextHelper.LIGHT_GRAY + "[ " + TextHelper.TEAL + "ISidedTile " + TextHelper.GRAY + "(sides)" + TextHelper.LIGHT_GRAY + " ]"));
+							tooltip.add(new StringTextComponent(ChatColour.LIGHT_BLUE + "   > " + ChatColour.LIGHT_GRAY + "[ " + ChatColour.CYAN + "ISidedTile " + ChatColour.GRAY + "(sides)" + ChatColour.LIGHT_GRAY + " ]"));
 							
-							tooltip.add(new StringTextComponent(TextHelper.RED + "     - " + TextHelper.LIGHT_GRAY + "[U] " + TextHelper.GRAY + "= " + text_colours[1] + strings[1]));
-							tooltip.add(new StringTextComponent(TextHelper.RED + "     - " + TextHelper.LIGHT_GRAY + "[D] " + TextHelper.GRAY + "= " + text_colours[0] + strings[0]));
-							tooltip.add(new StringTextComponent(TextHelper.RED + "     - " + TextHelper.LIGHT_GRAY + "[N] " + TextHelper.GRAY + "= " + text_colours[2] + strings[2]));
-							tooltip.add(new StringTextComponent(TextHelper.RED + "     - " + TextHelper.LIGHT_GRAY + "[S] " + TextHelper.GRAY + "= " + text_colours[3] + strings[3]));
-							tooltip.add(new StringTextComponent(TextHelper.RED + "     - " + TextHelper.LIGHT_GRAY + "[E] " + TextHelper.GRAY + "= " + text_colours[5] + strings[5]));
-							tooltip.add(new StringTextComponent(TextHelper.RED + "     - " + TextHelper.LIGHT_GRAY + "[W] " + TextHelper.GRAY + "= " + text_colours[4] + strings[4]));
+							tooltip.add(new StringTextComponent(ChatColour.RED + "     - " + ChatColour.LIGHT_GRAY + "[U] " + ChatColour.GRAY + "= " + text_colours[1] + strings[1]));
+							tooltip.add(new StringTextComponent(ChatColour.RED + "     - " + ChatColour.LIGHT_GRAY + "[D] " + ChatColour.GRAY + "= " + text_colours[0] + strings[0]));
+							tooltip.add(new StringTextComponent(ChatColour.RED + "     - " + ChatColour.LIGHT_GRAY + "[N] " + ChatColour.GRAY + "= " + text_colours[2] + strings[2]));
+							tooltip.add(new StringTextComponent(ChatColour.RED + "     - " + ChatColour.LIGHT_GRAY + "[S] " + ChatColour.GRAY + "= " + text_colours[3] + strings[3]));
+							tooltip.add(new StringTextComponent(ChatColour.RED + "     - " + ChatColour.LIGHT_GRAY + "[E] " + ChatColour.GRAY + "= " + text_colours[5] + strings[5]));
+							tooltip.add(new StringTextComponent(ChatColour.RED + "     - " + ChatColour.LIGHT_GRAY + "[W] " + ChatColour.GRAY + "= " + text_colours[4] + strings[4]));
 							
 						}
 					}
-					tooltip.add(new StringTextComponent(TextHelper.ctrlForLessDetails()));
+					tooltip.add(new StringTextComponent(ChatColour.ctrlForLessDetails()));
 				}
 			}
 		}

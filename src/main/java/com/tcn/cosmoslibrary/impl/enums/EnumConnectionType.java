@@ -1,16 +1,16 @@
 package com.tcn.cosmoslibrary.impl.enums;
 
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.IStringSerializable;
 
 public enum EnumConnectionType implements IStringSerializable {
 	
-	SCREEN(0, "screen", "connection_type.screen.name", 0xB5B5B5, TextHelper.TEAL),
-	ENERGY(1, "energy", "connection_type.energy.name", 0x9700FF, TextHelper.PURPLE),
-	FLUID(2, "fluid", "connection_type.fluid.name", 0x00AAFF, TextHelper.LIGHT_BLUE),
-	ITEM(3, "item", "connection_type.item.name", 0xF7FF00, TextHelper.YELLOW);
+	SCREEN(0, "screen", "connection_type.screen.name", 0xB5B5B5, ChatColour.CYAN),
+	ENERGY(1, "energy", "connection_type.energy.name", 0x9700FF, ChatColour.PURPLE),
+	FLUID(2, "fluid", "connection_type.fluid.name", 0x00AAFF, ChatColour.LIGHT_BLUE),
+	ITEM(3, "item", "connection_type.item.name", 0xF7FF00, ChatColour.YELLOW);
 
 	private final int index;
 	private final String basic_name;

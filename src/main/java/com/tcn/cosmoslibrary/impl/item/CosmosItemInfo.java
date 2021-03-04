@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
@@ -39,20 +39,20 @@ public class CosmosItemInfo extends Item {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 		
 		if (!shift_desc_one.isEmpty() && !shift_desc_two.isEmpty()) {
-			if (!TextHelper.isShiftKeyDown(Minecraft.getInstance())) {
-				tooltip.add(new StringTextComponent(TextHelper.getInfoText(this.info)));
+			if (!ChatColour.isShiftKeyDown(Minecraft.getInstance())) {
+				tooltip.add(new StringTextComponent(ChatColour.getInfoText(this.info)));
 				
-				if (TextHelper.displayShiftForDetail) {
-					tooltip.add(new StringTextComponent(TextHelper.shiftForMoreDetails()));
+				if (ChatColour.displayShiftForDetail) {
+					tooltip.add(new StringTextComponent(ChatColour.shiftForMoreDetails()));
 				}
 			} else {
-				tooltip.add(new StringTextComponent(TextHelper.getDescOneText(shift_desc_one)));
-				tooltip.add(new StringTextComponent(TextHelper.getDescTwoText(shift_desc_two)));
+				tooltip.add(new StringTextComponent(ChatColour.getDescOneText(shift_desc_one)));
+				tooltip.add(new StringTextComponent(ChatColour.getDescTwoText(shift_desc_two)));
 				
-				tooltip.add(new StringTextComponent(TextHelper.shiftForLessDetails()));
+				tooltip.add(new StringTextComponent(ChatColour.shiftForLessDetails()));
 			}
 		} else {
-			tooltip.add(new StringTextComponent(TextHelper.getInfoText(this.info)));
+			tooltip.add(new StringTextComponent(ChatColour.getInfoText(this.info)));
 		}
 	}
 }

@@ -2,7 +2,7 @@ package com.tcn.cosmoslibrary.impl.util;
 
 import javax.annotation.Nonnull;
 
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 import com.tcn.cosmoslibrary.impl.interfaces.tile.ISidedTile;
 
 import net.minecraft.block.Block;
@@ -108,7 +108,7 @@ public class CompatUtil {
 			ListNBT lore = new ListNBT();
 			for (String s : loreStrings) {
 				if (s != null) {
-					lore.add(StringNBT.valueOf(TextHelper.GRAY + s));
+					lore.add(StringNBT.valueOf(ChatColour.GRAY + s));
 				}
 			}
 			display.put("Lore", lore);
@@ -117,7 +117,7 @@ public class CompatUtil {
 		if (name != null) {
 			StringBuilder sb = new StringBuilder();
 			if (forceCleanName) {
-				sb.append(TextHelper.END);
+				sb.append(ChatColour.END);
 			}
 			sb.append(name);
 

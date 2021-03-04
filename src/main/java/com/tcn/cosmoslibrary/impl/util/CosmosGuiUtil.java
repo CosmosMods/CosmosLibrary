@@ -12,8 +12,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.tcn.cosmoslibrary.CosmosReference;
 import com.tcn.cosmoslibrary.client.impl.container.GuiContainerElements;
 import com.tcn.cosmoslibrary.client.impl.screen.GuiListElement;
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
 import com.tcn.cosmoslibrary.client.impl.widget.FluidWidget;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -138,7 +138,7 @@ public class CosmosGuiUtil {
 		public static void renderToolTipEmptyFluidButton(Screen container, MatrixStack stack, int[] screen_coords, int draw_x, int draw_y, int mouse_x, int mouse_y, boolean has_fluid) {
 			if (IS_HOVERING.isHoveringButtonStandard(mouse_x, mouse_y, screen_coords[0] + draw_x, screen_coords[1] + draw_y)) {
 				if (has_fluid) {
-					if (TextHelper.isShiftKeyDown(container.getMinecraft())) {
+					if (ChatColour.isShiftKeyDown(container.getMinecraft())) {
 						container.func_243308_b(stack, TEXT_LIST.emptyFluidTankDo(), mouse_x - screen_coords[0], mouse_y - screen_coords[1]);
 					} else {
 						container.func_243308_b(stack, TEXT_LIST.emptyFluidTank(), mouse_x - screen_coords[0], mouse_y - screen_coords[1]);
@@ -482,62 +482,62 @@ public class CosmosGuiUtil {
 	public static class TEXT_LIST {
 		public static List<ITextComponent> storedTextRF(int stored, int speed) {
 			StringTextComponent[] description = { 
-					new StringTextComponent(TextHelper.PURPLE + "Stored: " + TextHelper.ORANGE + stored), 
-					new StringTextComponent(TextHelper.GREEN + "Using: " + TextHelper.TEAL + speed + TextHelper.GREEN + " RF/t.")};
+					new StringTextComponent(ChatColour.PURPLE + "Stored: " + ChatColour.ORANGE + stored), 
+					new StringTextComponent(ChatColour.GREEN + "Using: " + ChatColour.CYAN + speed + ChatColour.GREEN + " RF/t.")};
 			
 			return Arrays.asList(description);
 		}
 		
 		public static List<ITextComponent> storedTextNo(int stored) {
 			StringTextComponent[] description = {
-					new StringTextComponent(TextHelper.PURPLE + "Stored: " + TextHelper.ORANGE + stored)};
+					new StringTextComponent(ChatColour.PURPLE + "Stored: " + ChatColour.ORANGE + stored)};
 			
 			return Arrays.asList(description);
 		}
 		
 		public static List<ITextComponent> fluidText(String name, int amount, int capacity) {
 			StringTextComponent[] description = {
-					new StringTextComponent(TextHelper.TEAL + "Fluid: " + name), 
-					new StringTextComponent(TextHelper.ORANGE + "Amount: " + amount + " / " + capacity + " mB")};
+					new StringTextComponent(ChatColour.CYAN + "Fluid: " + name), 
+					new StringTextComponent(ChatColour.ORANGE + "Amount: " + amount + " / " + capacity + " mB")};
 			
 			return Arrays.asList(description);
 		}
 		
 		public static List<ITextComponent> fluidTextEmpty() {
 			StringTextComponent[] description = { 
-					new StringTextComponent(TextHelper.TEAL + "Empty:"), 
-					new StringTextComponent(TextHelper.ORANGE + "Amount: 0 mB")};
+					new StringTextComponent(ChatColour.CYAN + "Empty:"), 
+					new StringTextComponent(ChatColour.ORANGE + "Amount: 0 mB")};
 			
 			return Arrays.asList(description);
 		}
 		
 		public static List<ITextComponent> emptyFluidTankDo() {
 			StringTextComponent[] description = { 
-					new StringTextComponent(TextHelper.GREEN + "Empty tank."), 
-					new StringTextComponent(TextHelper.RED + "Warning: " + TextHelper.ORANGE + "Cannot be undone!")};
+					new StringTextComponent(ChatColour.GREEN + "Empty tank."), 
+					new StringTextComponent(ChatColour.RED + "Warning: " + ChatColour.ORANGE + "Cannot be undone!")};
 			
 			return Arrays.asList(description);
 		}
 
 		public static List<ITextComponent> emptyFluidTank() {
 			StringTextComponent[] description = {
-					new StringTextComponent(TextHelper.GREEN + "Shift click " + TextHelper.LIGHT_GRAY + "to empty tank.")};
+					new StringTextComponent(ChatColour.GREEN + "Shift click " + ChatColour.LIGHT_GRAY + "to empty tank.")};
 			
 			return Arrays.asList(description);
 		}
 		
 		public static List<ITextComponent> modeChange(String colour, String mode) {
 			StringTextComponent[] description = { 
-					new StringTextComponent(TextHelper.GREEN + "Click to change mode."), 
-					new StringTextComponent(TextHelper.LIGHT_GRAY + "Current mode: " + colour + mode + TextHelper.LIGHT_GRAY + ".")};
+					new StringTextComponent(ChatColour.GREEN + "Click to change mode."), 
+					new StringTextComponent(ChatColour.LIGHT_GRAY + "Current mode: " + colour + mode + ChatColour.LIGHT_GRAY + ".")};
 			
 			return Arrays.asList(description);
 		}
 		
 		public static List<ITextComponent> generationText(int stored, int generation_rate) {
 			StringTextComponent[] description = { 
-					new StringTextComponent(TextHelper.PURPLE + "Stored: " + TextHelper.ORANGE + stored), 
-					new StringTextComponent(TextHelper.RED + "Producing: " + TextHelper.TEAL + generation_rate + TextHelper.RED + " RF/t.")};
+					new StringTextComponent(ChatColour.PURPLE + "Stored: " + ChatColour.ORANGE + stored), 
+					new StringTextComponent(ChatColour.RED + "Producing: " + ChatColour.CYAN + generation_rate + ChatColour.RED + " RF/t.")};
 			
 			return Arrays.asList(description);
 		}

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
 
-import com.tcn.cosmoslibrary.client.impl.util.TextHelper;
+import com.tcn.cosmoslibrary.impl.colour.ChatColour;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
@@ -47,22 +47,22 @@ public class CosmosChatUtil {
 		FD_COLOURS.put(Direction.EAST,  red);
 		// @formatter:on
 
-		chatColours.put("BLACK", TextHelper.BLACK);
-		chatColours.put("BLUE", TextHelper.BLUE);
-		chatColours.put("GREEN", TextHelper.GREEN);
-		chatColours.put("TEAL", TextHelper.TEAL);
-		chatColours.put("RED", TextHelper.RED);
-		chatColours.put("PURPLE", TextHelper.PURPLE);
-		chatColours.put("ORANGE", TextHelper.ORANGE);
-		chatColours.put("LIGHT_GRAY", TextHelper.LIGHT_GRAY);
-		chatColours.put("GRAY", TextHelper.GRAY);
-		chatColours.put("LIGHT_BLUE", TextHelper.LIGHT_BLUE);
-		chatColours.put("BRIGHT_GREEN", TextHelper.BRIGHT_GREEN);
-		chatColours.put("BRIGHT_BLUE", TextHelper.BRIGHT_BLUE);
-		chatColours.put("RED", TextHelper.RED);
-		chatColours.put("PINK", TextHelper.PINK);
-		chatColours.put("YELLOW", TextHelper.YELLOW);
-		chatColours.put("WHITE", TextHelper.WHITE);
+		chatColours.put("BLACK", ChatColour.BLACK);
+		chatColours.put("BLUE", ChatColour.BLUE);
+		chatColours.put("GREEN", ChatColour.GREEN);
+		chatColours.put("TEAL", ChatColour.CYAN);
+		chatColours.put("RED", ChatColour.RED);
+		chatColours.put("PURPLE", ChatColour.PURPLE);
+		chatColours.put("ORANGE", ChatColour.ORANGE);
+		chatColours.put("LIGHT_GRAY", ChatColour.LIGHT_GRAY);
+		chatColours.put("GRAY", ChatColour.GRAY);
+		chatColours.put("LIGHT_BLUE", ChatColour.LIGHT_BLUE);
+		chatColours.put("BRIGHT_GREEN", ChatColour.BRIGHT_GREEN);
+		chatColours.put("BRIGHT_BLUE", ChatColour.BRIGHT_BLUE);
+		chatColours.put("RED", ChatColour.RED);
+		chatColours.put("PINK", ChatColour.MAGENTA);
+		chatColours.put("YELLOW", ChatColour.YELLOW);
+		chatColours.put("WHITE", ChatColour.WHITE);
 	}
 	
 	public static String capitalizeString(String string) {
@@ -90,7 +90,7 @@ public class CosmosChatUtil {
 	
 	public static String getColourByName(String colourName) {
 		String colour = chatColours.get(colourName);
-		return colour != null ? colour : TextHelper.WHITE;
+		return colour != null ? colour : ChatColour.WHITE;
 	}
 
 	public static final void sendPlayerMessage(PlayerEntity playerIn, boolean format, String message) {

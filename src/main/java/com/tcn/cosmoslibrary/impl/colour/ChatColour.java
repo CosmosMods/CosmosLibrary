@@ -1,4 +1,4 @@
-package com.tcn.cosmoslibrary.client.impl.util;
+package com.tcn.cosmoslibrary.impl.colour;
 
 import java.util.List;
 
@@ -15,12 +15,12 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraftforge.fluids.FluidStack;
 
-public final class TextHelper {
+public final class ChatColour {
 	
 	public static final String BLACK = (char) 167 + "0";
 	public static final String BLUE = (char) 167 + "1";
 	public static final String GREEN = (char) 167 + "2";
-	public static final String TEAL = (char) 167 + "3";
+	public static final String CYAN = (char) 167 + "3";
 	public static final String RED = (char) 167 + "4";
 	public static final String PURPLE = (char) 167 + "5";
 	public static final String ORANGE = (char) 167 + "6";
@@ -30,7 +30,7 @@ public final class TextHelper {
 	public static final String BRIGHT_GREEN = (char) 167 + "a";
 	public static final String BRIGHT_BLUE = (char) 167 + "b";
 	public static final String LIGHT_RED = (char) 167 + "c";
-	public static final String PINK = (char) 167 + "d";
+	public static final String MAGENTA = (char) 167 + "d";
 	public static final String YELLOW = (char) 167 + "e";
 	public static final String WHITE = (char) 167 + "f";
 
@@ -129,7 +129,7 @@ public final class TextHelper {
 	}
 
 	public static String getDescOneText(String key) {
-		return TEAL + localize(key) + END;
+		return CYAN + localize(key) + END;
 	}
 
 	public static String getDescTwoText(String key) {
