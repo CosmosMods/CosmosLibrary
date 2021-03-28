@@ -1,0 +1,68 @@
+{
+	"jei.experience": "XP",
+	
+	"info.hold.name": "Hold",
+	"info.shift.name": "Shift",
+	"info.fordetails.name": "for more details.",
+	"info.tooltip.energy.name": "An item that stores energy.",
+	"info.currentpower.name": "Current Power:",
+	"info.maxpower.name": "Max Power:",
+	"info.release.name": "Release",
+	"info.lessdetails.name": "for less details.",
+	
+	"info.ctrl.name": "Ctrl",
+	"info.nbt.name": "for NBT information.",
+	"info.nbt.lessdetails.name": "for less information.",
+	
+	"info.tooltip.fluid.name": "A block that stores a fluid.",
+	
+	"info.pickaxe.name": "Pickaxe that uses energy",
+	"info.pickaxe.powerinfo.name": "Power Left",
+	
+	"gui.button.side.output_to": "Output",
+	"gui.button.side.input_from": "Input",
+	"gui.button.side.none": "None",
+	"gui.button.side.disabled": "Disabled",
+	
+	"gui.info.input.name": "Input",
+	"gui.info.output.name": "Output",
+	"gui.info.normal.name": "Normal",
+	"gui.info.disabled.name": "Disabled",
+	
+	"channel_state.no_conn.name": "No Connection",
+	"channel_state.cable.name": "Cable",
+	"channel_state.cable_other.name": "Other Cable",
+	"channel_state.interface_normal.name": "Interface Normal",
+	"channel_state.interface_output.name": "Interface Output",
+	"channel_state.interface_input.name": "Interface Input",
+	"channel_state.disabled.name": "Disabled",
+	
+	"item.cosmoslibrary.cosmos_wrench": "Cosmos Wrench",
+	
+	"cosmoslibrary.enum.lock_state.locked": "Locked",
+	"cosmoslibrary.enum.lock_state.unlocked": "Unlocked",
+	"cosmoslibrary.enum.lock_state.unknown": "Unknown",
+	
+	"cosmoslibrary.enum.connection_type.screen": "Screen",
+	"cosmoslibrary.enum.connection_type.energy": "Energy",
+	"cosmoslibrary.enum.connection_type.fluid": "Fluid",
+	"cosmoslibrary.enum.connection_type.item": "Item",
+	
+	"cosmoslibrary.enum.side_state.interface_normal": "Interface Normal",
+	"cosmoslibrary.enum.side_state.interface_output": "Interface Output",
+	"cosmoslibrary.enum.side_state.interface_input": "Interface Input",
+	"cosmoslibrary.enum.side_state.disabled": "Disabled",
+	
+	"cosmoslibrary.enum.side_guide.shown": "Shown",
+	"cosmoslibrary.enum.side_guide.hidden": "Hidden",
+	
+	"cosmoslibrary.enum.generated.false": "Ungenerated",
+	"cosmoslibrary.enum.generated.true": "Generated",
+	
+	"cosmoslibrary.enum.trap_players.free": "Free",
+	"cosmoslibrary.enum.trap_players.trapped": "Trapped",
+	
+	"cosmoslibrary.enum.allow_state.allowed": "Allowed",
+	"cosmoslibrary.enum.allow_state.blocked": "Blocked"
+	
+}
