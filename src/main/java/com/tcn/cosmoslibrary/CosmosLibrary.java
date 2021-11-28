@@ -1,7 +1,7 @@
 package com.tcn.cosmoslibrary;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.tcn.cosmoslibrary.actual.CosmosConsoleManager;
+import com.tcn.cosmoslibrary.actual.CosmosConsoleManager.LEVEL;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,36 +19,32 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public final class CosmosLibrary {
 
 	public static final String MOD_ID = "cosmoslibrary";
-	
-	// Directly reference a log4j logger.
-    public static final Logger LOGGER = LogManager.getLogger();
-    public static final String LOGGER_PREFIX = "< " + MOD_ID + " >: ";
     
     public CosmosLibrary() {
     	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
     }
 	
 	public void commonSetup(FMLCommonSetupEvent event){
-		LOGGER.info(LOGGER_PREFIX + "[FMLCommonSetupEvent] PreInit...");
+		CosmosConsoleManager.message(LEVEL.STARTUP, "[FMLCommonSetupEvent] PreInit...");
 	}
 	
 	@SubscribeEvent
     public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerAboutToStartEvent] Server about to start...");
+		CosmosConsoleManager.message(LEVEL.STARTUP, "[FMLServerAboutToStartEvent] Server about to start...");
     }
 	
 	@SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerStartingEvent] Server starting...");
+		CosmosConsoleManager.message(LEVEL.STARTUP, "[FMLServerStartingEvent] Server starting...");
     }
 	
 	@SubscribeEvent
     public void onServerStarted(FMLServerStartedEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerStartedEvent] Server started...");
+		CosmosConsoleManager.message(LEVEL.STARTUP, "[FMLServerStartedEvent] Server started...");
     }
 	
 	@SubscribeEvent
     public void onServerStopping(FMLServerStoppingEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerStoppingEvent] Server stopping...");
+		CosmosConsoleManager.message(LEVEL.SHUTDOWN, "[FMLServerStoppingEvent] Server stopping...");
     }
 }
