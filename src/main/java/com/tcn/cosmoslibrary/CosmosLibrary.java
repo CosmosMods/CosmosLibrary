@@ -1,16 +1,15 @@
 package com.tcn.cosmoslibrary;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.tcn.cosmoslibrary.management.CosmosConsoleManager;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
 
 /**
  * @author TheRealZeher
@@ -19,36 +18,33 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public final class CosmosLibrary {
 
 	public static final String MOD_ID = "cosmoslibrary";
-	
-	// Directly reference a log4j logger.
-    public static final Logger LOGGER = LogManager.getLogger();
-    public static final String LOGGER_PREFIX = "< " + MOD_ID + " >: ";
-    
+	public static final CosmosConsoleManager CONSOLE = new CosmosConsoleManager(CosmosLibrary.MOD_ID);
+
     public CosmosLibrary() {
     	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
     }
 	
 	public void commonSetup(FMLCommonSetupEvent event){
-		LOGGER.info(LOGGER_PREFIX + "[FMLCommonSetupEvent] PreInit...");
+		CONSOLE.startup("[FMLCommonSetupEvent] PreInit...");
 	}
 	
 	@SubscribeEvent
     public void onServerAboutToStart(FMLServerAboutToStartEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerAboutToStartEvent] Server about to start...");
+		CONSOLE.startup("[FMLServerAboutToStartEvent] Server about to start...");
     }
 	
 	@SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerStartingEvent] Server starting...");
-    }
+		CONSOLE.startup("[FMLServerStartingEvent] Server starting...");
+	}
 	
 	@SubscribeEvent
     public void onServerStarted(FMLServerStartedEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerStartedEvent] Server started...");
+		CONSOLE.startup("[FMLServerStartedEvent] Server started...");
     }
 	
 	@SubscribeEvent
     public void onServerStopping(FMLServerStoppingEvent event) {
-		LOGGER.info(LOGGER_PREFIX + "[FMLServerStoppingEvent] Server stopping...");
+		CONSOLE.startup("[FMLServerStoppingEvent] Server stopping...");
     }
 }
