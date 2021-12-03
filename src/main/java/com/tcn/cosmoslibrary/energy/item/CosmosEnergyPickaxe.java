@@ -114,7 +114,7 @@ public class CosmosEnergyPickaxe extends PickaxeItem implements ICosmosEnergyIte
 	}
 
 	@Override
-	public boolean showDurabilityBar(ItemStack stack) {
+	public boolean isBarVisible(ItemStack p_150899_) {
 		return false;
 	}
 

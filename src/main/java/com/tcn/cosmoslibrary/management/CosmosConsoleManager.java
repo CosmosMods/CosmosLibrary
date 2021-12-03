@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.tcn.cosmosportals.core.management.ConfigurationManager;
-
 /**
  * @author TheCosmicNebula_
  */
@@ -62,9 +60,13 @@ public class CosmosConsoleManager {
 
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static String MOD_ID;
+	public boolean debugEnabled;
+	public boolean infoEnabled;
 	
-	public CosmosConsoleManager(String modId) {
+	public CosmosConsoleManager(String modId, boolean debugEnabledIn, boolean infoEnabledIn) {
 		MOD_ID = modId;
+		this.debugEnabled = debugEnabledIn;
+		this.infoEnabled = infoEnabledIn;
 	}
 	
 	public CosmosConsoleManager getInstance() {
@@ -109,11 +111,11 @@ public class CosmosConsoleManager {
 
 	public void message(LEVEL level, Object object, Throwable t) {
 		if (level.equals(LEVEL.DEBUG)) {
-			if (ConfigurationManager.getInstance().getDebugMessage()) {
+			if (this.debugEnabled) {
 				LOGGER.log(level.getLevel(), "[" + MOD_ID + "]" + level.getConsoleName() + "[" + getSimpleCallerCallerClassName() + "] " + object, t);
 			}
 		} else if (level.equals(LEVEL.INFO)) {
-			if (ConfigurationManager.getInstance().getInfoMessage()) {
+			if (this.infoEnabled) {
 				LOGGER.log(level.getLevel(), "[" + MOD_ID + "]" + level.getConsoleName() + "[" + getSimpleCallerCallerClassName() + "] " + object, t);
 			}
 		} else {

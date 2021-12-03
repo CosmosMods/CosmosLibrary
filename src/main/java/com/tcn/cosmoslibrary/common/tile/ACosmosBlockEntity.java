@@ -23,7 +23,7 @@ public abstract class ACosmosBlockEntity extends BlockEntity {
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         CompoundTag tag = new CompoundTag();
         save(tag);
-        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, tag);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     public void fireEvent(int id, int process) {
