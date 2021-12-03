@@ -11,7 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ForgeModelBakery;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -26,7 +26,7 @@ public class ModBusSubscriberCosmos {
 	
 	@SubscribeEvent
 	public static void onItemRegistry(final RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(setupString("cosmos_wrench", COSMOS_WRENCH));
+		//event.getRegistry().registerAll(setupString("cosmos_wrench", COSMOS_WRENCH));
 	}
 	
 	public static <T extends IForgeRegistryEntry<T>> T setupString(final String name, final T entry) {
@@ -47,7 +47,7 @@ public class ModBusSubscriberCosmos {
 	@SubscribeEvent
 	public static void onModelRegistryEvent(ModelRegistryEvent event) {
 		for (int i = 0; i < 14; i++) {
-			ForgeModelBakery.addSpecialModel(new ResourceLocation(CosmosLibrary.MOD_ID, "item/energy_bar_" + i));
+			ModelLoader.addSpecialModel(new ResourceLocation(CosmosLibrary.MOD_ID, "item/energy_bar_" + i));
 		}
 		
 		for (final Item item : ForgeRegistries.ITEMS.getValues()) {
@@ -61,7 +61,7 @@ public class ModBusSubscriberCosmos {
 				
 				String modelPath = "item/" + path + "_item";
 				
-				ForgeModelBakery.addSpecialModel(new ResourceLocation(namespace, modelPath));
+				ModelLoader.addSpecialModel(new ResourceLocation(namespace, modelPath));
 				CosmosLibrary.CONSOLE.info("Special Model Registered [" + item + ", " + modelPath + " ]");
 			}
 		}

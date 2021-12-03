@@ -120,7 +120,7 @@ public class CosmosEnergyAxe extends AxeItem implements ICosmosEnergyItem {
 	}
 
 	@Override
-	public boolean isBarVisible(ItemStack p_150899_) {
+	public boolean showDurabilityBar(ItemStack stack) {
 		return false;
 	}
 

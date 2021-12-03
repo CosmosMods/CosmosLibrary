@@ -28,6 +28,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fmlclient.gui.GuiUtils;
 
 /**
  * 
@@ -37,7 +38,7 @@ import net.minecraftforge.fluids.IFluidTank;
  * 
  */
 
-@SuppressWarnings({ "static-access" })
+@SuppressWarnings({ "removal", "static-access" })
 @OnlyIn(Dist.CLIENT)
 public class CosmosScreenHelper {
 	
@@ -83,9 +84,9 @@ public class CosmosScreenHelper {
 			if (withTooltip) {
 				if (mouseX > renderX && mouseX < renderX + 16) {
 					if (mouseY > renderY && mouseY < renderY + 16) {
-					    //GuiUtils.preItemToolTip(stack);
+					    GuiUtils.preItemToolTip(stack);
 						screen.renderComponentTooltip(matrixStack, getTooltipFromItem(screen, stack), mouseX, mouseY, font);
-					    //GuiUtils.postItemToolTip();
+					    GuiUtils.postItemToolTip();
 					}
 				}
 			}
@@ -100,9 +101,9 @@ public class CosmosScreenHelper {
 			if (withTooltip) {
 				if (mouseX > renderX && mouseX < renderX + 16) {
 					if (mouseY > renderY && mouseY < renderY + 16) {
-						//GuiUtils.preItemToolTip(stack);
+						GuiUtils.preItemToolTip(stack);
 						screen.renderComponentTooltip(matrixStack, getTooltipFromItem(screen, stack), mouseX, mouseY, font);
-					    //GuiUtils.postItemToolTip();
+					    GuiUtils.postItemToolTip();
 					}
 				}
 			}

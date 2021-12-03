@@ -173,9 +173,9 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 		
 		return 0;
 	}
-
+	
 	@Override
-	public boolean isBarVisible(ItemStack p_150899_) {
+	public boolean showDurabilityBar(ItemStack stack) {
 		return false;
 	}
 
