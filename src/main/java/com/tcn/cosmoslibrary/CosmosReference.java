@@ -1,6 +1,14 @@
 package com.tcn.cosmoslibrary;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+
+/**
+ * 
+ * Collection of static fields for reference purposes.
+ * 
+ * @author TheCosmicNebula_
+ *
+ */
 
 public class CosmosReference {
 	/**
@@ -15,7 +23,7 @@ public class CosmosReference {
 		public static final String RESOURCE = PRE + "textures/";
 		
 		/**
-		 * ResourceLocations for Base Objects
+		 * ResourceLocations / Path Strings for Base Objects
 		 */
 		public static class BASE {
 			public static final String BASE = RESOURCE + "base/";
@@ -24,42 +32,62 @@ public class CosmosReference {
 			public static final String GUI = BASE + "gui/";
 			
 			/** Gui */
-			public static final ResourceLocation GUI_SLOT_LOC = new ResourceLocation(GUI + "gui_slot.png");
-			public static final ResourceLocation GUI_ENERGY_BAR_LOC = new ResourceLocation(GUI + "gui_energy_bar.png");
-			public static final ResourceLocation GUI_DIRECTION_LOC = new ResourceLocation(GUI + "gui_direction.png");
 			
-			public static final ResourceLocation GUI_ICON_BUTTON_LOC = new ResourceLocation(GUI + "button/gui_icon_button.png");
+			/** - Button - */
+			public static final ResourceLocation BUTTON_ICON_PATH = new ResourceLocation(GUI + "button/button_icon.png");
+			public static final ResourceLocation BUTTON_ICON_PATH_ALT = new ResourceLocation(GUI + "button/button_icon_0.png");
+			
+			public static final ResourceLocation BUTTON_GENERAL_PATH = new ResourceLocation(GUI + "button/button_general.png");
+			public static final ResourceLocation BUTTON_GENERAL_PATH_ALT = new ResourceLocation(GUI + "button/button_general_0.png");
+			
+			public static final ResourceLocation BUTTON_ENERGY_PATH = new ResourceLocation(GUI + "button/button_energy.png");
+			public static final ResourceLocation BUTTON_ENERGY_PATH_ALT = new ResourceLocation(GUI + "button/button_energy_0.png");
+			
+			public static final ResourceLocation BUTTON_FLUID_PATH = new ResourceLocation(GUI + "button/button_fluid.png");
+			public static final ResourceLocation BUTTON_FLUID_PATH_ALT = new ResourceLocation(GUI + "button/button_fluid_0.png");
+			
+			public static final ResourceLocation BUTTON_ITEM_PATH = new ResourceLocation(GUI + "button/button_item.png");
+			public static final ResourceLocation BUTTON_ITEM_PATH_ALT = new ResourceLocation(GUI + "button/button_item_0.png");
+			
+			public static final ResourceLocation BUTTON_STORAGE_PATH = new ResourceLocation(GUI + "button/button_storage.png");
+			public static final ResourceLocation BUTTON_STORAGE_PATH_ALT = new ResourceLocation(GUI + "button/button_storage_0.png");
+			
+			public static final ResourceLocation BUTTON_UI = new ResourceLocation(GUI + "button/button_ui_icon.png");
+			
+			/** - Misc UI - */
+			public static final ResourceLocation UI_DARKEN = new ResourceLocation(GUI + "ui_darken.png");
+			public static final ResourceLocation UI_LIGHTEN = new ResourceLocation(GUI + "ui_lighten.png");
+			public static final ResourceLocation UI_LIGHTEN_HIGHLIGHT = new ResourceLocation(GUI + "ui_lighten_highlight.png");
+			
+			public static final ResourceLocation GUI_SLOT_LOC = new ResourceLocation(GUI + "gui_slot.png");
+			public static final ResourceLocation UI_ENERGY_VERTICAL = new ResourceLocation(GUI + "ui_energy_vertical.png");
+			public static final ResourceLocation UI_ENERGY_HORIZONTAL = new ResourceLocation(GUI + "ui_energy_horizontal.png");
+			public static final ResourceLocation GUI_DIRECTION_LOC = new ResourceLocation(GUI + "gui_direction.png");
 			public static final ResourceLocation GUI_ELEMENT_MISC_LOC = new ResourceLocation(GUI + "gui_element_misc.png");
 			
-			public static final ResourceLocation GUI_ENERGY_BUTTON_CUSTOM_LOC = new ResourceLocation(GUI + "button/gui_energy_button_custom.png");
-			public static final ResourceLocation GUI_ENERGY_BUTTON_LOC = new ResourceLocation(GUI + "button/gui_energy_button.png");
-			
-			public static final ResourceLocation GUI_FLUID_BUTTON_LOC = new ResourceLocation(GUI + "button/gui_fluid_button.png");
-			public static final ResourceLocation GUI_FLUID_BUTTON_CUSTOM_LOC = new ResourceLocation(GUI + "button/gui_fluid_button_custom.png");
-			
-			public static final ResourceLocation GUI_ITEM_BUTTON_LOC = new ResourceLocation(GUI + "button/gui_item_button.png");
-			public static final ResourceLocation GUI_ITEM_BUTTON_CUSTOM_LOC = new ResourceLocation(GUI + "button/gui_item_button_custom.png");
-			
-			public static final ResourceLocation GUI_STORAGE_BUTTON_LOC = new ResourceLocation(GUI + "button/gui_storage_button.png");
-			public static final ResourceLocation GUI_STORAGE_BUTTON_CUSTOM_LOC = new ResourceLocation(GUI + "button/gui_storage_button_custom.png");
-			
 			/** ToolTip */
-			public static final String TOOLTIP_HOLD = "info.hold.name";
-			public static final String TOOLTIP_SHIFT = "info.shift.name";
-			public static final String TOOLTIP_FOR_DETAILS = "info.fordetails.name";
+			public static final String TOOLTIP_HOLD = "cosmoslibrary.info.hold.name";
 			
-			public static final String TOOLTIP_ENERGYITEM = "info.tooltip.energy.name";
-			public static final String TOOLTIP_FLUIDITEM = "info.tooltip.fluid.name";
+			public static final String TOOLTIP_SHIFT = "cosmoslibrary.info.shift.name";
+			public static final String TOOLTIP_CTRL = "cosmoslibrary.info.ctrl.name";
+			public static final String TOOLTIP_ALT = "cosmoslibrary.info.alt.name";
+
+			public static final String TOOLTIP_NBT = "cosmoslibrary.info.nbt.name";
+			public static final String TOOLTIP_NBT_LESS = "cosmoslibrary.info.nbt.less.name";
+
+			public static final String TOOLTIP_ENERGY = "cosmoslibrary.info.energy.name";
+			public static final String TOOLTIP_ENERGY_LESS = "cosmoslibrary.info.energy.less.name";
 			
-			public static final String TOOLTIP_CURRENT_POWER = "info.currentpower.name";
-			public static final String TOOLTIP_MAX_POWER = "info.maxpower.name";
+			public static final String TOOLTIP_MORE = "cosmoslibrary.info.fordetails.name";
+			public static final String TOOLTIP_RELEASE = "cosmoslibrary.info.release.name";
+			public static final String TOOLTIP_LESS = "cosmoslibrary.info.less.name";
 			
-			public static final String TOOLTIP_RELEASE = "info.release.name";
-			public static final String TOOLTIP_LESS_DETAILS = "info.lessdetails.name";
+			public static final String TOOLTIP_ENERGYITEM = "cosmoslibrary.info.tooltip.energy.name";
+			public static final String TOOLTIP_FLUIDITEM = "cosmoslibrary.info.tooltip.fluid.name";
 			
-			public static final String TOOLTIP_CTRL = "info.ctrl.name";
-			public static final String TOOLTIP_NBT = "info.nbt.name";
-			public static final String TOOLTIP_NBT_LESS_DETAILS = "info.nbt.lessdetails.name";
+			public static final String TOOLTIP_CURRENT_POWER = "cosmoslibrary.info.currentpower.name";
+			public static final String TOOLTIP_MAX_POWER = "cosmoslibrary.info.maxpower.name";
+			
 		}
 		
 		public static class INFO {
@@ -83,7 +111,7 @@ public class CosmosReference {
 			public static final int[] SLOT_INPUT_SMALL = new int[] { 36, 0, 18, 18 };
 			
 			/** Energy-bar in the format: [ texture-x, texture-y, texture-height, texture-width ]*/
-			public static final int[] ENERGY_BAR = new int[] { 72, 61, 62, 18};
+			public static final int[] ENERGY_BAR = new int[] { 72, 61, 62, 18 };
 			public static final int[] ENERGY_BAR_SMALL = new int[] { 72, 102, 40, 18 };
 			
 			@Deprecated
@@ -121,6 +149,9 @@ public class CosmosReference {
 		
 	}
 	
+	/**
+	 * JEI recipes.
+	 */
 	public static class JEI {
 		public static final String GRINDER_UID = CosmosLibrary.MOD_ID + ":grinder";
 		
