@@ -1,0 +1,8 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "cosmoslibrary:base/item/energy_bar_background",
+        "layer1": "cosmoslibrary:base/item/energy_bar_10"
+    },
+    "gui_light": "front"
+}
