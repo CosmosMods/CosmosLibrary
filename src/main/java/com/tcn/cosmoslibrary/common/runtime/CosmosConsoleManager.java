@@ -147,16 +147,14 @@ public class CosmosConsoleManager {
 	}
 
 	public void message(LEVEL level, Object object, Throwable t) {
-		if (level.equals(LEVEL.DEBUG) || level.equals(LEVEL.DEBUG_WARNING)) {
-			if (this.debugEnabled) {
-				System.out.println("[" + CosmosUtil.getTimeHMS() + "] [Cosmos Thread/" + level.getCapName() + "] [" + this.MOD_ID + "] [" + this.getSimpleCallerCallerClassName() + "] [" + this.getSimpleCallerClassName() + "]: " + object);
-			}
-		} else if (level.equals(LEVEL.INFO)) {
-			if (this.infoEnabled) {
-				System.out.println("[" + CosmosUtil.getTimeHMS() + "] [Cosmos Thread/" + level.getCapName() + "] [" + this.MOD_ID + "] [" + this.getSimpleCallerCallerClassName() + "] [" + this.getSimpleCallerClassName() + "]: " + object);
-			}
-		} else {
-			System.out.println("[" + CosmosUtil.getTimeHMS() + "] [Cosmos Thread/" + level.getCapName() + "] [" + this.MOD_ID + "] [" + this.getSimpleCallerCallerClassName() + "] [" + this.getSimpleCallerClassName() + "]: " + object);
+		if (!this.debugEnabled && level.equals(LEVEL.DEBUG) || !this.infoEnabled && level.equals(LEVEL.INFO)) {
+			return;
+		}
+		
+		System.out.println("[" + CosmosUtil.getTimeHMS() + "] [Cosmos Thread/" + level.getCapName() + "] [" + this.MOD_ID + "] [" + this.getSimpleCallerCallerClassName() + "] [" + this.getSimpleCallerClassName() + "]: " + object);
+		
+		if (t != null) {
+			System.out.println(t);
 		}
 	}
 	

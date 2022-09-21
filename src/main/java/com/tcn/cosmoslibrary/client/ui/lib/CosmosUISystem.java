@@ -4,11 +4,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Matrix4f;
 import com.tcn.cosmoslibrary.CosmosReference;
+import com.tcn.cosmoslibrary.client.renderer.lib.CosmosRendererHelper;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonWithType;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonWithType.TYPE;
 import com.tcn.cosmoslibrary.common.enums.EnumUIMode;
+import com.tcn.cosmoslibrary.common.interfaces.IEnergyEntity;
 import com.tcn.cosmoslibrary.common.interfaces.blockentity.IBlockEntityUIMode;
 import com.tcn.cosmoslibrary.common.interfaces.blockentity.IEnergyHolder;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
@@ -27,6 +35,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -42,7 +51,6 @@ import net.minecraftforge.fluids.IFluidTank;
  * 
  */
 
-@SuppressWarnings({ "static-access" })
 @OnlyIn(Dist.CLIENT)
 public class CosmosUISystem {
 	
@@ -104,9 +112,9 @@ public class CosmosUISystem {
 	}
 
 	public static void setTexture(PoseStack poseStack, ResourceLocation textureIn) {
+		setTextureColour(NORMAL_COLOUR);
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		RenderSystem.setShaderTexture(0, textureIn);
-		setTextureColour(NORMAL_COLOUR);
 	}
 
 	public static void nullTexture(PoseStack poseStack, ResourceLocation textureIn) {
@@ -193,6 +201,34 @@ public class CosmosUISystem {
 
 			if (energyHolderIn.hasEnergyStored()) {
 				int scaled = energyHolderIn.getEnergyStoredScaled(heightIn);
+
+				setTextureColour(colourIn);
+				renderStaticElement(screen, poseStack, screenCoords, drawX, drawY + heightIn - scaled, 0, 255 - scaled, widthIn, scaled);
+				setTextureColour(NORMAL_COLOUR);
+			}
+		}
+	}
+
+	public static void renderEnergyDisplay(Screen screen, PoseStack poseStack, ComponentColour colourIn, IEnergyEntity energyHolderIn, int[] screenCoords, int drawX, int drawY, int widthIn, int heightIn, boolean horizontal) {
+		if (horizontal) {
+			setTexture(poseStack, CosmosReference.RESOURCE.BASE.UI_ENERGY_HORIZONTAL);
+			setTextureColour(0.6F, 0.6F, 0.6F);
+			renderStaticElement(screen, poseStack, screenCoords, drawX, drawY, 0, 0, widthIn, heightIn);
+			
+			if (energyHolderIn.hasEnergy()) {
+				int scaled = energyHolderIn.getEnergyScaled(widthIn);
+
+				setTextureColour(colourIn);
+				renderStaticElement(screen, poseStack, screenCoords, drawX, drawY, 0 + scaled, 0, scaled, heightIn);
+				setTextureColour(NORMAL_COLOUR);
+			}
+		} else {
+			setTexture(poseStack, CosmosReference.RESOURCE.BASE.UI_ENERGY_VERTICAL);
+			setTextureColour(0.6F, 0.6F, 0.6F);
+			renderStaticElement(screen, poseStack, screenCoords, drawX, drawY, 0, 255 - heightIn, widthIn, heightIn);
+
+			if (energyHolderIn.hasEnergy()) {
+				int scaled = energyHolderIn.getEnergyScaled(heightIn);
 
 				setTextureColour(colourIn);
 				renderStaticElement(screen, poseStack, screenCoords, drawX, drawY + heightIn - scaled, 0, 255 - scaled, widthIn, scaled);
@@ -304,7 +340,7 @@ public class CosmosUISystem {
 	}
 	
 	@OnlyIn(Dist.CLIENT)
-	public static void renderFluidTank(Screen screen, PoseStack poseStack, int[] screenCoords, int drawX, int drawY, IFluidTank tank, int scaledIn) {
+	public static void renderFluidTank(Screen screen, PoseStack poseStack, int[] screenCoords, int drawX, int drawY, IFluidTank tank, int scaledIn, int scaleMax) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 		
 		if (tank.getFluidAmount() > 0) {
@@ -312,7 +348,6 @@ public class CosmosUISystem {
 			TextureAtlas texture = screen.getMinecraft().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
 			TextureAtlasSprite fluid_textureIn = texture.getSprite(fluidStill);
 			
-			//texture.bind();
 			int color = tank.getFluid().getFluid().getAttributes().getColor();
 			
 			float r = ((color >> 16) & 0xFF) / 255f; // red
@@ -325,18 +360,60 @@ public class CosmosUISystem {
 			
 		    if (fluid_textureIn != null) {
 		    	poseStack.pushPose();
-				if(scaledIn <= 30){
-					screen.blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + 38 - scaledIn,     0, 16, scaledIn,         fluid_textureIn);
-				} else if (scaledIn > 30 && scaledIn <= 45){
-					screen.blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + 38 - scaledIn,     0, 16, scaledIn / 2 + 1, fluid_textureIn);
-					screen.blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + 38 - scaledIn / 2, 0, 16, scaledIn / 2,     fluid_textureIn);
-				} else if (scaledIn > 45){
-					screen.blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + 38 - scaledIn,     0, 16, scaledIn / 2,     fluid_textureIn);
-					screen.blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + 38 - scaledIn / 2, 0, 16, scaledIn / 2,     fluid_textureIn);
+		    	
+		    	if (scaledIn > 0) {
+		    		int limited = Mth.clamp(scaledIn, 0, 16);
+		    		blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + scaleMax - limited, 0, 16, limited, fluid_textureIn);
+		    	}
+		    	
+				if (scaledIn > 16) {
+					int scaled = scaledIn - 16;
+					int limited = Mth.clamp(scaled, 0, 16);
+					
+					blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + (scaleMax - 16) - limited, 0, 16, limited, fluid_textureIn);
 				}
+				
+				if (scaledIn > 32) {
+					int scaled = scaledIn - 32;
+					int limited = Mth.clamp(scaled, 0, 16);
+					
+					blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + (scaleMax - 32) - limited, 0, 16, limited, fluid_textureIn);
+				}
+				
+				if (scaledIn > 48) {
+					int scaled = scaledIn - 48;
+					int limited = Mth.clamp(scaled, 0, 16);
+					
+					blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + (scaleMax - 48) - limited, 0, 16, limited, fluid_textureIn);
+				}
+				
+				if (scaledIn > 64) {
+					int scaled = scaledIn - 64;
+					int limited = Mth.clamp(scaled, 0, 16);
+					
+					blit(poseStack, screenCoords[0] + drawX, screenCoords[1] + drawY + (scaleMax - 64) - limited, 0, 16, limited, fluid_textureIn);
+				}
+				
 				poseStack.popPose();
 			}
 		}
+	}
+	
+	public static void blit(PoseStack poseStackIn, int posX, int posY, int ex, int widthIn, int heightIn, TextureAtlasSprite spriteIn) {
+		float mappedHeight = CosmosRendererHelper.getMappedTextureHeight(spriteIn, heightIn);
+		innerBlit(poseStackIn.last().pose(), posX, posX + widthIn, posY, posY + heightIn, ex, spriteIn.getU0(), spriteIn.getU1(), spriteIn.getV0() + mappedHeight, spriteIn.getV1());
+	}
+
+	private static void innerBlit(Matrix4f matrixIn, int minX, int maxX, int minY, int maxY, int zIn, float minU, float maxU, float minV, float maxV) {
+		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		bufferbuilder.vertex(matrixIn, (float) minX, (float) maxY, (float) zIn).uv(minU, maxV).endVertex();
+		bufferbuilder.vertex(matrixIn, (float) maxX, (float) maxY, (float) zIn).uv(maxU, maxV).endVertex();
+		bufferbuilder.vertex(matrixIn, (float) maxX, (float) minY, (float) zIn).uv(maxU, minV).endVertex();
+		bufferbuilder.vertex(matrixIn, (float) minX, (float) minY, (float) zIn).uv(minU, minV).endVertex();
+		bufferbuilder.end();
+		BufferUploader.end(bufferbuilder);
 	}
 	
 	public static void renderToolTipPowerProducer(Screen screen, PoseStack poseStack, int[] screenCoords, int drawX, int drawY, int mouseX, int mouseY, int stored, int generation_rate, boolean producing) {
@@ -479,9 +556,9 @@ public class CosmosUISystem {
 			CosmosButtonWithType button;
 			
 			if (enabled) {
-				button = new CosmosButtonWithType(TYPE.FLUID, screenCoords[0] + drawX, screenCoords[1] + drawY, sizeIn, true, false, 1, ComponentHelper.locComp(""), (buttonAction) -> {});
+				button = new CosmosButtonWithType(TYPE.FLUID, screenCoords[0] + drawX, screenCoords[1] + drawY, sizeIn, true, false, 1, ComponentHelper.empty(), (buttonAction) -> {  });
 			} else {
-				button = new CosmosButtonWithType(TYPE.FLUID, screenCoords[0] + drawX, screenCoords[1] + drawY, sizeIn, true, true, 4, ComponentHelper.locComp(""), (buttonAction) -> {});
+				button = new CosmosButtonWithType(TYPE.FLUID, screenCoords[0] + drawX, screenCoords[1] + drawY, sizeIn, true, true, 4, ComponentHelper.empty(), (buttonAction) -> {  });
 			}
 			
 			return button;
@@ -492,6 +569,10 @@ public class CosmosUISystem {
 	public static class FONT {
 		public static void drawString(PoseStack poseStack, Font font, int[] screenCoords, int x, int y, boolean drawFrom, Component comp) {
 			font.draw(poseStack, comp, !drawFrom ? x : screenCoords[0] + x, !drawFrom ? y : screenCoords[1] + y, comp.getStyle().getColor().getValue());
+		}
+		
+		public static void drawStringShadow(PoseStack poseStack, Font font, int[] screenCoords, int x, int y, boolean drawFrom, Component comp) {
+			font.drawShadow(poseStack, comp, !drawFrom ? x : screenCoords[0] + x, !drawFrom ? y : screenCoords[1] + y, comp.getStyle().getColor().getValue());
 		}
 
 		public static void drawCenteredString(PoseStack poseStack, Font font, int[] screenCoords, int xOffset, int yOffset, Component comp) {

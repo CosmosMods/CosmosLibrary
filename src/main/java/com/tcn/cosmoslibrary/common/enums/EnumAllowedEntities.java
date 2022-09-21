@@ -42,7 +42,7 @@ public enum EnumAllowedEntities {
 	 * Get the localized name for display.
 	 */
 	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.displayColour, true, this.localizedName);
+		return ComponentHelper.style(this.displayColour, "bold", this.localizedName);
 	}
 	
 	/**

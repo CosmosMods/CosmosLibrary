@@ -36,7 +36,7 @@ public class CosmosOptionBoolean extends Option {
 		this.getter = getter;
 		this.setter = setter;
 		this.tooltipText = tooltip;
-		this.newCaption = ComponentHelper.locComp(colour, bold, caption, ":");
+		this.newCaption = ComponentHelper.style2(colour, bold ? "bold" : "", caption, ":");
 		this.type = type;
 	}
 

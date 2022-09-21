@@ -7,12 +7,11 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 import com.tcn.cosmoslibrary.common.item.CosmosArmourItemColourable;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
-import com.tcn.cosmoslibrary.energy.item.CosmosEnergyArmourItemColourable;
 
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -53,7 +52,7 @@ public class CosmosLayerArmourColourable<E extends LivingEntity, M extends Human
 
 	@Override
 	public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, E entityLivingBaseIn, float limbSwingIn, float limbSwingAmountIn, float partialTicks, float ageInTicks, float netHeadYawIn, float headPitchIn) {
-		this.renderArmorPiece(matrixStackIn, bufferIn, entityLivingBaseIn, EquipmentSlot.CHEST, packedLightIn, this.getArmorModel(EquipmentSlot.CHEST));
+		this.renderArmorPiece(matrixStackIn, bufferIn, entityLivingBaseIn, EquipmentSlot.CHEST, packedLightIn, this.getArmorModel(EquipmentSlot.CHEST) );
 		this.renderArmorPiece(matrixStackIn, bufferIn, entityLivingBaseIn, EquipmentSlot.LEGS,  packedLightIn, this.getArmorModel(EquipmentSlot.LEGS) );
 		this.renderArmorPiece(matrixStackIn, bufferIn, entityLivingBaseIn, EquipmentSlot.FEET,  packedLightIn, this.getArmorModel(EquipmentSlot.FEET) );
 		this.renderArmorPiece(matrixStackIn, bufferIn, entityLivingBaseIn, EquipmentSlot.HEAD,  packedLightIn, this.getArmorModel(EquipmentSlot.HEAD) );
@@ -66,11 +65,11 @@ public class CosmosLayerArmourColourable<E extends LivingEntity, M extends Human
 			CosmosArmourItemColourable armoritem = (CosmosArmourItemColourable) stackIn.getItem();
 
 			if (armoritem.getSlot() == slotTypeIn) {
-				modelIn = this.getArmorModelHook(livingEntityIn, stackIn, slotTypeIn, modelIn);
 				this.getParentModel().copyPropertiesTo(modelIn);
+				Model model = this.getArmorModelHook(livingEntityIn, stackIn, slotTypeIn, modelIn);
 				this.setPartVisibility(modelIn, slotTypeIn);
+				
 				boolean flag = this.usesInnerModel(slotTypeIn);
-
 				boolean flag1 = stackIn.hasFoil();
 
 				float[] rgb = ComponentColour.rgbFloatArray(ComponentColour.POCKET_PURPLE_LIGHT);
@@ -86,18 +85,18 @@ public class CosmosLayerArmourColourable<E extends LivingEntity, M extends Human
 							
 							float[] colArray = ComponentColour.rgbFloatArray(colour);
 							
-							this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, modelIn, colArray[0], colArray[1], colArray[2], 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.BASE, null));
+							this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, model, colArray[0], colArray[1], colArray[2], 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.BASE, null));
 						}
 					} else {
-						this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, modelIn, rgb[0], rgb[1], rgb[2], 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.BASE, null));
+						this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, model, rgb[0], rgb[1], rgb[2], 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.BASE, null));
 					}
 				} else {
-					this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, modelIn, rgb[0], rgb[1], rgb[2], 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.BASE, null));
+					this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, model, rgb[0], rgb[1], rgb[2], 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.BASE, null));
 				}
 
-				this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, modelIn, 1.0F, 1.0F, 1.0F, 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.OVERLAY, null));
+				this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, model, 1.0F, 1.0F, 1.0F, 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.OVERLAY, null));
 				
-				this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, modelIn, 1.0F, 1.0F, 1.0F, 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.ALPHA, null));
+				this.renderModel(matrixStackIn, bufferIn, packedLightIn, flag1, model, 1.0F, 1.0F, 1.0F, 1.0F, false, this.getArmorResource(livingEntityIn, stackIn, slotTypeIn, TYPE.ALPHA, null));
 			}
 		}
 	}
@@ -127,7 +126,7 @@ public class CosmosLayerArmourColourable<E extends LivingEntity, M extends Human
 
 	}
 
-	private void renderModel(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, boolean foilIn, A modelIn, float r, float g, float b, float a, boolean alphaLayer, ResourceLocation armorResource) {
+	private void renderModel(PoseStack poseStack, MultiBufferSource bufferIn, int packedLightIn, boolean foilIn, Model modelIn, float r, float g, float b, float a, boolean alphaLayer, ResourceLocation armorResource) {
 		if (alphaLayer) {
 			RenderType type = RenderType.entityTranslucent(armorResource);
 			
@@ -149,7 +148,7 @@ public class CosmosLayerArmourColourable<E extends LivingEntity, M extends Human
 		return slotIn == EquipmentSlot.LEGS;
 	}
 	
-	protected A getArmorModelHook(E entity, ItemStack itemStack, EquipmentSlot slot, A model) {
+	protected Model getArmorModelHook(E entity, ItemStack itemStack, EquipmentSlot slot, A model) {
 		return ForgeHooksClient.getArmorModel(entity, itemStack, slot, model);
 	}
 	

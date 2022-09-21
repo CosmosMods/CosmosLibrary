@@ -36,7 +36,7 @@ public enum EnumGenerationMode {
 	}
 	
 	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.colour, true, this.localizedName);
+		return ComponentHelper.style(this.colour, "bold", this.localizedName);
 	}
 
 	public boolean getValue() {

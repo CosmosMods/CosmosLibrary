@@ -47,7 +47,7 @@ public enum EnumConnectionType {
 	}
 	
 	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.colour, true, this.localized_name);
+		return ComponentHelper.style(this.colour, "bold", this.localized_name);
 	}
 	
 	/**

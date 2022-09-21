@@ -36,14 +36,16 @@ public enum ComponentColour {
 	DARK_YELLOW(24, "Dark Yellow", 8355584, Value.YELLOW, 127, 127, 0, true),
 	TURQUOISE(25, "Turquoise", 50115, Value.CYAN, 0, 225, 225, false),
 	DARK_CYAN(26, "Dark Cyan", 26214, Value.CYAN, 0, 102, 102, true),
-	BLURPLE(26, "Blurple", 7506394, Value.CYAN, 114, 137, 218, true),
-	BLURPLE_LIGHT(27, "Blurple Light", 3692707, Value.CYAN, 56, 88, 163, false);
+	BLURPLE(27, "Blurple", 7506394, Value.CYAN, 114, 137, 218, true),
+	BLURPLE_LIGHT(28, "Blurple Light", 3692707, Value.CYAN, 56, 88, 163, false),
+	EMPTY(29, "Default", 11184810, Value.LIGHT_GRAY, 170, 170, 170, true);
 
 	private final int index;
 	private final String name;
 	private final int decimal;
 	private final String chat_colour;
 	private final int[] RGB;
+	private final float[] RGBF;
 	private final boolean dark;
 
 	private static final ComponentColour[] VALUES = Arrays.stream(values()).sorted(Comparator.comparingInt(ComponentColour::getIndex)).toArray((index) -> { return new ComponentColour[index]; });
@@ -54,6 +56,7 @@ public enum ComponentColour {
 		this.decimal = decimalIn;
 		this.chat_colour = chatColourIn;
 		this.RGB = new int[] { rIn, gIn, bIn};
+		this.RGBF = new float[] { rIn / 255.0F, gIn / 255.0F, bIn / 255.0F };
 		this.dark = isDarkIn;
 	}
 
@@ -74,23 +77,31 @@ public enum ComponentColour {
 	}
 
 	public String getChatColour() {
-		return this.chat_colour;
+		if (this.chat_colour != null) {
+			return this.chat_colour;
+		} else {
+			return "";
+		}
 	}
 	
 	public BaseComponent getColouredName() {
-		return ComponentHelper.locComp(this, true, this.name);
+		return ComponentHelper.style(this, "bold", this.name);
 	}
 
 	public static ComponentColour fromIndex(int colorId) {
 		if (colorId < 0 || colorId >= VALUES.length) {
 			colorId = 0;
 		}
-
+		
 		return VALUES[colorId];
 	}
 	
 	public int[] getRGB() {
 		return this.RGB;
+	}
+	
+	public float[] getFloatRGB() {
+		return this.RGBF;
 	}
 
 	public boolean isDark() {
@@ -143,5 +154,91 @@ public enum ComponentColour {
 	
 	public static ComponentColour getCompColourForScreen(ComponentColour colour) {
 		return !colour.isDark() ? SCREEN_DARK : SCREEN_LIGHT;
+	}
+	
+	public ComponentColour getNextVanillaColour(boolean includeNoColour) {
+		switch (this) {
+			case EMPTY:
+				return WHITE;
+			case WHITE:
+				return ORANGE;
+			case ORANGE:
+				return MAGENTA;
+			case MAGENTA:
+				return LIGHT_BLUE;
+			case LIGHT_BLUE:
+				return YELLOW;
+			case YELLOW:
+				return LIME;
+			case LIME:
+				return PINK;
+			case PINK:
+				return GRAY;
+			case GRAY:
+				return LIGHT_GRAY;
+			case LIGHT_GRAY:
+				return CYAN;
+			case CYAN:
+				return PURPLE;
+			case PURPLE:
+				return BLUE;
+			case BLUE:
+				return BROWN;
+			case BROWN:
+				return GREEN;
+			case GREEN:
+				return RED;
+			case RED:
+				return BLACK;
+			case BLACK:
+				return includeNoColour ? EMPTY : WHITE;
+			default:
+				return WHITE;
+		}
+	}
+
+	public static ComponentColour getNextVanillaColour(boolean includeNoColour, ComponentColour colourIn) {
+		switch (colourIn) {
+			case EMPTY:
+				return WHITE;
+			case WHITE:
+				return ORANGE;
+			case ORANGE:
+				return MAGENTA;
+			case MAGENTA:
+				return LIGHT_BLUE;
+			case LIGHT_BLUE:
+				return YELLOW;
+			case YELLOW:
+				return LIME;
+			case LIME:
+				return PINK;
+			case PINK:
+				return GRAY;
+			case GRAY:
+				return LIGHT_GRAY;
+			case LIGHT_GRAY:
+				return CYAN;
+			case CYAN:
+				return PURPLE;
+			case PURPLE:
+				return BLUE;
+			case BLUE:
+				return BROWN;
+			case BROWN:
+				return GREEN;
+			case GREEN:
+				return RED;
+			case RED:
+				return BLACK;
+			case BLACK:
+				return includeNoColour ? EMPTY : WHITE;
+			default:
+				return WHITE;
+		}
+	}
+	
+	public boolean isEmpty() {
+		return this == EMPTY;
 	}
 }

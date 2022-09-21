@@ -88,56 +88,77 @@ public final class ComponentHelper {
 	public static String locString(String pre, String key, String suff) {
 		return pre + I18n.get(key) + suff + Value.END;
 	}
+
+	public static BaseComponent empty() {
+		return new TranslatableComponent("");
+	}
 	
-	public static BaseComponent locComp(String key) {
+	public static BaseComponent title(String key) {
 		return new TranslatableComponent(key);
 	}
 
-	public static BaseComponent locComp(int colour, boolean bold, String key) {
-		BaseComponent comp = new TranslatableComponent(key);
-		
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour)));
-		
-		return comp;
-	}
-
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, String key) {
-		BaseComponent comp = new TranslatableComponent(key);
-		
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return comp;
-	}
-
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, boolean underline, String key) {
-		BaseComponent comp = new TranslatableComponent(key);
-		
-		comp.setStyle(Style.EMPTY.withBold(bold).withUnderlined(underline).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return comp;
+	public static BaseComponent comp(String key) {
+		return new TranslatableComponent(key);
 	}
 	
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, String pre, String key) {
-		BaseComponent pre_comp = new TranslatableComponent(pre);
-		BaseComponent comp = new TranslatableComponent(key);
-
-		pre_comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
+	/**
+	 * 
+	 * @param colourIn {@link Integer} - Text Colour
+	 * @param flags {@link String} - Style. In the format: "bold underline italic strikethrough obfuscated"
+	 * @param keyIn {@link String} - Text you actually want. Can be localized or unlocalized.
+	 * @return {@link BaseComponent} - Styled Component.
+	 */
+	public static BaseComponent style(int colourIn, String flags, String keyIn) {
+		BaseComponent comp = new TranslatableComponent(keyIn);
 		
-		return (BaseComponent) pre_comp.append(comp);
+		comp.setStyle(Style.EMPTY
+			.withBold(flags.contains("bold"))
+			.withUnderlined(flags.contains("underline"))
+			.withItalic(flags.contains("italic"))
+			.withStrikethrough(flags.contains("strikethrough"))
+			.withObfuscated(flags.contains("obfuscated"))
+			.withColor(TextColor.fromRgb(colourIn))
+		);
+		
+		return comp;
+	}
+
+	public static BaseComponent style(int colourIn, String keyIn) {
+		return style(colourIn, "", keyIn);
+	}
+
+	public static BaseComponent style(ComponentColour colourIn, String keyIn) {
+		return style(colourIn.dec(), "", keyIn);
 	}
 	
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, String pre, String key, String suff) {
-		BaseComponent pre_comp = new TranslatableComponent(pre);
-		BaseComponent comp = new TranslatableComponent(key);
-		BaseComponent suff_comp = new TranslatableComponent(suff);
-
-		pre_comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return (BaseComponent) pre_comp.append(comp).append(suff_comp);
+	public static BaseComponent style(ComponentColour colourIn, String flags, String keyIn) {
+		return style(colourIn.dec(), flags, keyIn);
 	}
 
+	public static BaseComponent style3(int colourIn, String flags, String keyInA, String keyInB, String keyInC) {
+		return (BaseComponent) style(colourIn, flags, keyInA).append(style(colourIn, flags, keyInB)).append(style(colourIn, flags, keyInC));
+	}
+
+	public static BaseComponent style3(int colourIn, String keyInA, String keyInB, String keyInC) {
+		return (BaseComponent) style(colourIn, "", keyInA).append(style(colourIn, "", keyInB)).append(style(colourIn, "", keyInC));
+	}
+
+	public static BaseComponent style3(ComponentColour colourIn, String keyInA, String keyInB, String keyInC) {
+		return (BaseComponent) style(colourIn, "", keyInA).append(style(colourIn, "", keyInB)).append(style(colourIn, "", keyInC));
+	}
+
+	public static BaseComponent style3(ComponentColour colourIn, String flags, String keyInA, String keyInB, String keyInC) {
+		return (BaseComponent) style(colourIn, flags, keyInA).append(style(colourIn, flags, keyInB)).append(style(colourIn, flags, keyInC));
+	}
+
+	public static BaseComponent style2(ComponentColour colourIn, String flags, String keyInA, String keyInB) {
+		return (BaseComponent) style(colourIn, flags, keyInA).append(style(colourIn, flags, keyInB));
+	}
+	
+	public static BaseComponent style2(ComponentColour colourIn, String... keys) {
+		return (BaseComponent) style(colourIn, "", keys[0]).append(style(colourIn, "", keys[1]));
+	}
+	
 	public static String getFluidName(FluidStack fluid) {
 		return getFluidName(fluid.getFluid());
 	}
@@ -174,62 +195,61 @@ public final class ComponentHelper {
 	}
 
 	public static BaseComponent shiftForMoreDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_HOLD).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.ORANGE, true, BASE.TOOLTIP_SHIFT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_MORE)));
-		
+		return (BaseComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_HOLD).append(style(ComponentColour.BLACK,  " ")).append(style(ComponentColour.ORANGE, "bold", BASE.TOOLTIP_SHIFT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_MORE)));
 	}
 	
 	public static BaseComponent shiftForLessDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_RELEASE).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.ORANGE, true, BASE.TOOLTIP_SHIFT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_LESS)));
+		return (BaseComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_RELEASE).append(style(ComponentColour.BLACK,  " ")).append(style(ComponentColour.ORANGE, "bold", BASE.TOOLTIP_SHIFT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_LESS)));
 	}
 	
 	public static BaseComponent ctrlForMoreDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_HOLD).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.LIGHT_GRAY, true, BASE.TOOLTIP_CTRL)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_NBT)));
+		return (BaseComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_HOLD).append(style(ComponentColour.BLACK,  " ")).append(style(ComponentColour.LIGHT_GRAY, "bold", BASE.TOOLTIP_CTRL)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE,  BASE.TOOLTIP_NBT)));
 	}
 	
 	public static BaseComponent ctrlForLessDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_RELEASE).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.LIGHT_GRAY, true, BASE.TOOLTIP_CTRL)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_NBT_LESS)));
+		return (BaseComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_RELEASE).append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.LIGHT_GRAY, "bold", BASE.TOOLTIP_CTRL)
+				.append(style(ComponentColour.BLACK," ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_NBT_LESS)));
 	}
 
 	public static BaseComponent altForMoreDetails(ComponentColour colourIn) {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_HOLD).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(colourIn, true, BASE.TOOLTIP_ALT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_ENERGY)));
+		return (BaseComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_HOLD).append(style(ComponentColour.BLACK, " ")).append(style(colourIn, "bold", BASE.TOOLTIP_ALT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_ENERGY)));
 	}
 	
 	public static BaseComponent altForLessDetails(ComponentColour colourIn) {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_RELEASE).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(colourIn, true, BASE.TOOLTIP_ALT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_ENERGY_LESS)));
+		return (BaseComponent) style(ComponentColour.WHITE,  BASE.TOOLTIP_RELEASE).append(style(ComponentColour.BLACK, " ")).append(style(colourIn, "bold", BASE.TOOLTIP_ALT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_ENERGY_LESS)));
 	}
 
 	public static BaseComponent getTooltipInfo(String key) {
-		return locComp(ComponentColour.LIGHT_GRAY, false, key);
+		return style(ComponentColour.LIGHT_GRAY, key);
 	}
 
 	public static BaseComponent getTooltipOne(String key) {
-		return locComp(ComponentColour.CYAN, false, key);
+		return style(ComponentColour.CYAN, key);
 	}
 
 	public static BaseComponent getTooltipTwo(String key) {
-		return locComp(ComponentColour.GREEN, false, key);
+		return style(ComponentColour.GREEN, key);
 	}
 	
 	public static BaseComponent getTooltipThree(String key) {
-		return locComp(ComponentColour.LIGHT_BLUE, false, key);
+		return style(ComponentColour.LIGHT_BLUE, key);
 	}
 
 	public static BaseComponent getTooltipFour(String key) {
-		return locComp(ComponentColour.LIME, false, key);
+		return style(ComponentColour.LIME, key);
 	}
 	
 	public static BaseComponent getTooltipLimit(String key) {
-		return locComp(ComponentColour.LIGHT_RED, false, key);
+		return style(ComponentColour.LIGHT_RED, key);
 	}
 	
 	public static BaseComponent getErrorText(String key) {
-		return locComp(ComponentColour.RED, false, key);
+		return style(ComponentColour.RED, key);
 	}
 
 	public static boolean displayShiftForDetail = true;

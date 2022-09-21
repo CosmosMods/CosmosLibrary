@@ -45,6 +45,10 @@ public class CosmosContainerRecipeBookBlockEntity<J extends Container> extends R
 		return pos;
 	}
 
+	public Player getPlayer() {
+		return this.player;
+	}
+	
 	@Override
 	public void fillCraftSlotsStackedContents(StackedContents p_40117_) { }
 

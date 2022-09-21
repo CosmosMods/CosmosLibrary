@@ -38,4 +38,8 @@ public class CosmosContainerMenuBlockEntity extends AbstractContainerMenu {
 	public BlockPos getBlockPos() {
 		return pos;
 	}
+	
+	public Player getPlayer() {
+		return this.player;
+	}
 }

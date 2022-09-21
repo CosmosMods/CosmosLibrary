@@ -31,13 +31,13 @@ public class CosmosBlockRemovableNBT extends CosmosBlock {
 	}
 	
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
-		player.swing(handIn);
+	public InteractionResult use(BlockState state, Level levelIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit) {
+		levelIn.sendBlockUpdated(pos, state, state, 3);
 		
-		worldIn.sendBlockUpdated(pos, state, state, 3);
-		
-		if (CosmosUtil.holdingWrench(player) && player.isShiftKeyDown() && !worldIn.isClientSide) {
-			CompatHelper.generateStack(worldIn, pos);
+		if (CosmosUtil.holdingWrench(player) && player.isShiftKeyDown()) {
+			if (!levelIn.isClientSide) {
+				CompatHelper.generateStack(levelIn, pos);
+			}
 			
 			return InteractionResult.SUCCESS;
 		}	

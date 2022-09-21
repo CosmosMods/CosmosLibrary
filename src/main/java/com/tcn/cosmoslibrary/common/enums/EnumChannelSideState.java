@@ -1,25 +1,31 @@
 package com.tcn.cosmoslibrary.common.enums;
 
-import net.minecraft.client.resources.language.I18n;
+import com.tcn.cosmoslibrary.common.lib.ComponentColour;
+import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
+
+import net.minecraft.network.chat.BaseComponent;
 
 public enum EnumChannelSideState {
 	
-	NO_CONN(0, "no_conn", "channel_state.no_conn.name"),
-	CABLE(1, "cable", "channel_state.cable.name"),
-	CABLE_OTHER(2, "cable", "channel_state.cable_other.name"),
-	INTERFACE_NORMAL(3, "NO_CONN", "channel_state.NO_CONN.name"),
-	INTERFACE_INPUT(4, "interface_input", "channel_state.interface_input.name"),
-	INTERFACE_OUTPUT(5, "interface_output", "channel_state.interface_output.name"),
-	DISABLED(6, "disabled", "channel_state.disabled.name");
+	AIR(0, "air", "cosmoslibrary.channel_state.air.name", ComponentColour.RED),
+	CABLE_NO_CONN(1, "no_conn", "cosmoslibrary.channel_state.no_conn.name", ComponentColour.LIGHT_GRAY),
+	CABLE(2, "cable", "cosmoslibrary.channel_state.cable.name", ComponentColour.LIGHT_GRAY),
+	CABLE_OTHER(3, "cable", "cosmoslibrary.channel_state.cable_other.name", ComponentColour.LIGHT_GRAY),
+	INTERFACE_NO_CONN(4, "interface_no_conn", "cosmoslibrary.channel_state.interface_no_conn.name", ComponentColour.WHITE),
+	INTERFACE_INPUT(5, "interface_input", "cosmoslibrary.channel_state.interface_input.name", ComponentColour.BLUE),
+	INTERFACE_OUTPUT(6, "interface_output", "cosmoslibrary.channel_state.interface_output.name", ComponentColour.GREEN),
+	DISABLED(7, "disabled", "cosmoslibrary.channel_state.disabled.name", ComponentColour.GRAY);
 	
 	public final int index;
 	public final String basic_name;
-	public final String display_name;
+	public final String localizedName;
+	public final ComponentColour colour;
 	
-	private EnumChannelSideState (int indexIn, String basic_nameIn, String display_nameIn) {
+	private EnumChannelSideState (int indexIn, String basic_nameIn, String localizedNameIn, ComponentColour colourIn) {
 		index = indexIn;
 		basic_name = basic_nameIn;
-		display_name = display_nameIn;
+		localizedName = localizedNameIn;
+		colour = colourIn;
 	}
 	
 	/**
@@ -28,19 +34,20 @@ public enum EnumChannelSideState {
 	public String getName() {
 		return this.basic_name;
 	}
-	
+
 	/**
-	 * Get the localised name for display.
+	 * Get the localized name for display.
 	 */
-	public String getDisplayName() {
-		return I18n.get(display_name).toString();
+	public BaseComponent getColouredComp() {
+		return ComponentHelper.style(this.colour, "bold", this.localizedName);
 	}
-	
+
+
 	/**
 	 * Get the display_name.
 	 */
-	public String getDisplayNameUnformatted() {
-		return this.display_name;
+	public String getlocalizedName() {
+		return this.localizedName;
 	}
 	
 	@Override
@@ -59,27 +66,46 @@ public enum EnumChannelSideState {
 	 * Returns the standard array [NO_CONN[5]].
 	 */
 	public static EnumChannelSideState[] getStandardArray() {
-		return new EnumChannelSideState[] { NO_CONN, NO_CONN, NO_CONN, NO_CONN, NO_CONN, NO_CONN };
+		return new EnumChannelSideState[] { AIR, AIR, AIR, AIR, AIR, AIR };
 	}
 	
 	public EnumChannelSideState getNextState() {
 		switch(this) {
-			case NO_CONN:
+			case AIR:
+				return CABLE_NO_CONN;
+			case CABLE_NO_CONN:
 				return CABLE;
 			case CABLE:
 				return CABLE_OTHER;
 			case CABLE_OTHER:
-				return INTERFACE_NORMAL;
-			case INTERFACE_NORMAL:
+				return INTERFACE_NO_CONN;
+			case INTERFACE_NO_CONN:
 				return INTERFACE_INPUT;
 			case INTERFACE_INPUT:
 				return INTERFACE_OUTPUT;
 			case INTERFACE_OUTPUT:
 				return DISABLED;
 			case DISABLED:
-				return NO_CONN;
+				return AIR;
 			default:
 				throw new IllegalStateException("Unable to obtain next state of [" + this + "]");
+		}
+	}
+
+	public EnumChannelSideState getNextStateUser() {
+		switch(this) {
+			case AIR:
+				return INTERFACE_INPUT;
+			case INTERFACE_NO_CONN:
+				return INTERFACE_INPUT;
+			case INTERFACE_INPUT:
+				return INTERFACE_OUTPUT;
+			case INTERFACE_OUTPUT:
+				return DISABLED;
+			case DISABLED:
+				return AIR;
+			default:
+				return AIR;
 		}
 	}
 	
@@ -90,21 +116,27 @@ public enum EnumChannelSideState {
 	public static EnumChannelSideState getStateFromIndex(int index_in) {
 		switch (index_in) {
 			case 0 :
-				return NO_CONN;
+				return AIR;
 			case 1:
-				return CABLE;
+				return CABLE_NO_CONN;
 			case 2:
+				return CABLE;
+			case 3:
 				return CABLE_OTHER;
-			case 3: 
-				return NO_CONN;
-			case 4:
-				return INTERFACE_INPUT;
+			case 4: 
+				return INTERFACE_NO_CONN;
 			case 5:
-				return INTERFACE_OUTPUT;
+				return INTERFACE_INPUT;
 			case 6:
+				return INTERFACE_OUTPUT;
+			case 7:
 				return DISABLED;
 			default:
 				throw new IllegalStateException("No Enum exists with that index: " + "[ " + index_in + " ]");
 		}
+	}
+	
+	public boolean isInterface() {
+		return this.equals(INTERFACE_NO_CONN) || this.equals(INTERFACE_INPUT) || this.equals(INTERFACE_OUTPUT);
 	}
 }

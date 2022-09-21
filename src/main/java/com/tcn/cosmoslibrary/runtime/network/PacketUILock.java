@@ -1,5 +1,6 @@
-package com.tcn.cosmoslibrary.actual.network;
+package com.tcn.cosmoslibrary.runtime.network;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import com.tcn.cosmoslibrary.CosmosLibrary;
@@ -15,38 +16,44 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-public class PacketUIMode implements ICosmosPacket {
+public class PacketUILock implements ICosmosPacket {
 	
 	private BlockPos pos;
 	private ResourceKey<Level> dimension;
+	private UUID uuid;
 	
-	public PacketUIMode(FriendlyByteBuf buf) {
+	public PacketUILock(FriendlyByteBuf buf) {
 		this.pos = buf.readBlockPos();
 		ResourceLocation location = buf.readResourceLocation();
 		this.dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, location);
+		this.uuid = buf.readUUID();
 	}
 	
-	public PacketUIMode(CosmosContainerMenuBlockEntity containerIn) {
+	public PacketUILock(CosmosContainerMenuBlockEntity containerIn) {
 		this.pos = containerIn.getBlockPos();
 		this.dimension = containerIn.getLevel().dimension();
+		this.uuid = containerIn.getPlayer().getUUID();
 	}
 	
-	public PacketUIMode(CosmosContainerRecipeBookBlockEntity<? extends Container> containerIn) {
+	public PacketUILock(CosmosContainerRecipeBookBlockEntity<? extends Container> containerIn) {
 		this.pos = containerIn.getBlockPos();
 		this.dimension = containerIn.getLevel().dimension();
+		this.uuid = containerIn.getPlayer().getUUID();
 	}
 	
-	public static void encode(PacketUIMode packet, FriendlyByteBuf buf) {
+	public static void encode(PacketUILock packet, FriendlyByteBuf buf) {
 		buf.writeBlockPos(packet.pos);
 		buf.writeResourceLocation(packet.dimension.location());
+		buf.writeUUID(packet.uuid);
 	}
 	
-	public static void handle(final PacketUIMode packet, Supplier<NetworkEvent.Context> context) {
+	public static void handle(final PacketUILock packet, Supplier<NetworkEvent.Context> context) {
 		NetworkEvent.Context ctx = context.get();
 		
 		ctx.enqueueWork(() -> {
@@ -54,12 +61,16 @@ public class PacketUIMode implements ICosmosPacket {
 			ServerLevel world = server.getLevel(packet.dimension);
 			BlockEntity entity = world.getBlockEntity(packet.pos);
 			
+			Player player = world.getPlayerByUUID(packet.uuid);
+			
 			if (entity instanceof IBlockEntityUIMode) {
 				IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
-			
-				blockEntity.cycleUIMode();
+				
+				if (blockEntity.checkIfOwner(player)) {
+					blockEntity.cycleUILock();
+				}
 			} else {
-				CosmosLibrary.CONSOLE.debugWarn("[Packet Delivery Failure] <uimode> Block Entity not equal to expected.");
+				CosmosLibrary.CONSOLE.debugWarn("[Packet Delivery Failure] <uilock> Block Entity not equal to expected.");
 			}
 			
 		});

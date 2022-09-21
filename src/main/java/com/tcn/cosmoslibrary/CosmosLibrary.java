@@ -1,8 +1,10 @@
 package com.tcn.cosmoslibrary;
 
-import com.tcn.cosmoslibrary.actual.NetworkManagerCosmos;
 import com.tcn.cosmoslibrary.common.runtime.CosmosConsoleManager;
+import com.tcn.cosmoslibrary.runtime.ModBusSubscriberCosmos;
+import com.tcn.cosmoslibrary.runtime.NetworkManagerCosmos;
 
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -17,7 +19,11 @@ public final class CosmosLibrary {
 	public static final CosmosConsoleManager CONSOLE = new CosmosConsoleManager(CosmosLibrary.MOD_ID, false, true);
 
     public CosmosLibrary() {
-    	FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
+    	IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+    	
+    	ModBusSubscriberCosmos.register(bus);
+    	
+    	bus.addListener(this::commonSetup);
     }
 	
 	public void commonSetup(FMLCommonSetupEvent event){

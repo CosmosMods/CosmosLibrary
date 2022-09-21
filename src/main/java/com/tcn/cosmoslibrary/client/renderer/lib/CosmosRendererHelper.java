@@ -7,33 +7,46 @@ import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import com.tcn.cosmoslibrary.CosmosLibrary;
-import com.tcn.cosmoslibrary.client.enums.EnumBERColour;
+import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HalfTransparentBlock;
+import net.minecraft.world.level.block.StainedGlassPaneBlock;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.ForgeHooksClient;
 
 @OnlyIn(Dist.CLIENT)
-public class CosmosBERHelper {
+public class CosmosRendererHelper {
 	public static final ResourceLocation LASER_TEXTURE = new ResourceLocation(CosmosLibrary.MOD_ID, "textures/entity/laser_beam.png");
 
 	public static final int MAX_LIGHT_X = 0xF000F0;
 	public static final int MAX_LIGHT_Y = 0xF000F0;
 	
-	public static void renderLaser(MultiBufferSource bufferIn, PoseStack matrixStack, double firstX, double firstY, double firstZ, double secondX, double secondY, double secondZ, double rotationTime, float alpha, double beamWidth, EnumBERColour enum_colour) {
+	public static void renderLaser(MultiBufferSource bufferIn, PoseStack matrixStack, double firstX, double firstY, double firstZ, double secondX, double secondY, double secondZ, double rotationTime, float alpha, double beamWidth, ComponentColour enum_colour) {
 		Minecraft mc = Minecraft.getInstance();
 		Level world = mc.level;
 		VertexConsumer vertexBuilder = bufferIn.getBuffer(RenderType.entityTranslucent(LASER_TEXTURE));
 
-		float[] colour = enum_colour.getColour();
+		float[] colour = enum_colour.getFloatRGB();
 		
 		float r = colour[0];
 		float g = colour[1];
@@ -121,5 +134,59 @@ public class CosmosBERHelper {
 		fontRendererIn.drawInBatch(textIn, width, 0.0F, 553648127, false, matrix4f, bufferIn, false, -alpha, combinedLightIn);
 		fontRendererIn.drawInBatch(textIn, width, 0.0F, -1, false, matrix4f, bufferIn, true, 0, combinedLightIn);
 		matrixStackIn.popPose();
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public static void render(ItemRenderer renderer, ItemStack stackIn, ItemTransforms.TransformType transformIn, boolean p_229111_3_, PoseStack poseStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, boolean renderFoil) {
+		if (!stackIn.isEmpty()) {
+			poseStackIn.pushPose();
+			boolean flag = transformIn == ItemTransforms.TransformType.GUI || transformIn == ItemTransforms.TransformType.GROUND || transformIn == ItemTransforms.TransformType.FIXED;
+			
+			modelIn = ForgeHooksClient.handleCameraTransforms(poseStackIn, modelIn, transformIn, p_229111_3_);
+			poseStackIn.translate(-0.5D, -0.5D, -0.5D);
+			
+			if ((stackIn.getItem() != Items.TRIDENT || flag)) {
+				boolean flag1;
+				if (transformIn != ItemTransforms.TransformType.GUI && !transformIn.firstPerson() && stackIn.getItem() instanceof BlockItem) {
+					Block block = ((BlockItem) stackIn.getItem()).getBlock();
+					flag1 = !(block instanceof HalfTransparentBlock) && !(block instanceof StainedGlassPaneBlock);
+				} else {
+					flag1 = true;
+				}
+				
+				if (modelIn.isLayered()) {
+					ForgeHooksClient.drawItemLayered(renderer, modelIn, stackIn, poseStackIn, bufferIn, combinedLightIn, combinedOverlayIn, flag1);
+				} else {
+					RenderType rendertype = ItemBlockRenderTypes.getRenderType(stackIn, flag1);
+					VertexConsumer ivertexbuilder;
+					
+					if (flag1) {
+						if (renderFoil) {
+							ivertexbuilder = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, stackIn.hasFoil());
+						} else {
+							ivertexbuilder = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, false);
+						}
+					} else {
+						if (renderFoil) {
+							ivertexbuilder = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, stackIn.hasFoil());
+						} else {
+							ivertexbuilder = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, false);
+						}
+					}
+					renderer.renderModelLists(modelIn, stackIn, combinedLightIn, combinedOverlayIn, poseStackIn, ivertexbuilder);
+				}
+			}
+			poseStackIn.popPose();
+		}
+	}
+	
+	@OnlyIn(Dist.CLIENT)
+	public static float getMappedTextureHeight(TextureAtlasSprite spriteIn, float inputHeightIn, float inputMinIn, float inputMaxIn) {
+		return ((0.0625F / (512.0F / spriteIn.getHeight())) * (Mth.map(inputHeightIn, inputMinIn, inputMaxIn, 0, 8)));
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	public static float getMappedTextureHeight(TextureAtlasSprite spriteIn, float inputHeightIn) {
+		return getMappedTextureHeight(spriteIn, inputHeightIn, 16, 0);
 	}
 }

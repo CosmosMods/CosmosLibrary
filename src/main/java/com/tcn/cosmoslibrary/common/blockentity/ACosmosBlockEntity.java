@@ -1,4 +1,4 @@
-package com.tcn.cosmoslibrary.common.tile;
+package com.tcn.cosmoslibrary.common.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +22,7 @@ public abstract class ACosmosBlockEntity extends BlockEntity {
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         CompoundTag tag = new CompoundTag();
-        save(tag);
+        saveAdditional(tag);
         return ClientboundBlockEntityDataPacket.create(this);
     }
 

@@ -3,14 +3,11 @@ package com.tcn.cosmoslibrary;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * 
  * Collection of static fields for reference purposes.
- * 
  * @author TheCosmicNebula_
- *
  */
-
 public class CosmosReference {
+	
 	/**
 	 * Static access to standard values required by multiple classes.
 	 */
@@ -53,6 +50,8 @@ public class CosmosReference {
 			public static final ResourceLocation BUTTON_STORAGE_PATH_ALT = new ResourceLocation(GUI + "button/button_storage_0.png");
 			
 			public static final ResourceLocation BUTTON_UI = new ResourceLocation(GUI + "button/button_ui_icon.png");
+
+			public static final ResourceLocation BUTTON_COLOUR = new ResourceLocation(GUI + "button/button_colour.png");
 			
 			/** - Misc UI - */
 			public static final ResourceLocation UI_DARKEN = new ResourceLocation(GUI + "ui_darken.png");
@@ -87,7 +86,6 @@ public class CosmosReference {
 			
 			public static final String TOOLTIP_CURRENT_POWER = "cosmoslibrary.info.currentpower.name";
 			public static final String TOOLTIP_MAX_POWER = "cosmoslibrary.info.maxpower.name";
-			
 		}
 		
 		public static class INFO {
@@ -129,24 +127,6 @@ public class CosmosReference {
 			@Deprecated
 			public static final int[] CREATIVE_BAR_SMALL = new int[] { 54, 102, 40, 18 };
 		}
-	}
-	
-	/**
-	 * Dependencies.
-	 */
-	public static class DEPENDENCY {
-		private static final String FORGE_BUILD = "2838";
-		private static final String FORGE_REQ = "14.23.5." + FORGE_BUILD;
-		private static final String FORGE_REQ_MAX = "14.24.0";
-
-		private static final String REDSTONE_REQ = "2.1.0";
-		private static final String REDSTONE_REQ_MAX = "2.2.0";
-		public static final String REDSTONE_DEP = "required-after:" + "redstoneflux" + "@[" + REDSTONE_REQ + "," + REDSTONE_REQ_MAX + "];";
-		
-		public static final String FORGE_DEP = "required-after:" + "forge" +  "@[" + FORGE_REQ + "," + FORGE_REQ_MAX + "];";
-		
-		public static final String DOWN_URL = "";
-		
 	}
 	
 	/**

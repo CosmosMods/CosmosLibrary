@@ -55,6 +55,63 @@ public class IBlockEntityClientUpdated {
 		 * Returns whether the machine is processing or not.
 		 */
 		public boolean isProcessing();
+		
+		/**
+		 * Returns how much FE the machine is currently using.
+		 */
+		public int getRFTickRate();
+	}
+
+	public interface ProcessingRecipe {
+
+		/**
+		 * Returns the current process progress scaled for display.
+		 * @param scale [scale inside the Gui]
+		 * @return energy [scaled as required]
+		 */
+		public int getEnergyScaled(int scale);
+		
+		/**
+		 * Returns whether or not the tile has energy.
+		 */
+		public boolean hasEnergy();
+		
+		/**
+		 * Returns the processing speed of this tile.
+		 */
+		public int getProcessSpeed();
+		
+		/**
+		 * Returns the time it takes to process.
+		 * @param i [number of upgrades]
+		 */
+		public int getProcessTime(int i);
+		
+		/**
+		 * Returns the current process progress scaled for display.
+		 * @param scale [scale inside the Gui]
+		 */
+		public int getProcessProgressScaled(int scale);
+		
+		/**
+		 * Returns whether the tile can process or not.
+		 */
+		public boolean canProcess(@Nullable Recipe<?> recipeIn);
+	
+		/**
+		 * Actually process the Item;
+		 */
+		public void processItem(@Nullable Recipe<?> recipeIn);
+		
+		/**
+		 * Returns whether the machine is processing or not.
+		 */
+		public boolean isProcessing();
+		
+		/**
+		 * Returns how much FE the machine is currently using.
+		 */
+		public int getRFTickRate();
 	}
 	
 	public interface Furnace {

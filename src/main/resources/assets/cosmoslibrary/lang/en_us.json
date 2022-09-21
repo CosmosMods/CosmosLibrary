@@ -41,13 +41,14 @@
 	"gui.info.normal.name": "Normal",
 	"gui.info.disabled.name": "Disabled",
 	
-	"channel_state.no_conn.name": "No Connection",
-	"channel_state.cable.name": "Cable",
-	"channel_state.cable_other.name": "Other Cable",
-	"channel_state.interface_normal.name": "Interface Normal",
-	"channel_state.interface_output.name": "Interface Output",
-	"channel_state.interface_input.name": "Interface Input",
-	"channel_state.disabled.name": "Disabled",
+	"cosmoslibrary.channel_state.air.name": "",
+	"cosmoslibrary.channel_state.cable_no_conn.name": "No Connection",
+	"cosmoslibrary.channel_state.cable.name": "Cable",
+	"cosmoslibrary.channel_state.cable_other.name": "Other Cable",
+	"cosmoslibrary.channel_state.interface_no_conn.name": "Interface Normal",
+	"cosmoslibrary.channel_state.interface_input.name": "Interface Input",
+	"cosmoslibrary.channel_state.interface_output.name": "Interface Output",
+	"cosmoslibrary.channel_state.disabled.name": "Disabled",
 	
 	"item.cosmoslibrary.cosmos_wrench": "Cosmos Wrench",
 	
@@ -97,6 +98,9 @@
 	"cosmoslibrary.enum.ui_help.hidden": "Hidden",
 	"cosmoslibrary.enum.ui_help.shown": "Shown",
 	
+	"cosmoslibrary.enum.ui_lock.private": "Private",
+	"cosmoslibrary.enum.ui_lock.public": "Public",
+	
 	"cosmoslibrary.gui.button.direction.down": "Down",
 	"cosmoslibrary.gui.button.direction.up": "Up",
 	"cosmoslibrary.gui.button.direction.north": "North",
@@ -134,6 +138,12 @@
 	
 	"cosmoslibrary.gui_help_title": "UI Help Mode",
 	"cosmoslibrary.gui.ui_help.info": "Show UI Help: ",
-	"cosmoslibrary.gui.ui_help.value": "UI Help is currently: "
+	"cosmoslibrary.gui.ui_help.value": "UI Help is currently: ",
+	
+	"cosmoslibrary.gui.ui_lock.info": "Change UI Lock State: ",
+	"cosmoslibrary.gui.ui_lock.value": "Current UI Lock State: ",
+	
+	"cosmoslibrary.gui.colour.info": "Change the current Colour:",
+	"cosmoslibrary.gui.colour.value": "Current Colour: "
 	
 }

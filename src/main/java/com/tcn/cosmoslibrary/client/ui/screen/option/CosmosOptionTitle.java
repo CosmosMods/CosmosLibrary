@@ -24,7 +24,7 @@ public class CosmosOptionTitle extends Option {
 	public CosmosOptionTitle(ComponentColour colour, boolean bold, String caption) {
 		super("");
 		
-		this.customCaption = ComponentHelper.locComp(colour, bold, caption);
+		this.customCaption = ComponentHelper.style2(colour, bold ? "bold" : "", caption);
 	}
 
 	public AbstractWidget createButton(Options options, int xIn, int yIn, int width) {

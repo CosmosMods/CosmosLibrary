@@ -18,7 +18,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> extends CosmosScreenUIMode<J> {
+public class CosmosScreenUIModeListBE<J extends CosmosContainerMenuBlockEntity> extends CosmosScreenUIModeBE<J> {
 
 	protected ResourceLocation WIDGET_TEXTURE;
 	protected ArrayList<CosmosListWidget> widgetList = new ArrayList<CosmosListWidget>();
@@ -27,10 +27,13 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 	private boolean scrollEnabled = false;
 	private int currentScroll;
 	
+	private int topIndex = 0;
+	protected int selectedIndex = -1;
+	
 	private int[] listIndex;
 	private int[] scrollElementIndex;
 	
-	public CosmosScreenUIModeList(J containerIn, Inventory playerInventoryIn, Component titleIn) {
+	public CosmosScreenUIModeListBE(J containerIn, Inventory playerInventoryIn, Component titleIn) {
 		super(containerIn, playerInventoryIn, titleIn);
 	}
 	
@@ -50,7 +53,8 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 	}
 	
 	protected void updateWidgetList() {
-		this.renderSmallWidgetList();
+		this.updateFromStringList();
+		//this.renderSmallWidgetList();
 	}
 	
 	@Override
@@ -66,18 +70,17 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 		for (int i = 0; i < widgetList.size(); i++) {
 			CosmosListWidget widget = this.getListWidget(i);
 			
-			if (widget.isMouseOver()) {
+			if (widget.isMouseOver() && i != 0) {
 				widget.mousePressed(this.minecraft, mouseX, mouseY);
 				this.selectWidget(i);
+				this.selectedIndex = i;
 			} else {
-				if (mouseX < this.listIndex[0] && mouseX > this.listIndex[0] + this.listIndex[2]) {
-					if (mouseY < this.listIndex[1] && mouseY > this.listIndex[1] + this.listIndex[3]) {
-						//this.deselectWidget(i);//widget.deselect();
-					}
+				if (mouseX < this.listIndex[0] || mouseX > this.listIndex[0] + this.listIndex[2] || mouseY < this.listIndex[1] || mouseY > this.listIndex[1] + this.listIndex[3]) {
+					//this.deselectWidget(i);
+					//this.selectedIndex = -1;
 				}
 			}
 		}
-		
 		return super.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
@@ -89,18 +92,13 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 			
 			if (this.currentScroll >= 0) {
 				if (this.currentScroll <= maxScroll) {
-					
 					if (direction == -1.0F) {
-						for (int i = 0; i < this.widgetList.size(); i++) {
-							CosmosListWidget widget = this.widgetList.get(i);
-							
-							widget.setPositionToLastWidget(this.listIndex[5]);
+						if (this.topIndex < this.fromList.size()) {
+							this.topIndex += 1;
 						}
 					} else {
-						for (int i = 0; i < this.widgetList.size(); i++) {
-							CosmosListWidget widget = this.widgetList.get(i);
-							
-							widget.setPositionToNextWidget(this.listIndex[5]);
+						if (this.topIndex > 0) {
+							this.topIndex -= 1;
 						}
 					}
 					
@@ -141,21 +139,24 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 		this.fromList = fromListIn;
 	}
 	
-	public CosmosListWidget addListWidget(CosmosListWidget widget) {
+	protected CosmosListWidget addListWidget(CosmosListWidget widget) {
 		this.widgetList.add(widget);
 		return widget;
 	}
-	
+
 	protected CosmosListWidget getListWidget(int index) {
 		return this.widgetList.get(index);
 	}
 
-	protected void setWidgetList(ArrayList<CosmosListWidget> list) {
-		this.widgetList = list;
-	}
-	
 	protected ArrayList<CosmosListWidget> getWidgetList() {
 		return this.widgetList;
+	}
+	
+	protected void removeElement() {
+		if (this.topIndex > 0) {
+			this.topIndex = this.topIndex - 1;
+		}
+		this.selectedIndex = -1;
 	}
 	
 	protected void selectWidget(int index) {
@@ -171,17 +172,15 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 	}
 	
 	public int getSelectedWidgetIndex() {
-		for (int i = 0; i < this.widgetList.size(); i++) {
-			if (this.getListWidget(i).getSelected()) {
-				return i;
-			}
+		if (this.selectedIndex > 0) {
+			return this.selectedIndex;
 		}
 		
 		return 0;
 	}
 	
 	public int widgetCount() {
-		return (int) Math.floor(this.listIndex[3] / (this.listIndex[4]));
+		return (int) Math.floor(this.listIndex[3] / (this.listIndex[4] + this.listIndex[5]));
 	}
 	
 	public boolean scrollEnabled() {
@@ -200,63 +199,30 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 		for (int i = 0; i < this.widgetList.size(); i++) {
 			CosmosListWidget widget = this.getListWidget(i);
 			
-			if ((widget.getYPos() + widget.getHeight()) <= this.listIndex[2]) {
-				if (this.scrollEnabled()) {
-					int j = i + this.currentScroll;
-					
-					if (!(j > this.widgetList.size()) && j < this.widgetList.size()) {
-						CosmosListWidget firstWidget = this.widgetList.get(j);
-
-						firstWidget.renderWidget(poseStack, this.font, this.getScreenCoords(), mouseX, mouseY, j, this.listIndex[2]);
-					}
-				} else {
-					widget.renderWidget(poseStack, this.font, this.getScreenCoords(), mouseX, mouseY, i, this.listIndex[2]);
-				}
+			if (i >= this.topIndex && i <= this.topIndex + this.widgetCount() && i < this.widgetList.size()) {
+				widget.renderWidget(poseStack, font, this.getScreenCoords(), this.listIndex[0], this.listIndex[1] + ((this.listIndex[4] + this.listIndex[5]) * (i - this.topIndex)), mouseX, mouseY, i, (this.listIndex[1] + this.listIndex[3]));
 			}
 		}
 	}
 	
-	protected void renderSmallWidgetList() {
+	protected void updateFromStringList() {
+		this.clearWidgetList();
+		
 		int spacing_y = this.listIndex[4] + this.listIndex[5];
 		
-		ArrayList<CosmosListWidget> new_list = new ArrayList<CosmosListWidget>();
-		
-		if (this.fromList.isEmpty()) {
-			return;
-		} else {
-			for (int j = 0; j < this.fromList.size(); j++) {
-				String string = this.fromList.get(j);
-				
-				if (string != null) {
-					for (int i = 0; i < this.getWidgetList().size(); i++) {
-						String test_string = this.getWidgetList().get(i).getDisplayString();
-						if (string.equals(test_string)) {
-							return;
-						}
-					}
-				}
-			}
-		}
-		
 		for (int i = 0; i < this.fromList.size(); i++) {
-			String display_string = this.fromList.get(i);
-			CosmosListWidget widget = new CosmosListWidget(this.listIndex[0], this.listIndex[1] + (spacing_y * i), this.listIndex[2], this.listIndex[4], this.WIDGET_TEXTURE, display_string, ComponentColour.WHITE);
+			CosmosListWidget widget = new CosmosListWidget(this.listIndex[0], this.listIndex[1] + (spacing_y * i), this.listIndex[2], this.listIndex[4], this.WIDGET_TEXTURE, this.fromList.get(i), ComponentColour.WHITE);
 			
-			if (new_list.size() < 1) {
-				new_list.add(widget);
-			} else {
-				if (!(new_list.contains(widget))) {
-					new_list.add(widget);
-				}
+			this.widgetList.add(widget);
+			
+			if (i == this.selectedIndex) {
+				this.getListWidget(i).setSelectedState(true);
 			}
 		}
-		
-		this.setWidgetList(new_list);
 	}
 	
 	protected void renderScrollElement(PoseStack poseStack) {
 		int[] scrollType = new int[] { 15, 0, 15 };
-		
 		CosmosUISystem.setTextureWithColour(poseStack, BASE.GUI_ELEMENT_MISC_LOC, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
 		
 		if (this.widgetList.size() > 0) {
@@ -268,19 +234,18 @@ public class CosmosScreenUIModeList<J extends CosmosContainerMenuBlockEntity> ex
 				div = this.widgetList.size() - this.widgetCount();
 			}
 			
-			int increment = (this.listIndex[3] - 12) / div;
+			int increment = (this.listIndex[3]) / div;
 			
 			int posX = this.scrollElementIndex[0];
-			int posY = Mth.clamp((this.scrollElementIndex[1] + (this.currentScroll * increment)), 0, (this.listIndex[1] + this.listIndex[3] - 1) - this.listIndex[4]);
-
-			BlockEntity entity = this.getBlockEntity();
+			int posY = this.scrollElementIndex[1];
 			
+			int posYUpdated = Mth.clamp((posY + (this.currentScroll * increment)), posY, (this.listIndex[1] + this.listIndex[3] - 1) - this.listIndex[4]);
+			
+			BlockEntity entity = this.getBlockEntity();
 			if (entity instanceof IBlockEntityUIMode) {
-				IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
+				int type = ((IBlockEntityUIMode) entity).getUIMode().equals(EnumUIMode.DARK) ? 0 : 1;
 				
-				int type = blockEntity.getUIMode().equals(EnumUIMode.DARK) ? 0 : 1;
-				
-				CosmosUISystem.renderStaticElementToggled(this, poseStack, this.getScreenCoords(), posX, this.scrollEnabled ? posY : this.scrollElementIndex[1], scrollType[0], scrollType[type + 1], 13, 15, true);
+				CosmosUISystem.renderStaticElementToggled(this, poseStack, this.getScreenCoords(), posX, this.scrollEnabled ? posYUpdated : posY, scrollType[0], scrollType[type + 1], 13, 15, true);
 			}
 		}
 	}
