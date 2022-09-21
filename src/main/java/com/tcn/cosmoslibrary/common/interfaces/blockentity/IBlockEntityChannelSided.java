@@ -3,6 +3,8 @@ package com.tcn.cosmoslibrary.common.interfaces.blockentity;
 import javax.annotation.Nullable;
 
 import com.tcn.cosmoslibrary.common.enums.EnumChannelSideState;
+import com.tcn.cosmoslibrary.common.enums.EnumConnectionType;
+import com.tcn.cosmoslibrary.common.enums.EnumIndustryTier;
 
 import net.minecraft.core.Direction;
 
@@ -61,4 +63,9 @@ public interface IBlockEntityChannelSided {
 	 */
 	public void updateRenders();
 	
+	public EnumConnectionType getChannelType();
+	
+	public EnumIndustryTier getChannelTier();
+	
+	public EnumChannelSideState getStateForConnection(Direction facing);
 }

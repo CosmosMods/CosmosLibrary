@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.tcn.cosmoslibrary.common.item.CosmosArmourItemElytra;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
@@ -21,6 +23,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
@@ -38,6 +42,7 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 	protected boolean doesExtract;
 	protected boolean doesCharge;
 	protected boolean doesDisplayEnergyInTooltip;
+	private ComponentColour barColour;
 
 	public CosmosEnergyArmourItemElytra(ArmorMaterial materialIn, EquipmentSlot slot, Item.Properties builderIn, boolean damageableIn, CosmosEnergyItem.Properties energyProperties) {
 		super(materialIn, slot, builderIn, damageableIn);
@@ -49,6 +54,7 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 		this.doesExtract = energyProperties.doesExtract;
 		this.doesCharge = energyProperties.doesCharge;
 		this.doesDisplayEnergyInTooltip = energyProperties.doesDisplayEnergyInTooltip;
+		this.barColour = energyProperties.barColour;
 		
 		builderIn.setNoRepair();
 	}
@@ -78,16 +84,16 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 	}
 
 	@Override
-	public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-		return isFlyEnabled(stack);
+	public boolean canElytraFly(ItemStack stackIn, LivingEntity entityIn) {
+		return this.isFlyEnabled(stackIn);
 	}
 
 	@Override
-	public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-		if (this.hasEnergy(stack)) {
-			this.extractEnergy(stack, (this.getMaxUse(stack) / 2) / 20, false);
+	public boolean elytraFlightTick(ItemStack stackIn, LivingEntity entityIn, int flightTicks) {
+		if (this.isFlyEnabled(stackIn)) {
+			this.extractEnergy(stackIn, (this.getMaxUse(stackIn) / 2) / 20, false);
 		} else {
-			entity.hurt(DamageSource.ON_FIRE, 1);
+			entityIn.hurt(DamageSource.ON_FIRE, 1);
 		}
 		
 		return true;
@@ -97,7 +103,7 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		if (stack.hasTag()) {
 			CompoundTag stackTag = stack.getTag();
-			tooltip.add(ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.locComp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
+			tooltip.add(ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.comp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
 		}
 		super.appendHoverText(stack, worldIn, tooltip, flagIn);
 	}
@@ -110,13 +116,20 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 		
 		if (this.hasEnergy(stackIn)) {
 			this.extractEnergy(stackIn, this.getMaxUse(stackIn), false);
-		} else {
-			entity.hurt(DamageSource.ON_FIRE, 1);
 		}
 		
         return 0;
     }
 
+	@Override
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slotIn, ItemStack stackIn) {
+		if (!this.hasEnergy(stackIn)) {
+			return ImmutableMultimap.of();
+		} else {
+			return this.getDefaultAttributeModifiers(slotIn);
+		}
+	}
+	
 	@Override
 	public int getMaxEnergyStored(ItemStack stackIn) {
 		Item item = stackIn.getItem();
@@ -227,7 +240,7 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 	
 	@Override
 	public int getBarColor(ItemStack stackIn) {
-		return ComponentColour.RED.dec();
+		return this.barColour.dec();
 	}
 	
 	@Override

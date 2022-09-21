@@ -33,13 +33,13 @@ public class CosmosTeleportCore {
 						server_player.changeDimension(server_world, teleporterIn);
 
 						if (!teleporterIn.playVanillaSound() && soundIn != null) {
-							server_player.connection.send(new ClientboundSoundPacket(soundIn, SoundSource.AMBIENT, position[0], position[1], position[2], volume, 1));
+							server_player.connection.send(new ClientboundSoundPacket(soundIn, SoundSource.AMBIENT, position[0], position[1], position[2], volume, 1, 0));
 						}
 					} else {
 						server_player.changeDimension(server_world, teleporterIn);
 
 						if (!teleporterIn.playVanillaSound() && soundIn != null) {
-							server_player.connection.send(new ClientboundSoundPacket(soundIn, SoundSource.AMBIENT, server_player.getX(), server_player.getY(), server_player.getZ(), volume, 1));
+							server_player.connection.send(new ClientboundSoundPacket(soundIn, SoundSource.AMBIENT, server_player.getX(), server_player.getY(), server_player.getZ(), volume, 1, 0));
 						}
 					}
 				}

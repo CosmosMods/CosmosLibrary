@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,90 +22,134 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class CosmosOptionsList extends ContainerObjectSelectionList<CosmosOptionsList.Entry> {
-   public CosmosOptionsList(Minecraft p_94465_, int p_94466_, int p_94467_, int p_94468_, int p_94469_, int p_94470_) {
-      super(p_94465_, p_94466_, p_94467_, p_94468_, p_94469_, p_94470_);
-      this.centerListVertically = false;
-   }
 
-   public int addBig(Option p_94472_) {
-      return this.addEntry(CosmosOptionsList.Entry.big(this.minecraft.options, this.width, p_94472_));
-   }
+	private int smallWidth;
+	private int bigWidth;
+	
+	private int buttonHeight;
+	
+	public CosmosOptions options;
+	
+	public CosmosOptionsList(Minecraft minecraftIn, int widthIn, int heightIn, int yZeroIn, int yOneIn, int itemHeight, int buttonHeightIn, CosmosOptions options) {
+		this(minecraftIn, widthIn, heightIn, yZeroIn, yOneIn, itemHeight, buttonHeightIn, 310, options);
+	}
+	
+	public CosmosOptionsList(Minecraft minecraftIn, int widthIn, int heightIn, int yZeroIn, int yOneIn, int itemHeight, int buttonHeightIn, int bigWidthIn, CosmosOptions options) {
+		super(minecraftIn, widthIn, heightIn, yZeroIn, yOneIn, itemHeight);
+		this.centerListVertically = false;
+		
+		this.options = options;
+		
+		this.smallWidth = (bigWidthIn - 10) / 2;
+		this.bigWidth = bigWidthIn;
+		this.buttonHeight = buttonHeightIn;
+	}
 
-   public void addSmall(Option p_94474_, @Nullable Option p_94475_) {
-      this.addEntry(CosmosOptionsList.Entry.small(this.minecraft.options, this.width, p_94474_, p_94475_));
-   }
+	public int addBig(CosmosOptionInstance<?> optionIn) {
+		return this.addEntry(CosmosOptionsList.Entry.big(this.options, this.width, optionIn, this.bigWidth, this.buttonHeight));
+	}
 
-   public void addSmall(Option[] p_94477_) {
-      for(int i = 0; i < p_94477_.length; i += 2) {
-         this.addSmall(p_94477_[i], i < p_94477_.length - 1 ? p_94477_[i + 1] : null);
-      }
+	public void addSmall(CosmosOptionInstance<?> optionIn, @Nullable CosmosOptionInstance<?> secondOptionIn) {
+		this.addEntry(CosmosOptionsList.Entry.small(this.options, this.width, optionIn, secondOptionIn, this.smallWidth, this.bigWidth, this.buttonHeight));
+	}
 
-   }
+	public void addSmall(CosmosOptionInstance<?>[] optionsIn) {
+		for (int i = 0; i < optionsIn.length; i += 2) {
+			this.addSmall(optionsIn[i], i < optionsIn.length - 1 ? optionsIn[i + 1] : null);
+		}
+	}
 
-   public int getRowWidth() {
-      return 400;
-   }
+	@Override
+	public int getRowWidth() {
+		return 400;
+	}
 
-   protected int getScrollbarPosition() {
-      return super.getScrollbarPosition() + 32;
-   }
+	@Override
+	protected int getScrollbarPosition() {
+		return super.getScrollbarPosition() + 32;
+	}
 
-   @Nullable
-   public AbstractWidget findOption(Option p_94479_) {
-      for(CosmosOptionsList.Entry optionslist$entry : this.children()) {
-         AbstractWidget abstractwidget = optionslist$entry.options.get(p_94479_);
-         if (abstractwidget != null) {
-            return abstractwidget;
-         }
-      }
+	@Nullable
+	public AbstractWidget findOption(CosmosOptionInstance<?> optionIn) {
+		for (CosmosOptionsList.Entry optionslist$entry : this.children()) {
+			AbstractWidget abstractwidget = optionslist$entry.options.get(optionIn);
+			if (abstractwidget != null) {
+				return abstractwidget;
+			}
+		}
 
-      return null;
-   }
+		return null;
+	}
 
-   public Optional<AbstractWidget> getMouseOver(double p_94481_, double p_94482_) {
-      for(CosmosOptionsList.Entry optionslist$entry : this.children()) {
-         for(AbstractWidget abstractwidget : optionslist$entry.children) {
-            if (abstractwidget.isMouseOver(p_94481_, p_94482_)) {
-               return Optional.of(abstractwidget);
-            }
-         }
-      }
+	public Optional<AbstractWidget> getMouseOver(double mouseX, double mouseY) {
+		for (CosmosOptionsList.Entry optionslist$entry : this.children()) {
+			for (AbstractWidget abstractwidget : optionslist$entry.children) {
+				if (abstractwidget.isMouseOver(mouseX, mouseY)) {
+					return Optional.of(abstractwidget);
+				}
+			}
+		}
 
-      return Optional.empty();
-   }
+		return Optional.empty();
+	}
 
-   @OnlyIn(Dist.CLIENT)
-   public static class Entry extends ContainerObjectSelectionList.Entry<CosmosOptionsList.Entry> {
-      final Map<Option, AbstractWidget> options;
-      final List<AbstractWidget> children;
+	@OnlyIn(Dist.CLIENT)
+	public static class Entry extends ContainerObjectSelectionList.Entry<CosmosOptionsList.Entry> {
+		final Map<CosmosOptionInstance<?>, AbstractWidget> options;
+		final List<AbstractWidget> children;
 
-      private Entry(Map<Option, AbstractWidget> p_169047_) {
-         this.options = p_169047_;
-         this.children = ImmutableList.copyOf(p_169047_.values());
-      }
+		private Entry(Map<CosmosOptionInstance<?>, AbstractWidget> optionMap) {
+			this.options = optionMap;
+			this.children = ImmutableList.copyOf(optionMap.values());
+		}
 
-      public static CosmosOptionsList.Entry big(Options p_94507_, int p_94508_, Option p_94509_) {
-         return new CosmosOptionsList.Entry(ImmutableMap.of(p_94509_, p_94509_.createButton(p_94507_, p_94508_ / 2 - 155, 0, 310)));
-      }
+		private Entry(Map<CosmosOptionInstance<?>, AbstractWidget> optionMap, AbstractWidget addedChild) {
+			this.options = optionMap;
+			
+			this.children = Lists.newCopyOnWriteArrayList(optionMap.values());
+			this.children.add(addedChild);
+		}
 
-      public static CosmosOptionsList.Entry small(Options p_94511_, int p_94512_, Option p_94513_, @Nullable Option p_94514_) {
-         AbstractWidget abstractwidget = p_94513_.createButton(p_94511_, p_94512_ / 2 - 155, 0, 150);
-         return p_94514_ == null ? new CosmosOptionsList.Entry(ImmutableMap.of(p_94513_, abstractwidget)) : new CosmosOptionsList.Entry(ImmutableMap.of(p_94513_, abstractwidget, p_94514_, p_94514_.createButton(p_94511_, p_94512_ / 2 - 155 + 160, 0, 150)));
-      }
+		public static CosmosOptionsList.Entry big(CosmosOptions optionsIn, int screenWidthIn, CosmosOptionInstance<?> optionIn, int widthIn, int heightIn) {
+			AbstractWidget abstractWidget = optionIn.createButton(optionsIn, screenWidthIn / 2 - (widthIn / 2), 0, widthIn, heightIn);
+			return !optionIn.hasResetButton() ? 
+					new CosmosOptionsList.Entry(ImmutableMap.of(optionIn, abstractWidget)) : 
+						new CosmosOptionsList.Entry(ImmutableMap.of(optionIn, abstractWidget), optionIn.createResetButton(optionsIn, screenWidthIn / 2 - (widthIn / 2), 45, widthIn, heightIn));
+		}
 
-      public void render(PoseStack p_94496_, int p_94497_, int p_94498_, int p_94499_, int p_94500_, int p_94501_, int p_94502_, int p_94503_, boolean p_94504_, float p_94505_) {
-         this.children.forEach((p_94494_) -> {
-            p_94494_.y = p_94498_;
-            p_94494_.render(p_94496_, p_94502_, p_94503_, p_94505_);
-         });
-      }
+		public static CosmosOptionsList.Entry small(CosmosOptions optionsIn, int screenWidthIn, CosmosOptionInstance<?> optionOneIn, @Nullable CosmosOptionInstance<?> optionTwoIn, int widthIn, int bigWidthIn, int heightIn) {
+			AbstractWidget abstractwidget = optionOneIn.createButton(optionsIn, screenWidthIn / 2 - (bigWidthIn / 2), 0, widthIn, heightIn);
+			return optionTwoIn == null ? 
+					new CosmosOptionsList.Entry(ImmutableMap.of(optionOneIn, abstractwidget)) : 
+						new CosmosOptionsList.Entry(ImmutableMap.of(optionOneIn, abstractwidget, optionTwoIn, optionTwoIn.createButton(optionsIn, screenWidthIn / 2 - (bigWidthIn / 2) + (widthIn + 10), 0, widthIn, heightIn)));
+		}
+		
+		@Override
+		public void render(PoseStack poseStackIn, int xPosIn, int yPosIn, int p_94499_, int p_94500_, int p_94501_, int mouseX, int mouseY, boolean p_94504_, float partialTicks) {
+			this.children.forEach((widget) -> {
+				renderWidget(widget, poseStackIn, xPosIn, yPosIn, mouseX, mouseY, partialTicks);
+			});
+		}
+		
+		public void renderWidget(AbstractWidget widgetIn, PoseStack poseStackIn, int xPosIn, int yPosIn, int mouseX, int mouseY, float partialTicks) {
+			if (!(widgetIn instanceof EditBox)) {
+				widgetIn.y = yPosIn;
+				widgetIn.render(poseStackIn, mouseX, mouseY, partialTicks);
+			}
+			else if (widgetIn instanceof EditBox) {
+				widgetIn.y = yPosIn + 2;
+				widgetIn.render(poseStackIn, mouseX, mouseY, partialTicks);
+			}
+		}
 
-      public List<? extends GuiEventListener> children() {
-         return this.children;
-      }
+		@Override
+		public List<? extends GuiEventListener> children() {
+			return this.children;
+		}
 
-      public List<? extends NarratableEntry> narratables() {
-         return this.children;
-      }
-   }
+		@Override
+		public List<? extends NarratableEntry> narratables() {
+			return this.children;
+		}
+	}
 }

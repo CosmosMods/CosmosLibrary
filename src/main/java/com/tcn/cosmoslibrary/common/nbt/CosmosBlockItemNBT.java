@@ -14,7 +14,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -114,7 +113,7 @@ public class CosmosBlockItemNBT extends BlockItem {
 						//if(compound_tag.hasKey("energy")) {
 							int energy = compound_tag.getInt("energy");
 							
-							tooltip.add(new TextComponent(Value.GRAY + "Energy Stored: " + Value.LIGHT_GRAY + "["+ energy + "] " + Value.PURPLE + "RF"));
+							tooltip.add(Component.literal(Value.GRAY + "Energy Stored: " + Value.LIGHT_GRAY + "["+ energy + "] " + Value.PURPLE + "RF"));
 							
 						//}
 						
@@ -124,22 +123,22 @@ public class CosmosBlockItemNBT extends BlockItem {
 							NonNullList<ItemStack> list_ = NonNullList.<ItemStack>withSize(size, ItemStack.EMPTY);
 							ContainerHelper.loadAllItems(tag.getCompound("nbt_data"), list_);
 							
-							tooltip.add(new TextComponent(Value.GRAY + "   > [ Items: { Items } ]: "));
+							tooltip.add(Component.literal(Value.GRAY + "   > [ Items: { Items } ]: "));
 							
 							if (list_.size() > 6) {
 								for (int j = 0; j < 6; j++) {
 									if (list_.get(j)!= null){
 										if (list_.get(j).getItem() != Item.byBlock(Blocks.AIR)) {
-											tooltip.add(new TextComponent(Value.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.get(list_.get(j).getItem().getName(list_.get(j)).toString()) + " )"));
+											tooltip.add(Component.literal(Value.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.get(list_.get(j).getItem().getName(list_.get(j)).toString()) + " )"));
 										}
 									}
 								}
-								tooltip.add(new TextComponent(Value.GRAY + "     - ( & " + (list_.size() - 5) + " stack(s) more... )"));
+								tooltip.add(Component.literal(Value.GRAY + "     - ( & " + (list_.size() - 5) + " stack(s) more... )"));
 							} else {
 								for (int j = 0; j < list_.size(); j++) {
 									if (list_.get(j)!= null){
 										if (list_.get(j).getItem() != Item.byBlock(Blocks.AIR)) {
-											tooltip.add(new TextComponent(Value.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.get(list_.get(j).getItem().getName(list_.get(j)).toString()) + " )"));
+											tooltip.add(Component.literal(Value.GRAY + "     - ( " + "Slot " + j + ": " + list_.get(j).getCount() + "x " + I18n.get(list_.get(j).getItem().getName(list_.get(j)).toString()) + " )"));
 										}
 									}
 								}
@@ -158,14 +157,14 @@ public class CosmosBlockItemNBT extends BlockItem {
 								text_colours[c.get3DDataValue()] = EnumSideState.getStateFromIndex(index).getTextColour().dec();
 							}
 							
-							tooltip.add(new TextComponent(Value.LIGHT_BLUE + "   > " + Value.LIGHT_GRAY + "[ " + Value.CYAN + "ISidedTile " + Value.GRAY + "(sides)" + Value.LIGHT_GRAY + " ]"));
+							tooltip.add(Component.literal(Value.LIGHT_BLUE + "   > " + Value.LIGHT_GRAY + "[ " + Value.CYAN + "ISidedTile " + Value.GRAY + "(sides)" + Value.LIGHT_GRAY + " ]"));
 							
-							tooltip.add(new TextComponent(Value.RED + "     - " + Value.LIGHT_GRAY + "[U] " + Value.GRAY + "= " + text_colours[1] + strings[1]));
-							tooltip.add(new TextComponent(Value.RED + "     - " + Value.LIGHT_GRAY + "[D] " + Value.GRAY + "= " + text_colours[0] + strings[0]));
-							tooltip.add(new TextComponent(Value.RED + "     - " + Value.LIGHT_GRAY + "[N] " + Value.GRAY + "= " + text_colours[2] + strings[2]));
-							tooltip.add(new TextComponent(Value.RED + "     - " + Value.LIGHT_GRAY + "[S] " + Value.GRAY + "= " + text_colours[3] + strings[3]));
-							tooltip.add(new TextComponent(Value.RED + "     - " + Value.LIGHT_GRAY + "[E] " + Value.GRAY + "= " + text_colours[5] + strings[5]));
-							tooltip.add(new TextComponent(Value.RED + "     - " + Value.LIGHT_GRAY + "[W] " + Value.GRAY + "= " + text_colours[4] + strings[4]));
+							tooltip.add(Component.literal(Value.RED + "     - " + Value.LIGHT_GRAY + "[U] " + Value.GRAY + "= " + text_colours[1] + strings[1]));
+							tooltip.add(Component.literal(Value.RED + "     - " + Value.LIGHT_GRAY + "[D] " + Value.GRAY + "= " + text_colours[0] + strings[0]));
+							tooltip.add(Component.literal(Value.RED + "     - " + Value.LIGHT_GRAY + "[N] " + Value.GRAY + "= " + text_colours[2] + strings[2]));
+							tooltip.add(Component.literal(Value.RED + "     - " + Value.LIGHT_GRAY + "[S] " + Value.GRAY + "= " + text_colours[3] + strings[3]));
+							tooltip.add(Component.literal(Value.RED + "     - " + Value.LIGHT_GRAY + "[E] " + Value.GRAY + "= " + text_colours[5] + strings[5]));
+							tooltip.add(Component.literal(Value.RED + "     - " + Value.LIGHT_GRAY + "[W] " + Value.GRAY + "= " + text_colours[4] + strings[4]));
 							
 						}
 					}

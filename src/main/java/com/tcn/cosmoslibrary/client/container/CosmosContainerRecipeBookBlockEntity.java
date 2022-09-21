@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.RecipeBookType;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 
-public class CosmosContainerRecipeBookBlockEntity<J extends Container> extends RecipeBookMenu<J> {
+public abstract class CosmosContainerRecipeBookBlockEntity<J extends Container> extends RecipeBookMenu<J> {
 
 	protected final ContainerLevelAccess access;
 	protected final Player player;
@@ -45,6 +45,10 @@ public class CosmosContainerRecipeBookBlockEntity<J extends Container> extends R
 		return pos;
 	}
 
+	public Player getPlayer() {
+		return this.player;
+	}
+	
 	@Override
 	public void fillCraftSlotsStackedContents(StackedContents p_40117_) { }
 
@@ -85,4 +89,5 @@ public class CosmosContainerRecipeBookBlockEntity<J extends Container> extends R
 	public boolean shouldMoveToInventory(int p_150635_) {
 		return false;
 	}
+
 }

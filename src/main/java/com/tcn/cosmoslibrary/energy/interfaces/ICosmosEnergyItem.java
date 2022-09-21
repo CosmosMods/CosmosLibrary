@@ -1,5 +1,7 @@
 package com.tcn.cosmoslibrary.energy.interfaces;
 
+import com.tcn.cosmoslibrary.common.lib.ComponentColour;
+
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -17,6 +19,7 @@ public interface ICosmosEnergyItem {
 	boolean doesExtract = true;
 	boolean doesCharge = true;
 	boolean doesDisplayEnergyInTooltip = true;
+	ComponentColour barColour = ComponentColour.RED;
 
 	public int getMaxEnergyStored(ItemStack stackIn);
 	public int getMaxExtract(ItemStack stackIn);
@@ -38,6 +41,7 @@ public interface ICosmosEnergyItem {
 	}
 	
 	default int setEnergy(ItemStack stackIn, int energy) {
+		stackIn.setDamageValue(0);
 		stackIn.getOrCreateTag().putInt("energy", Math.max(0, energy));
 		return energy;
 	}

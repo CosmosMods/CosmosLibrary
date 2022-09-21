@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.tcn.cosmoslibrary.common.item.CosmosArmourItemColourable;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
@@ -18,10 +20,11 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorMaterial;
@@ -31,7 +34,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
 public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable implements ICosmosEnergyItem {
-
 	private int maxEnergyStored;
 	private int maxExtract;
 	private int maxReceive;
@@ -39,6 +41,7 @@ public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable
 	private boolean doesExtract;
 	private boolean doesCharge;
 	private boolean doesDisplayEnergyInTooltip;
+	private ComponentColour barColour;
 	
 	private boolean isEnderMask;
 
@@ -52,12 +55,13 @@ public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable
 		this.doesExtract = energyProperties.doesExtract;
 		this.doesCharge = energyProperties.doesCharge;
 		this.doesDisplayEnergyInTooltip = energyProperties.doesDisplayEnergyInTooltip;
+		this.barColour = energyProperties.barColour;
 		
 		this.isEnderMask = isEnderMaskIn;
 		
 		builderIn.setNoRepair();
 	}
-
+	
 	@Override
 	public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
 		return this.isEnderMask;
@@ -69,7 +73,7 @@ public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable
 		
 		if (stack.hasTag()) {
 			CompoundTag stackTag = stack.getTag();
-			tooltip.add(ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.locComp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
+			tooltip.add(ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.comp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
 		}
 	}
 	
@@ -97,15 +101,24 @@ public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable
 			this.setDamage(stackIn, 0);
 		}
 		
-		if (this.hasEnergy(stackIn)) {
-			this.extractEnergy(stackIn, this.getMaxUse(stackIn), false);
-		} else {
-			entity.hurt(DamageSource.ON_FIRE, 1);
+		if (entity instanceof Player) {
+			if (this.hasEnergy(stackIn)) {
+				this.extractEnergy(stackIn, this.getMaxUse(stackIn), false);
+			}
 		}
 		
         return 0;
     }
 
+	@Override
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slotIn, ItemStack stackIn) {
+		if (!this.hasEnergy(stackIn)) {
+			return ImmutableMultimap.of();
+		} else {
+			return this.getDefaultAttributeModifiers(slotIn);
+		}
+	}
+	
 	@Override
 	public int getMaxEnergyStored(ItemStack stackIn) {
 		Item item = stackIn.getItem();
@@ -216,7 +229,7 @@ public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable
 	
 	@Override
 	public int getBarColor(ItemStack stackIn) {
-		return ComponentColour.RED.dec();
+		return this.barColour.dec();
 	}
 	
 	@Override

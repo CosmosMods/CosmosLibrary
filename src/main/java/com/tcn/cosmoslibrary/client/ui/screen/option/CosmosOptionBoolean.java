@@ -1,104 +1,55 @@
 package com.tcn.cosmoslibrary.client.ui.screen.option;
 
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.MutableComponent;
 
-public class CosmosOptionBoolean extends Option {
+public class CosmosOptionBoolean extends CosmosOptionInstance<Boolean> {
 	
-	private final Predicate<Options> getter;
-	private final BiConsumer<Options, Boolean> setter;
-	@Nullable
-	private final BaseComponent tooltipText;
-	
-	private final BaseComponent newCaption;
-	private final TYPE type;
-
-	public CosmosOptionBoolean(ComponentColour colour, boolean bold, String caption, TYPE type, Predicate<Options> getter, BiConsumer<Options, Boolean> setter) {
-		this(colour, bold, caption, type, (BaseComponent) null, getter, setter);
+	public CosmosOptionBoolean(ComponentColour colour, String flags, String caption, TYPE type, boolean initialValueIn, Consumer<Boolean> consumerFunctionIn) {
+		this(colour, flags, caption, type, CosmosOptionInstance.noTooltip(), initialValueIn, consumerFunctionIn, ":");
 	}
 
-	public CosmosOptionBoolean(ComponentColour colour, boolean bold, String caption, TYPE type, @Nullable BaseComponent tooltip, Predicate<Options> getter, BiConsumer<Options, Boolean> setter) {
-		super("");
-		this.getter = getter;
-		this.setter = setter;
-		this.tooltipText = tooltip;
-		this.newCaption = ComponentHelper.locComp(colour, bold, caption, ":");
-		this.type = type;
+	public CosmosOptionBoolean(ComponentColour colour, String flags, String caption, TYPE type, CosmosOptionInstance.TooltipSupplierFactory<Boolean> tooltipIn, boolean initialValue, Consumer<Boolean> consumerFunctionIn, String splitterIn) {
+		super(ComponentHelper.style(colour, flags, caption), tooltipIn, (comp, value) -> {
+			return value ? type.getOnStateComp() : type.getOffStateComp();
+		}, CosmosOptionInstance.BOOLEAN_VALUES, initialValue, false, consumerFunctionIn, false, splitterIn);
 	}
-
-	public void set(Options options, String valueIn) {
+	
+	public void set(CosmosOptions options, String valueIn) {
 		this.set(options, "true".equals(valueIn));
 	}
 
-	public void toggle(Options options) {
-		this.set(options, !this.get(options));
+	public void toggle(CosmosOptions options) {
+		this.set(options, !this.value);
 		options.save();
 	}
 
-	private void set(Options options, boolean valueIn) {
-		this.setter.accept(options, valueIn);
+	private void set(CosmosOptions options, boolean valueIn) {
+		this.value = valueIn;
 	}
 
-	public boolean get(Options options) {
-		return this.getter.test(options);
-	}
-
-	@Override
-	public Button createButton(Options options, int xIn, int yIn, int width) {
-		return new Button(xIn, yIn, width, 20, this.getMessage(options), (button) -> {
-			this.toggle(options);
-			button.setMessage(this.getMessage(options));
-		});
-	}
-
-	public Component getMessage(Options options) {
-		return optionStatusMessage(this.getCaption(), this.get(options), this.type);
-	}
-	
-	@Override
-	public BaseComponent getCaption() {
-		if (this.newCaption != null) {
-			return this.newCaption;
-		}
-		
-		return (BaseComponent) super.getCaption();
-	}
-
-	public static final BaseComponent OPTION_ON = new TranslatableComponent("options.on");
-	public static final BaseComponent OPTION_OFF = new TranslatableComponent("options.off");
-
-	public static BaseComponent optionStatusMessage(BaseComponent caption, boolean valueIn, TYPE type) {
-		if (type.equals(TYPE.ON_OFF)) {
-			TranslatableComponent comp = new TranslatableComponent(valueIn ? "cosmoslibrary.options.on.composed" : "cosmoslibrary.options.off.composed", caption);
-			
-			comp.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(valueIn ? ComponentColour.GREEN.dec() : ComponentColour.RED.dec())).withBold(true));
-			return comp;
-		} else if (type.equals(TYPE.YES_NO)) {
-			TranslatableComponent comp = new TranslatableComponent(valueIn ? "cosmoslibrary.options.yes.composed" : "cosmoslibrary.options.no.composed", caption);
-			
-			comp.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(valueIn ? ComponentColour.GREEN.dec() : ComponentColour.RED.dec())).withBold(true));
-			return comp;
-		}
-		
-		return (TranslatableComponent) null;
-	}
-	
 	public enum TYPE {
-		ON_OFF,
-		YES_NO
+		ON_OFF(ComponentColour.GREEN, ComponentColour.RED, ComponentHelper.style(ComponentColour.GREEN, "bold", "cosmoslibrary.options.on.composed"), ComponentHelper.style(ComponentColour.RED, "bold", "cosmoslibrary.options.off.composed")),
+		YES_NO(ComponentColour.GREEN, ComponentColour.RED, ComponentHelper.style(ComponentColour.GREEN, "bold", "cosmoslibrary.options.yes.composed"), ComponentHelper.style(ComponentColour.RED, "bold", "cosmoslibrary.options.no.composed"));
+		
+		MutableComponent onState;
+		MutableComponent offState;
+		
+		TYPE(ComponentColour onStateColourIn, ComponentColour offStateColourIn, MutableComponent onStateIn, MutableComponent offStateIn) {
+			this.onState = onStateIn;
+			this.offState = offStateIn;
+		}
+		
+		public MutableComponent getOnStateComp() {
+			return this.onState;
+		}
+
+		public MutableComponent getOffStateComp() {
+			return this.offState;
+		}
 	}
 }

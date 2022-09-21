@@ -13,8 +13,8 @@ public class FluidHelper {
 	
 	public static ItemStack useItemSafely(ItemStack stack) {
 		if (stack.getCount() == 1) {
-			if (stack.getItem().hasContainerItem(stack))
-				return stack.getItem().getContainerItem(stack);
+			if (stack.getItem().hasCraftingRemainingItem(stack))
+				return stack.getItem().getCraftingRemainingItem(stack);
 			else
 				return null;
 		} else {

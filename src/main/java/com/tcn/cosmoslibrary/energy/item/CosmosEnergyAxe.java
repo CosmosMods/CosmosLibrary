@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper.Value;
@@ -21,7 +23,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
@@ -31,6 +36,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.common.ToolActions;
 
 public class CosmosEnergyAxe extends AxeItem implements ICosmosEnergyItem {
@@ -42,6 +48,7 @@ public class CosmosEnergyAxe extends AxeItem implements ICosmosEnergyItem {
 	private boolean doesExtract;
 	private boolean doesCharge;
 	private boolean doesDisplayEnergyInTooltip;
+	private ComponentColour barColour;
 
 	public CosmosEnergyAxe(Tier itemTier, int attackDamageIn, float attackSpeedIn, Properties builderIn, CosmosEnergyItem.Properties energyProperties) {
 		super(itemTier, attackDamageIn, attackSpeedIn, builderIn);
@@ -53,16 +60,26 @@ public class CosmosEnergyAxe extends AxeItem implements ICosmosEnergyItem {
 		this.doesExtract = energyProperties.doesExtract;
 		this.doesCharge = energyProperties.doesCharge;
 		this.doesDisplayEnergyInTooltip = energyProperties.doesDisplayEnergyInTooltip;
+		this.barColour = energyProperties.barColour;
 	}
 
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		if (stack.hasTag()) {
 			CompoundTag stackTag = stack.getTag();
-			tooltip.add(ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.locComp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
+			tooltip.add(ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.comp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
 		}
 	}
 
+	@Override
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slotIn, ItemStack stackIn) {
+		if (!this.hasEnergy(stackIn)) {
+			return ImmutableMultimap.of();
+		} else {
+			return this.getDefaultAttributeModifiers(slotIn);
+		}
+	}
+	
 	@Override
 	public boolean canAttackBlock(BlockState stateIn, Level worldIn, BlockPos posIn, Player playerEntity) {
 		ItemStack heldStack = playerEntity.getInventory().getSelected();
@@ -120,38 +137,47 @@ public class CosmosEnergyAxe extends AxeItem implements ICosmosEnergyItem {
 		BlockPos blockpos = context.getClickedPos();
 		Player player = context.getPlayer();
 		BlockState blockstate = level.getBlockState(blockpos);
-		Optional<BlockState> optional = Optional.ofNullable(blockstate.getToolModifiedState(level, blockpos, player, context.getItemInHand(), ToolActions.AXE_STRIP));
-		Optional<BlockState> optional1 = Optional.ofNullable(blockstate.getToolModifiedState(level, blockpos, player, context.getItemInHand(), ToolActions.AXE_SCRAPE));
-		Optional<BlockState> optional2 = Optional.ofNullable(blockstate.getToolModifiedState(level, blockpos, player, context.getItemInHand(), ToolActions.AXE_WAX_OFF));
+		Optional<BlockState> optional = Optional.ofNullable(blockstate.getToolModifiedState(context, ToolActions.AXE_STRIP, false));
+		Optional<BlockState> optional1 = optional.isPresent() ? Optional.empty() : Optional.ofNullable(blockstate.getToolModifiedState(context, ToolActions.AXE_SCRAPE, false));
+		Optional<BlockState> optional2 = optional.isPresent() || optional1.isPresent() ? Optional.empty() : Optional.ofNullable(blockstate.getToolModifiedState(context, ToolActions.AXE_WAX_OFF, false));
 		ItemStack itemstack = context.getItemInHand();
 		Optional<BlockState> optional3 = Optional.empty();
 		ItemStack selected = player.getInventory().getSelected();
-		
-		if (optional.isPresent()) {
-			level.playSound(player, blockpos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
-			optional3 = optional;
-		} else if (optional1.isPresent()) {
-			level.playSound(player, blockpos, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
-			level.levelEvent(player, 3005, blockpos, 0);
-			optional3 = optional1;
-		} else if (optional2.isPresent()) {
-			level.playSound(player, blockpos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
-			level.levelEvent(player, 3004, blockpos, 0);
-			optional3 = optional2;
-		}
 
-		if (optional3.isPresent()) {
-			if (player instanceof ServerPlayer) {
-				CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, blockpos, itemstack);
+		if (this.hasEnergy(selected)) {
+			if (optional.isPresent()) {
+				level.playSound(player, blockpos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
+				optional3 = optional;
+			} else if (optional1.isPresent()) {
+				level.playSound(player, blockpos, SoundEvents.AXE_SCRAPE, SoundSource.BLOCKS, 1.0F, 1.0F);
+				level.levelEvent(player, 3005, blockpos, 0);
+				optional3 = optional1;
+			} else if (optional2.isPresent()) {
+				level.playSound(player, blockpos, SoundEvents.AXE_WAX_OFF, SoundSource.BLOCKS, 1.0F, 1.0F);
+				level.levelEvent(player, 3004, blockpos, 0);
+				optional3 = optional2;
 			}
-
-			level.setBlock(blockpos, optional3.get(), 11);
-			this.extractEnergy(selected, this.getMaxUse(selected), false);
-			
-			return InteractionResult.sidedSuccess(level.isClientSide);
-		} else {
-			return InteractionResult.PASS;
+	
+			if (optional3.isPresent()) {
+				if (player instanceof ServerPlayer) {
+					CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, blockpos, itemstack);
+				}
+	
+				level.setBlock(blockpos, optional3.get(), 11);
+				this.extractEnergy(selected, this.getMaxUse(selected), false);
+				level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(player, optional3.get()));
+				if (player != null) {
+					itemstack.hurtAndBreak(1, player, (p_150686_) -> {
+						p_150686_.broadcastBreakEvent(context.getHand());
+					});
+				}
+	
+				return InteractionResult.sidedSuccess(level.isClientSide);
+			} else {
+				return InteractionResult.PASS;
+			}
 		}
+		return InteractionResult.FAIL;
 	}
 
 	@Override
@@ -264,7 +290,7 @@ public class CosmosEnergyAxe extends AxeItem implements ICosmosEnergyItem {
 	
 	@Override
 	public int getBarColor(ItemStack stackIn) {
-		return ComponentColour.RED.dec();
+		return this.barColour.dec();
 	}
 	
 	@Override

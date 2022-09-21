@@ -12,9 +12,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 /**
- * 
  * @author TheCosmicNebula_
- * 
  */
 @OnlyIn(Dist.CLIENT)
 public class CosmosButtonUIMode extends Button {
@@ -60,6 +58,7 @@ public class CosmosButtonUIMode extends Button {
 		if (!this.active) {
 			return false;
 		}
+		
 		return super.isMouseOver(mouseX, mouseY);
 	}
 

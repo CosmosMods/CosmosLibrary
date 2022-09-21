@@ -27,6 +27,7 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 	private boolean doesExtract;
 	private boolean doesCharge;
 	private boolean doesDisplayEnergyInTooltip;
+	private ComponentColour barColour;
 	
 	public CosmosEnergyItem(Item.Properties properties, CosmosEnergyItem.Properties energyProperties) {
 		super(properties);
@@ -38,6 +39,7 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 		this.doesExtract = energyProperties.doesExtract;
 		this.doesCharge = energyProperties.doesCharge;
 		this.doesDisplayEnergyInTooltip = energyProperties.doesDisplayEnergyInTooltip;
+		this.barColour = energyProperties.barColour;
 	}
 	
 	@Override
@@ -46,7 +48,7 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 		
 		if (stack.hasTag()) {
 			CompoundTag stackTag = stack.getTag();
-			tooltip.add(ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.locComp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
+			tooltip.add(ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.comp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
 		}
 	}
 
@@ -160,7 +162,7 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 	
 	@Override
 	public int getBarColor(ItemStack stackIn) {
-		return ComponentColour.RED.dec();
+		return this.barColour.dec();
 	}
 	
 	@Override
@@ -177,6 +179,7 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 		public boolean doesExtract = true;
 		public boolean doesCharge = true;
 		public boolean doesDisplayEnergyInTooltip = true;
+		public ComponentColour barColour = ComponentColour.RED;
 		
 		public CosmosEnergyItem.Properties maxEnergyStored(int valueIn) {
 			this.maxEnergyStored = valueIn;
@@ -216,6 +219,11 @@ public class CosmosEnergyItem extends CosmosItem implements ICosmosEnergyItem {
 
 		public CosmosEnergyItem.Properties doesDisplayEnergyInTooltip(boolean valueIn) {
 			this.doesDisplayEnergyInTooltip = valueIn;
+			return this;
+		}
+		
+		public CosmosEnergyItem.Properties barColour(ComponentColour colourIn) {
+			this.barColour = colourIn;
 			return this;
 		}
 		

@@ -8,7 +8,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.Level;
 
-public class CosmosContainerMenuBlockEntity extends AbstractContainerMenu {
+public abstract class CosmosContainerMenuBlockEntity extends AbstractContainerMenu {
 
 	protected final ContainerLevelAccess access;
 	protected final Player player;
@@ -38,4 +38,9 @@ public class CosmosContainerMenuBlockEntity extends AbstractContainerMenu {
 	public BlockPos getBlockPos() {
 		return pos;
 	}
+	
+	public Player getPlayer() {
+		return this.player;
+	}
+	
 }

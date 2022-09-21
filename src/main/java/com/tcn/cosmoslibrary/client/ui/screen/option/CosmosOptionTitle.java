@@ -1,65 +1,50 @@
 package com.tcn.cosmoslibrary.client.ui.screen.option;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.tcn.cosmoslibrary.common.lib.ComponentColour;
+import com.mojang.serialization.Codec;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Option;
-import net.minecraft.client.Options;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class CosmosOptionTitle extends Option {
+public class CosmosOptionTitle extends CosmosOptionInstance<String> {
 	
-	private final BaseComponent customCaption;
-
-	public CosmosOptionTitle(ComponentColour colour, boolean bold, String caption) {
-		super("");
-		
-		this.customCaption = ComponentHelper.locComp(colour, bold, caption);
-	}
-
-	public AbstractWidget createButton(Options options, int xIn, int yIn, int width) {
-		return new BlankTileButton(xIn, yIn, width, 16, this.getCaption(), false);
+	public CosmosOptionTitle(MutableComponent captionIn) {
+		super(captionIn, CosmosOptionInstance.noTooltip(), (component, value) -> { return ComponentHelper.empty(); }, new CosmosOptionInstance.Enum<String>(ImmutableList.of(""), Codec.STRING), "", "", (help) -> {}, false, "");
 	}
 
 	@Override
-	public BaseComponent getCaption() {
-		return this.customCaption;
+	public AbstractWidget createButton(CosmosOptions options, int xPosIn, int yPosIn, int widthIn, int heightIn) {
+		return new BlankTileButton(xPosIn, yPosIn, widthIn, 16, this.caption, false);
 	}
 	
 	@OnlyIn(Dist.CLIENT)
 	public class BlankTileButton extends Button {
 		
-		public boolean renderBg;
+		public boolean doRenderBackground;
 		
-		public BlankTileButton(int x, int y, int width, int height, BaseComponent title, boolean renderBg) {
-			super(x, y, width, height, title, (button) -> {});
+		public BlankTileButton(int xPosIn, int yPosIn, int widthIn, int heightIn, Component titleMessageIn, boolean doRenderBackgoundIn) {
+			super(xPosIn, yPosIn, widthIn, heightIn, titleMessageIn, (button) -> {  });
 			
-			this.renderBg = renderBg;
+			this.doRenderBackground = doRenderBackgoundIn;
 		}
 
+		@Override
 		public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-			this.renderButtonA(matrixStack, mouseX, mouseY, partialTicks);
-		}
-
-		public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
-			this.onTooltip.onTooltip(this, matrixStack, mouseX, mouseY);
-		}
-		
-		public void renderButtonA(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontrenderer = minecraft.font;
 			
-			if (this.renderBg) {
+			if (this.doRenderBackground) {
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);
 				RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
@@ -78,6 +63,9 @@ public class CosmosOptionTitle extends Option {
 			drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
 		}
 
+		@Override
+		public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
+			this.onTooltip.onTooltip(this, matrixStack, mouseX, mouseY);
+		}
 	}
-
 }

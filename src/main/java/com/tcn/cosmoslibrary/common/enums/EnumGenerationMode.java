@@ -3,7 +3,7 @@ package com.tcn.cosmoslibrary.common.enums;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum EnumGenerationMode {
 	BURNABLE_ITEM(0, "burnable_item", "cosmoslibrary.enum.generation_mode.item", false, ComponentColour.LIGHT_GRAY),
@@ -35,8 +35,8 @@ public enum EnumGenerationMode {
 		return this.localizedName;
 	}
 	
-	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.colour, true, this.localizedName);
+	public MutableComponent getColouredComp() {
+		return ComponentHelper.style(this.colour, "bold", this.localizedName);
 	}
 
 	public boolean getValue() {

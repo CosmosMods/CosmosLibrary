@@ -61,4 +61,6 @@ public interface IEnergyEntity {
 	void modifyEnergyStored(int stored);
 	
 	boolean hasEnergy();
+
+	int getEnergyScaled(int scale);
 }

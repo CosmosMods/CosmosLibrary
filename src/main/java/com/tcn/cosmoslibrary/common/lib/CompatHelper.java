@@ -2,15 +2,9 @@ package com.tcn.cosmoslibrary.common.lib;
 
 import javax.annotation.Nonnull;
 
-import com.tcn.cosmoslibrary.common.interfaces.blockentity.IBlockEntitySided;
-
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -35,43 +29,13 @@ public class CompatHelper {
 		Block block = world.getBlockState(pos).getBlock();
 		
 		ItemStack stack = new ItemStack(block);
-		CompoundTag compound = new CompoundTag();
 		stack.setTag(new CompoundTag());
-		//ListNBT list = new ListNBT();
 		
 		if (tile != null) {
-			if (tile instanceof Container) {
-				if (!((Container) tile).isEmpty()) {
-					int size = ((Container) tile).getContainerSize();
-					
-					NonNullList<ItemStack> list_ = NonNullList.<ItemStack>withSize(size, ItemStack.EMPTY);
-					
-					for (int i = 0; i < size; i++) {
-						list_.set(i, ((Container) tile).getItem(i));
-					}
-					
-					ContainerHelper.saveAllItems(compound, list_);
-					compound.putInt("size", size);
-				}
-			}
-		
-			if (tile instanceof IBlockEntitySided) {
-				CompoundTag compound_tag = new CompoundTag();
-				compound.put("sides", compound_tag);
-				
-				for (Direction c : Direction.values()) {
-					compound_tag.putInt("index_" + c.get3DDataValue(), ((IBlockEntitySided) tile).getSideArray()[c.get3DDataValue()].getIndex());
-				}
-			}
-			/**
-			if (tile instanceof IEnergyHandler) {
-				compound.setInteger("energy", ((IEnergyHandler) tile).getEnergyStored(Direction.DOWN));
-			} */
-			
-			stack.getTag().put("nbt_data", compound);
+			tile.saveToItem(stack);
 		}
 		
-		block.spawnAfterBreak(state, (ServerLevel) world, pos, stack);
+		block.spawnAfterBreak(state, (ServerLevel) world, pos, stack, true);
 		spawnStack(stack, world, pos.getX(), pos.getY(), pos.getZ(), 0);
 		world.removeBlock(pos, false);
 	}

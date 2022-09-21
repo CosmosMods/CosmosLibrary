@@ -3,7 +3,7 @@ package com.tcn.cosmoslibrary.common.enums;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum EnumAllowedEntities {
 	
@@ -41,8 +41,8 @@ public enum EnumAllowedEntities {
 	/**
 	 * Get the localized name for display.
 	 */
-	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.displayColour, true, this.localizedName);
+	public MutableComponent getColouredComp() {
+		return ComponentHelper.style(this.displayColour, "bold", this.localizedName);
 	}
 	
 	/**

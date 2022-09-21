@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper.Value;
@@ -19,7 +21,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +35,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraftforge.common.ToolActions;
 
 public class CosmosEnergyShovel extends ShovelItem implements ICosmosEnergyItem {
@@ -41,6 +47,7 @@ public class CosmosEnergyShovel extends ShovelItem implements ICosmosEnergyItem 
 	private boolean doesExtract;
 	private boolean doesCharge;
 	private boolean doesDisplayEnergyInTooltip;
+	private ComponentColour barColour;
 	
 	public CosmosEnergyShovel(Tier itemTier, int attackDamageIn, float attackSpeedIn, Properties builderIn, CosmosEnergyItem.Properties energyProperties) {
 		super(itemTier, attackDamageIn, attackSpeedIn, builderIn);
@@ -52,60 +59,73 @@ public class CosmosEnergyShovel extends ShovelItem implements ICosmosEnergyItem 
 		this.doesExtract = energyProperties.doesExtract;
 		this.doesCharge = energyProperties.doesCharge;
 		this.doesDisplayEnergyInTooltip = energyProperties.doesDisplayEnergyInTooltip;
+		this.barColour = energyProperties.barColour;
 	}
 	
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
 		if (stack.hasTag()) {
 			CompoundTag stackTag = stack.getTag();
-			tooltip.add(ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.locComp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
+			tooltip.add(ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.tooltip.energy_item.stored").append(ComponentHelper.comp(Value.LIGHT_GRAY + "[ " + Value.RED + CosmosUtil.formatIntegerMillion(stackTag.getInt("energy")) + Value.LIGHT_GRAY + " / " + Value.RED + CosmosUtil.formatIntegerMillion(this.getMaxEnergyStored(stack)) + Value.LIGHT_GRAY + " ]")));
 		}
 	}
 
 	@Override
+	public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slotIn, ItemStack stackIn) {
+		if (!this.hasEnergy(stackIn)) {
+			return ImmutableMultimap.of();
+		} else {
+			return this.getDefaultAttributeModifiers(slotIn);
+		}
+	}
+	
+	@Override
 	public InteractionResult useOn(UseOnContext context) {
-		Level world = context.getLevel();
+		Level level = context.getLevel();
 		BlockPos blockpos = context.getClickedPos();
-		BlockState blockstate = world.getBlockState(blockpos);
-		
+		BlockState blockstate = level.getBlockState(blockpos);
 		if (context.getClickedFace() == Direction.DOWN) {
 			return InteractionResult.PASS;
 		} else {
-			Player playerentity = context.getPlayer();
-			ItemStack selected = playerentity.getInventory().getSelected();
-			BlockState blockstate1 = blockstate.getToolModifiedState(world, blockpos, playerentity, context.getItemInHand(), ToolActions.SHOVEL_FLATTEN);
+			Player player = context.getPlayer();
+			ItemStack selected = context.getItemInHand();			
+			BlockState blockstate1 = blockstate.getToolModifiedState(context, ToolActions.SHOVEL_FLATTEN, false);
 			BlockState blockstate2 = null;
-			
+
 			if (this.hasEnergy(selected)) {
-				if (blockstate1 != null && world.isEmptyBlock(blockpos.above())) {
-					world.playSound(playerentity, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
+				if (blockstate1 != null && level.isEmptyBlock(blockpos.above())) {
+					level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
 					blockstate2 = blockstate1;
 				} else if (blockstate.getBlock() instanceof CampfireBlock && blockstate.getValue(CampfireBlock.LIT)) {
-					if (!world.isClientSide()) {
-						world.levelEvent((Player) null, 1009, blockpos, 0);
+					if (!level.isClientSide()) {
+						level.levelEvent((Player) null, 1009, blockpos, 0);
 					}
 	
-					CampfireBlock.dowse(context.getPlayer(), world, blockpos, blockstate);
+					CampfireBlock.dowse(context.getPlayer(), level, blockpos, blockstate);
 					blockstate2 = blockstate.setValue(CampfireBlock.LIT, Boolean.valueOf(false));
 				}
 	
 				if (blockstate2 != null) {
-					if (!world.isClientSide) {
-						world.setBlock(blockpos, blockstate2, 11);
-						if (playerentity != null) {
-							
+					if (!level.isClientSide) {
+						level.setBlock(blockpos, blockstate2, 11);
+						level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(player, blockstate2));
+						
+						if (player != null) {
 							this.extractEnergy(selected, this.getMaxUse(selected), false);
+							context.getItemInHand().hurtAndBreak(1, player, (p_43122_) -> {
+								p_43122_.broadcastBreakEvent(context.getHand());
+							});
 						}
 					}
 	
-					return InteractionResult.sidedSuccess(world.isClientSide);
+					return InteractionResult.sidedSuccess(level.isClientSide);
 				} else {
 					return InteractionResult.PASS;
 				}
-			} else {
-				return InteractionResult.FAIL;
 			}
 		}
+
+		return InteractionResult.FAIL;
 	}
 
 	@Override
@@ -269,7 +289,7 @@ public class CosmosEnergyShovel extends ShovelItem implements ICosmosEnergyItem 
 	
 	@Override
 	public int getBarColor(ItemStack stackIn) {
-		return ComponentColour.RED.dec();
+		return this.barColour.dec();
 	}
 	
 	@Override

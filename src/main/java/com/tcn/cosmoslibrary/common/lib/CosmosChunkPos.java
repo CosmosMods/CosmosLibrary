@@ -5,10 +5,12 @@ import java.util.Random;
 import javax.annotation.concurrent.Immutable;
 
 import com.google.common.collect.AbstractIterator;
+import com.tcn.cosmoslibrary.common.nbt.CosmosNBTHelper.Const;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Rotation;
 
@@ -334,5 +336,37 @@ public class CosmosChunkPos extends CosmosVec2 {
 		public CosmosChunkPos toImmutable() {
 			return new CosmosChunkPos(this);
 		}
+	}
+	
+	public void saveRaw(CompoundTag tag) {
+		tag.putInt(Const.NBT_POS_X_KEY, this.getX());
+		tag.putInt(Const.NBT_POS_Z_KEY, this.getZ());
+	}
+
+	public static CosmosChunkPos loadRaw(CompoundTag tag) {
+		int x = tag.getInt(Const.NBT_POS_X_KEY);
+		int z = tag.getInt(Const.NBT_POS_Z_KEY);
+		
+		return new CosmosChunkPos(x, z);
+	}
+	public void save(CompoundTag tag) {
+		CompoundTag info = new CompoundTag();
+		
+		info.putInt(Const.NBT_POS_X_KEY, this.getX());
+		info.putInt(Const.NBT_POS_Z_KEY, this.getZ());
+		
+		tag.put("chunk_pos", info);
+	}
+	
+	public static CosmosChunkPos load(CompoundTag tag) {
+		if (tag.contains("chunk_pos")) {
+			CompoundTag loaded = tag.getCompound("chunk_pos");
+			
+			int x = loaded.getInt(Const.NBT_POS_X_KEY);
+			int z = loaded.getInt(Const.NBT_POS_Z_KEY);
+			
+			return new CosmosChunkPos(x, z);
+		}
+		return null;
 	}
 }

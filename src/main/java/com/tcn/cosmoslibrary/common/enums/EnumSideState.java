@@ -3,7 +3,7 @@ package com.tcn.cosmoslibrary.common.enums;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum EnumSideState {
 
@@ -17,11 +17,13 @@ public enum EnumSideState {
 	private final String localized_name;
 	private final ComponentColour colour;
 	
-	/** All states in [NO_CONN-INTERFACE_NORMAL-INTERFACE_OUTPUT-INTERFACE_INPUT-DISABLED] order. */
+	/** All states in [ INTERFACE_NORMAL, INTERFACE_OUTPUT, INTERFACE_INPUT, DISABLED ] order. */
 	public static EnumSideState[] VALUES = new EnumSideState[4];
 	
 	/** You must CLONE (.clone()) this array or Bugs WILL happen */
-	public static EnumSideState[] STANDARD = new EnumSideState[] { INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL };
+	private static EnumSideState[] INTERNAL = new EnumSideState[] { INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL, INTERFACE_NORMAL };
+	
+	public static EnumSideState[] STANDARD = INTERNAL.clone();
 	
 	private EnumSideState(int indexIn, String nameIn, String localizedNameIn, ComponentColour colourIn) {
 		this.index = indexIn;
@@ -47,8 +49,8 @@ public enum EnumSideState {
 	/**
 	 * Get the localized name for display.
 	 */
-	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.colour, true, this.localized_name);
+	public MutableComponent getColouredComp() {
+		return ComponentHelper.style(this.colour, "bold", this.localized_name);
 	}
 	
 	/**

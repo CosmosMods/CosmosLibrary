@@ -1,7 +1,6 @@
 package com.tcn.cosmoslibrary.client.renderer.model;
 
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -9,6 +8,7 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 
 @SuppressWarnings("deprecation")
@@ -19,12 +19,7 @@ public class CosmosBakedModel implements BakedModel {
 	public CosmosBakedModel(BakedModel internal) {
 		this.internal = internal;
 	}
-
-	@Override
-	public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand) {
-		return this.internal.getQuads(state, side, rand);
-	}
-
+	
 	@Override
 	public boolean useAmbientOcclusion() {
 		return this.internal.useAmbientOcclusion();
@@ -56,12 +51,16 @@ public class CosmosBakedModel implements BakedModel {
 
 	@Override
 	public ItemTransforms getTransforms() {
-		//You can use a field on your TileEntityItemStackRenderer to store this TransformType for use in renderByItem, this method is always called before it.
 		return this.internal.getTransforms();
 	}
 
 	@Override
 	public boolean usesBlockLight() {
 		return false;
+	}
+
+	@Override
+	public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand) {
+		return this.internal.getQuads(state, side, rand);
 	}
 }

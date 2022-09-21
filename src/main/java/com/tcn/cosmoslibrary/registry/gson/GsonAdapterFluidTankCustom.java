@@ -49,7 +49,7 @@ public class GsonAdapterFluidTankCustom implements JsonSerializer<ObjectFluidTan
 
 	@Override
 	public JsonElement serialize(ObjectFluidTankCustom src, Type typeOfSrc, JsonSerializationContext context) {
-		ResourceLocation fluid_name = src.getFluidTank().getFluid().getFluid().getRegistryName();
+		ResourceLocation fluid_name = new ResourceLocation(src.getFluidTank().getFluid().getFluid().getFluidType().getDescriptionId());
 		
 		JsonObject object = new JsonObject();
 		JsonObject fluid = new JsonObject();

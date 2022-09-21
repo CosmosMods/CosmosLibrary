@@ -6,12 +6,10 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.tcn.cosmoslibrary.actual.NetworkManagerCosmos;
-import com.tcn.cosmoslibrary.actual.network.PacketUIHelp;
-import com.tcn.cosmoslibrary.actual.network.PacketUIMode;
 import com.tcn.cosmoslibrary.client.container.CosmosContainerRecipeBookBlockEntity;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonUIHelp;
+import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonUILock;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonUIMode;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosUIHelpElement;
 import com.tcn.cosmoslibrary.common.enums.EnumUIHelp;
@@ -19,6 +17,10 @@ import com.tcn.cosmoslibrary.common.enums.EnumUIMode;
 import com.tcn.cosmoslibrary.common.interfaces.blockentity.IBlockEntityUIMode;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
+import com.tcn.cosmoslibrary.runtime.NetworkManagerCosmos;
+import com.tcn.cosmoslibrary.runtime.network.PacketUIHelp;
+import com.tcn.cosmoslibrary.runtime.network.PacketUILock;
+import com.tcn.cosmoslibrary.runtime.network.PacketUIMode;
 
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Widget;
@@ -43,6 +45,7 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 	
 	protected CosmosButtonUIMode uiModeButton; private int[] uiModeButtonIndex;
 	protected CosmosButtonUIHelp uiHelpButton; private int[] uiHelpButtonIndex;
+	protected CosmosButtonUILock uiLockButton; private int[] uiLockButtonIndex;
 	
 	protected List<CosmosUIHelpElement> uiHelpElements = Lists.newArrayList();
 	
@@ -59,6 +62,8 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 	private int[] uiHelpElementDeadzone;
 	private int uiHelpTitleYOffset = 0;
 
+	private boolean hasUILock = false;
+	
 	public CosmosScreenUIModeRecipeBook(J containerIn, Inventory playerInventoryIn, Component titleIn) {
 		super(containerIn, playerInventoryIn, titleIn);
 	}
@@ -158,8 +163,8 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 			
 			if (this.uiModeButton.isMouseOver(mouseX, mouseY)) {
 				Component[] comp = new Component[] { 
-					ComponentHelper.locComp(ComponentColour.WHITE, false, "cosmoslibrary.gui.ui_mode.info"),
-					ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.gui.ui_mode.value").append(blockEntity.getUIMode().getColouredComp())
+					ComponentHelper.style(ComponentColour.WHITE, "cosmoslibrary.gui.ui_mode.info"),
+					ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.gui.ui_mode.value").append(blockEntity.getUIMode().getColouredComp())
 				};
 				
 				this.renderComponentTooltip(poseStack, Arrays.asList(comp), mouseX, mouseY);
@@ -168,8 +173,19 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 			if (this.getHasUIHelp()) {
 				if (this.uiHelpButton.isMouseOver(mouseX, mouseY)) {
 					Component[] comp = new Component[] { 
-						ComponentHelper.locComp(ComponentColour.WHITE, false, "cosmoslibrary.gui.ui_help.info"),
-						ComponentHelper.locComp(ComponentColour.GRAY, false, "cosmoslibrary.gui.ui_help.value").append(blockEntity.getUIHelp().getColouredComp())
+						ComponentHelper.style(ComponentColour.WHITE, "cosmoslibrary.gui.ui_help.info"),
+						ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.gui.ui_help.value").append(blockEntity.getUIHelp().getColouredComp())
+					};
+					
+					this.renderComponentTooltip(poseStack, Arrays.asList(comp), mouseX, mouseY);
+				}
+			}
+
+			if (this.getHasUILock()) {
+				if (this.uiLockButton.isMouseOver(mouseX, mouseY)) {
+					Component[] comp = new Component[] { 
+						ComponentHelper.style(ComponentColour.WHITE, "cosmoslibrary.gui.ui_lock.info"),
+						ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.gui.ui_lock.value").append(blockEntity.getUILock().getColouredComp())
 					};
 					
 					this.renderComponentTooltip(poseStack, Arrays.asList(comp), mouseX, mouseY);
@@ -198,7 +214,7 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 					
 					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					
-					Component title = ComponentHelper.locComp(ComponentColour.GREEN, false, "cosmoslibrary.gui_help_title");
+					Component title = ComponentHelper.style(ComponentColour.GREEN, "cosmoslibrary.gui_help_title");
 					//this.font.draw(poseStack, title, ((this.getScreenCoords()[0] * 2) / 2) + (this.imageWidth / 2) - (this.font.width(title) / 2), this.getScreenCoords()[1] - 8, CosmosColour.WHITE.dec());
 					this.renderComponentTooltip(poseStack, Arrays.asList(title), ((this.getScreenCoords()[0] * 2) / 2) + (this.imageWidth / 2) - (this.font.width(title) / 2) - 13, this.getScreenCoords()[1] - 2 + this.uiHelpTitleYOffset);
 				}
@@ -238,6 +254,10 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 			if (this.getHasUIHelp()) {
 				this.addUIHelpButton(blockEntity, screen_coords, uiHelpButtonIndex, (button) -> { this.pushButton(this.uiHelpButton); });
 			}
+			
+			if (this.getHasUILock()) {
+				this.addUILockButton(blockEntity, screen_coords, uiLockButtonIndex, (button) -> { this.pushButton(this.uiLockButton); });
+			}
 		}
 	}
 	
@@ -256,15 +276,22 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 				NetworkManagerCosmos.sendToServer(new PacketUIHelp(this.menu));
 				blockEntity.cycleUIHelp();
 			}
+
+			else if (button.equals(this.uiLockButton)) {
+				NetworkManagerCosmos.sendToServer(new PacketUILock(this.menu));
+				if (blockEntity.checkIfOwner(this.menu.getPlayer())) {
+					blockEntity.cycleUILock();
+				}
+			}
 		}
 	}
 	
 	protected void addUIModeButton(IBlockEntityUIMode entityIn, int[] screen_coords, int[] indexIn, Button.OnPress pressAction) {
-		this.uiModeButton = this.addRenderableWidget(new CosmosButtonUIMode(entityIn.getUIMode(), screen_coords[0] + indexIn[0], screen_coords[1] + indexIn[1], true, true, ComponentHelper.locComp(""), pressAction));
+		this.uiModeButton = this.addRenderableWidget(new CosmosButtonUIMode(entityIn.getUIMode(), screen_coords[0] + indexIn[0], screen_coords[1] + indexIn[1], true, true, ComponentHelper.empty(), pressAction));
 	}
 
 	protected void addUIHelpButton(IBlockEntityUIMode entityIn, int[] screen_coords, int[] indexIn, Button.OnPress pressAction) {
-		this.uiHelpButton = this.addRenderableWidget(new CosmosButtonUIHelp(entityIn.getUIHelp(), screen_coords[0] + indexIn[0], screen_coords[1] + indexIn[1], true, true, ComponentHelper.locComp(""), pressAction));
+		this.uiHelpButton = this.addRenderableWidget(new CosmosButtonUIHelp(entityIn.getUIHelp(), screen_coords[0] + indexIn[0], screen_coords[1] + indexIn[1], true, true, ComponentHelper.empty(), pressAction));
 	}
 	
 	protected void addUIHelpElements() { 
@@ -277,6 +304,10 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 	
 	protected void addRenderableUIHelpElement(int[] screenCoords, int xIn, int yIn, int widthIn, int heightIn, boolean isVisible, Component... descIn) {
 		this.addUIHelpElement(new CosmosUIHelpElement(screenCoords[0] + xIn, screenCoords[1] + yIn, widthIn, heightIn, descIn).setVisible(isVisible));
+	}
+
+	protected void addUILockButton(IBlockEntityUIMode entityIn, int[] screen_coords, int[] indexIn, Button.OnPress pressAction) {
+		this.uiLockButton = this.addRenderableWidget(new CosmosButtonUILock(entityIn.getUILock(), screen_coords[0] + indexIn[0], screen_coords[1] + indexIn[1], true, true, ComponentHelper.empty(), pressAction));
 	}
 	
 	private CosmosUIHelpElement addUIHelpElement(CosmosUIHelpElement elementIn) {
@@ -292,7 +323,11 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 	protected boolean getHasUIHelp() {
 		return this.hasUIHelp;
 	}
-	
+
+	protected void setHasUIHelp() {
+		this.hasUIHelp = true;
+	}
+
 	protected boolean getHasUIHelpShow() {
 		BlockEntity entity = this.getBlockEntity();
 		
@@ -316,10 +351,19 @@ public class CosmosScreenUIModeRecipeBook<A extends Container, J extends CosmosC
 		this.uiModeButtonIndex = new int[] { posX, posY };
 	}
 	
-	protected void setHasUIHelp() {
-		this.hasUIHelp = true;
+	protected boolean getHasUILock() {
+		return this.hasUILock;
+	}
+
+	protected void setHasUILock() {
+		this.hasUILock = true;
 	}
 	
+	protected void setUILockButtonIndex(int posX, int posY) {
+		this.setHasUILock();
+		this.uiLockButtonIndex = new int[] { posX, posY };
+	}
+
 	protected void setUIHelpButtonIndex(int posX, int posY) {
 		this.setHasUIHelp();
 		this.uiHelpButtonIndex = new int[] { posX, posY };

@@ -10,11 +10,11 @@ import com.tcn.cosmoslibrary.CosmosReference.RESOURCE.BASE;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.api.distmarker.Dist;
@@ -88,68 +88,89 @@ public final class ComponentHelper {
 	public static String locString(String pre, String key, String suff) {
 		return pre + I18n.get(key) + suff + Value.END;
 	}
+
+	public static MutableComponent empty() {
+		return Component.translatable("");
+	}
 	
-	public static BaseComponent locComp(String key) {
-		return new TranslatableComponent(key);
+	public static MutableComponent title(String key) {
+		return Component.translatable(key);
 	}
 
-	public static BaseComponent locComp(int colour, boolean bold, String key) {
-		BaseComponent comp = new TranslatableComponent(key);
+	public static MutableComponent comp(String key) {
+		return Component.translatable(key);
+	}
+	
+	/**
+	 * 
+	 * @param colourIn {@link Integer} - Text Colour
+	 * @param flags {@link String} - Style. In the format: "bold underline italic strikethrough obfuscated"
+	 * @param keyIn {@link String} - Text you actually want. Can be localized or unlocalized.
+	 * @return {@link MutableComponent} - Styled Component.
+	 */
+	public static MutableComponent style(int colourIn, String flags, String keyIn) {
+		MutableComponent comp = Component.translatable(keyIn);
 		
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour)));
+		comp.setStyle(Style.EMPTY
+			.withBold(flags.contains("bold"))
+			.withUnderlined(flags.contains("underline"))
+			.withItalic(flags.contains("italic"))
+			.withStrikethrough(flags.contains("strikethrough"))
+			.withObfuscated(flags.contains("obfuscated"))
+			.withColor(TextColor.fromRgb(colourIn))
+		);
 		
 		return comp;
 	}
 
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, String key) {
-		BaseComponent comp = new TranslatableComponent(key);
-		
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return comp;
+	public static MutableComponent style(int colourIn, String keyIn) {
+		return style(colourIn, "", keyIn);
 	}
 
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, boolean underline, String key) {
-		BaseComponent comp = new TranslatableComponent(key);
-		
-		comp.setStyle(Style.EMPTY.withBold(bold).withUnderlined(underline).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return comp;
+	public static MutableComponent style(ComponentColour colourIn, String keyIn) {
+		return style(colourIn.dec(), "", keyIn);
 	}
 	
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, String pre, String key) {
-		BaseComponent pre_comp = new TranslatableComponent(pre);
-		BaseComponent comp = new TranslatableComponent(key);
+	public static MutableComponent style(ComponentColour colourIn, String flags, String keyIn) {
+		return style(colourIn.dec(), flags, keyIn);
+	}
 
-		pre_comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return (BaseComponent) pre_comp.append(comp);
+	public static MutableComponent style3(int colourIn, String flags, String keyInA, String keyInB, String keyInC) {
+		return (MutableComponent) style(colourIn, flags, keyInA).append(style(colourIn, flags, keyInB)).append(style(colourIn, flags, keyInC));
+	}
+
+	public static MutableComponent style3(int colourIn, String keyInA, String keyInB, String keyInC) {
+		return (MutableComponent) style(colourIn, "", keyInA).append(style(colourIn, "", keyInB)).append(style(colourIn, "", keyInC));
+	}
+
+	public static MutableComponent style3(ComponentColour colourIn, String keyInA, String keyInB, String keyInC) {
+		return (MutableComponent) style(colourIn, "", keyInA).append(style(colourIn, "", keyInB)).append(style(colourIn, "", keyInC));
+	}
+
+	public static MutableComponent style3(ComponentColour colourIn, String flags, String keyInA, String keyInB, String keyInC) {
+		return (MutableComponent) style(colourIn, flags, keyInA).append(style(colourIn, flags, keyInB)).append(style(colourIn, flags, keyInC));
+	}
+
+	public static MutableComponent style2(ComponentColour colourIn, String flags, String keyInA, String keyInB) {
+		return (MutableComponent) style(colourIn, flags, keyInA).append(style(colourIn, flags, keyInB));
 	}
 	
-	public static BaseComponent locComp(ComponentColour colour, boolean bold, String pre, String key, String suff) {
-		BaseComponent pre_comp = new TranslatableComponent(pre);
-		BaseComponent comp = new TranslatableComponent(key);
-		BaseComponent suff_comp = new TranslatableComponent(suff);
-
-		pre_comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		comp.setStyle(Style.EMPTY.withBold(bold).withColor(TextColor.fromRgb(colour.dec())));
-		
-		return (BaseComponent) pre_comp.append(comp).append(suff_comp);
+	public static MutableComponent style2(ComponentColour colourIn, String... keys) {
+		return (MutableComponent) style(colourIn, "", keys[0]).append(style(colourIn, "", keys[1]));
 	}
-
+	
 	public static String getFluidName(FluidStack fluid) {
 		return getFluidName(fluid.getFluid());
 	}
 
 	public static String getFluidName(Fluid fluid) {
 		String fluidName = "";
-		if (fluid.getAttributes().getTemperature() > 1000) {
+		if (fluid.getFluidType().getTemperature() > 1000) {
 			fluidName = fluidName + Value.RED;
 		} else {
 			fluidName = fluidName + Value.BLUE;
 		}
-		fluidName = fluidName + locString(fluid.getRegistryName().toString()) + Value.END;
+		fluidName = fluidName + locString(fluid.getFluidType().getDescription().toString()) + Value.END;
 
 		return fluidName;
 	}
@@ -173,63 +194,62 @@ public final class ComponentHelper {
 		return numString;
 	}
 
-	public static BaseComponent shiftForMoreDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_HOLD).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.ORANGE, true, BASE.TOOLTIP_SHIFT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_MORE)));
-		
+	public static MutableComponent shiftForMoreDetails() {
+		return (MutableComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_HOLD).append(style(ComponentColour.BLACK,  " ")).append(style(ComponentColour.ORANGE, "bold", BASE.TOOLTIP_SHIFT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_MORE)));
 	}
 	
-	public static BaseComponent shiftForLessDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_RELEASE).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.ORANGE, true, BASE.TOOLTIP_SHIFT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_LESS)));
+	public static MutableComponent shiftForLessDetails() {
+		return (MutableComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_RELEASE).append(style(ComponentColour.BLACK,  " ")).append(style(ComponentColour.ORANGE, "bold", BASE.TOOLTIP_SHIFT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_LESS)));
 	}
 	
-	public static BaseComponent ctrlForMoreDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_HOLD).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.LIGHT_GRAY, true, BASE.TOOLTIP_CTRL)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_NBT)));
+	public static MutableComponent ctrlForMoreDetails() {
+		return (MutableComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_HOLD).append(style(ComponentColour.BLACK,  " ")).append(style(ComponentColour.LIGHT_GRAY, "bold", BASE.TOOLTIP_CTRL)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE,  BASE.TOOLTIP_NBT)));
 	}
 	
-	public static BaseComponent ctrlForLessDetails() {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_RELEASE).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.LIGHT_GRAY, true, BASE.TOOLTIP_CTRL)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_NBT_LESS)));
+	public static MutableComponent ctrlForLessDetails() {
+		return (MutableComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_RELEASE).append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.LIGHT_GRAY, "bold", BASE.TOOLTIP_CTRL)
+				.append(style(ComponentColour.BLACK," ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_NBT_LESS)));
 	}
 
-	public static BaseComponent altForMoreDetails(ComponentColour colourIn) {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_HOLD).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(colourIn, true, BASE.TOOLTIP_ALT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_ENERGY)));
+	public static MutableComponent altForMoreDetails(ComponentColour colourIn) {
+		return (MutableComponent) style(ComponentColour.WHITE, BASE.TOOLTIP_HOLD).append(style(ComponentColour.BLACK, " ")).append(style(colourIn, "bold", BASE.TOOLTIP_ALT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_ENERGY)));
 	}
 	
-	public static BaseComponent altForLessDetails(ComponentColour colourIn) {
-		return (BaseComponent) locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_RELEASE).append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(colourIn, true, BASE.TOOLTIP_ALT)
-				.append(locComp(ComponentColour.BLACK, false, " ")).append(locComp(ComponentColour.WHITE, false, BASE.TOOLTIP_ENERGY_LESS)));
+	public static MutableComponent altForLessDetails(ComponentColour colourIn) {
+		return (MutableComponent) style(ComponentColour.WHITE,  BASE.TOOLTIP_RELEASE).append(style(ComponentColour.BLACK, " ")).append(style(colourIn, "bold", BASE.TOOLTIP_ALT)
+				.append(style(ComponentColour.BLACK, " ")).append(style(ComponentColour.WHITE, BASE.TOOLTIP_ENERGY_LESS)));
 	}
 
-	public static BaseComponent getTooltipInfo(String key) {
-		return locComp(ComponentColour.LIGHT_GRAY, false, key);
+	public static MutableComponent getTooltipInfo(String key) {
+		return style(ComponentColour.LIGHT_GRAY, key);
 	}
 
-	public static BaseComponent getTooltipOne(String key) {
-		return locComp(ComponentColour.CYAN, false, key);
+	public static MutableComponent getTooltipOne(String key) {
+		return style(ComponentColour.CYAN, key);
 	}
 
-	public static BaseComponent getTooltipTwo(String key) {
-		return locComp(ComponentColour.GREEN, false, key);
+	public static MutableComponent getTooltipTwo(String key) {
+		return style(ComponentColour.GREEN, key);
 	}
 	
-	public static BaseComponent getTooltipThree(String key) {
-		return locComp(ComponentColour.LIGHT_BLUE, false, key);
+	public static MutableComponent getTooltipThree(String key) {
+		return style(ComponentColour.LIGHT_BLUE, key);
 	}
 
-	public static BaseComponent getTooltipFour(String key) {
-		return locComp(ComponentColour.LIME, false, key);
+	public static MutableComponent getTooltipFour(String key) {
+		return style(ComponentColour.LIME, key);
 	}
 	
-	public static BaseComponent getTooltipLimit(String key) {
-		return locComp(ComponentColour.LIGHT_RED, false, key);
+	public static MutableComponent getTooltipLimit(String key) {
+		return style(ComponentColour.LIGHT_RED, key);
 	}
 	
-	public static BaseComponent getErrorText(String key) {
-		return locComp(ComponentColour.RED, false, key);
+	public static MutableComponent getErrorText(String key) {
+		return style(ComponentColour.RED, key);
 	}
 
 	public static boolean displayShiftForDetail = true;

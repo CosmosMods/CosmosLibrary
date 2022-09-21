@@ -3,7 +3,7 @@ package com.tcn.cosmoslibrary.common.enums;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum EnumConnectionType {
 	
@@ -46,8 +46,8 @@ public enum EnumConnectionType {
 		return name;
 	}
 	
-	public BaseComponent getColouredComp() {
-		return ComponentHelper.locComp(this.colour, true, this.localized_name);
+	public MutableComponent getColouredComp() {
+		return ComponentHelper.style(this.colour, "bold", this.localized_name);
 	}
 	
 	/**

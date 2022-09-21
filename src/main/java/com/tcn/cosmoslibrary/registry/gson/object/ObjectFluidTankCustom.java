@@ -61,7 +61,7 @@ public class ObjectFluidTankCustom {
 	}
 	
 	public void writeToNBT(CompoundTag compound) {
-		ResourceLocation fluid_name = fluid_tank.getFluid().getFluid().getRegistryName();
+		ResourceLocation fluid_name = new ResourceLocation(fluid_tank.getFluid().getFluid().getFluidType().getDescriptionId());
 		
 		CompoundTag fluid = new CompoundTag();
 		
