@@ -1,5 +1,5 @@
 # CosmosLibrary
-Main required library for all my mods. Currently using Forge for MinecraftForge 1.18.1.
+Main required library for all my mods. Currently using Forge for MinecraftForge 1.19.2.
 
 ## Licence
 This repo does not have a licence. This means that by default, it is All Rights Reserved. However, due to having complete control over what rights that includes, here is a list of what you can and cannot do:
