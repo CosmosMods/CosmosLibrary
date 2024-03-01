@@ -38,7 +38,7 @@ public enum ComponentColour {
 	DARK_CYAN(26, "Dark Cyan", 26214, Value.CYAN, 0, 102, 102, true),
 	BLURPLE(27, "Blurple", 7506394, Value.CYAN, 114, 137, 218, true),
 	BLURPLE_LIGHT(28, "Blurple Light", 3692707, Value.CYAN, 56, 88, 163, false),
-	EMPTY(29, "Default", 11184810, Value.LIGHT_GRAY, 170, 170, 170, true);
+	EMPTY(29, "Default", 0, Value.LIGHT_GRAY, 0, 0, 0, true);
 
 	private final int index;
 	private final String name;
@@ -85,7 +85,7 @@ public enum ComponentColour {
 	}
 	
 	public MutableComponent getColouredName() {
-		return ComponentHelper.style(this, "bold", this.name);
+		return ComponentHelper.style(this == EMPTY ? LIGHT_GRAY : this, "bold", this.name);
 	}
 
 	public static ComponentColour fromIndex(int colorId) {
@@ -194,6 +194,47 @@ public enum ComponentColour {
 				return includeNoColour ? EMPTY : WHITE;
 			default:
 				return WHITE;
+		}
+	}
+
+	public ComponentColour getNextVanillaColourReverse(boolean includeNoColour) {
+		switch (this) {
+			case EMPTY:
+				return BLACK;
+			case BLACK:
+				return RED;
+			case RED:
+				return GREEN;
+			case GREEN:
+				return BROWN;
+			case BROWN:
+				return BLUE;
+			case BLUE:
+				return PURPLE;
+			case PURPLE:
+				return CYAN;
+			case CYAN:
+				return LIGHT_GRAY;
+			case LIGHT_GRAY:
+				return GRAY;
+			case GRAY:
+				return PINK;
+			case PINK:
+				return LIME;
+			case LIME:
+				return YELLOW;
+			case YELLOW:
+				return LIGHT_BLUE;
+			case LIGHT_BLUE:
+				return MAGENTA;
+			case MAGENTA:
+				return ORANGE;
+			case ORANGE:
+				return WHITE;
+			case WHITE:
+				return includeNoColour ? EMPTY : BLACK;
+			default:
+				return BLACK;
 		}
 	}
 

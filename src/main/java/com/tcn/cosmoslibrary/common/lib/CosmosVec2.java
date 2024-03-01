@@ -25,8 +25,8 @@ public class CosmosVec2 implements Comparable<CosmosVec2> {
    });
    /** An immutable vector with zero as all coordinates. */
    public static final CosmosVec2 NULL_VECTOR = new CosmosVec2(0, 0);
-   private int x;
-   private int z;
+   protected int x;
+   protected int z;
 
    public CosmosVec2(int xIn, int zIn) {
       this.x = xIn;

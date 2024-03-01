@@ -1,18 +1,22 @@
 package com.tcn.cosmoslibrary.client.ui.screen.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.Supplier;
+
 import com.tcn.cosmoslibrary.CosmosReference;
 import com.tcn.cosmoslibrary.CosmosReference.RESOURCE.INFO;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
+import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class CosmosColourButton extends Button {
+public class CosmosColourButton extends CosmosButtonBase {
 	
 	private ComponentColour colour = ComponentColour.EMPTY;
 	
@@ -21,11 +25,16 @@ public class CosmosColourButton extends Button {
 	public int x;
 	public int y;
 	protected boolean isHovered;
-	public boolean active = true;
-	public boolean visible = true;
 
-	public CosmosColourButton(ComponentColour startingColour, int x, int y, int size, boolean enabled, boolean visible, Component title, Button.OnPress pressedAction) {
-		super(x, y, size, size, title, pressedAction);
+	public CosmosColourButton(ComponentColour startingColour, int x, int y, int size, boolean enabled, boolean visible, Component title, CosmosButtonBase.OnClick clickedAction) {
+		super(x, y, size, size, enabled, visible, title, clickedAction, new Button.CreateNarration() {
+			
+			@Override
+			public MutableComponent createNarrationMessage(Supplier<MutableComponent> p_253695_) {
+				// TODO Auto-generated method stub
+				return ComponentHelper.empty();
+			}
+		});
 		
 		this.colour = startingColour;
 		
@@ -38,14 +47,14 @@ public class CosmosColourButton extends Button {
 		this.visible = visible;
 	}
 
-	public CosmosColourButton(ComponentColour startingColourIn, int x, int y, boolean enabled, boolean visible, Component title, Button.OnPress pressedAction) {
-		this(startingColourIn, x, y, 20, enabled, visible, title, pressedAction);
+	public CosmosColourButton(ComponentColour startingColourIn, int x, int y, boolean enabled, boolean visible, Component title, CosmosButtonBase.OnClick clickedAction) {
+		this(startingColourIn, x, y, 20, enabled, visible, title, clickedAction);
 	}
 
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.visible) {
-			this.renderButton(poseStack, mouseX, mouseY, partialTicks);
+			this.renderWidget(graphics, mouseX, mouseY, partialTicks);
 		}
 	}
 	
@@ -66,27 +75,29 @@ public class CosmosColourButton extends Button {
 	}
 
 	@Override
-	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		CosmosUISystem.setTextureWithColourAlpha(poseStack, CosmosReference.RESOURCE.BASE.BUTTON_COLOUR, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
+	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		CosmosUISystem.setTextureWithColourAlpha(graphics.pose(), CosmosReference.RESOURCE.BASE.BUTTON_COLOUR, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
 		
 		this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 		int i = this.getHoverState(this.isHovered);
 
 		if (this.width == 20 && this.height == 20) {
-			this.blit(poseStack, this.x, this.y, INFO.BUTTON_STATE_X[0], INFO.BUTTON_STATE_Y[i], this.width, this.height);
+			graphics.blit(CosmosReference.RESOURCE.BASE.BUTTON_COLOUR, this.x, this.y, INFO.BUTTON_STATE_X[0], INFO.BUTTON_STATE_Y[i], this.width, this.height);
 		} else if (this.width == 18 && this.height == 18) {
-			this.blit(poseStack, this.x, this.y, INFO.BUTTON_STATE_X_SMALL[0], INFO.BUTTON_STATE_Y_SMALL[i], this.width, this.height);
+			graphics.blit(CosmosReference.RESOURCE.BASE.BUTTON_COLOUR, this.x, this.y, INFO.BUTTON_STATE_X_SMALL[0], INFO.BUTTON_STATE_Y_SMALL[i], this.width, this.height);
 		}
 		
 		if (!this.colour.equals(ComponentColour.EMPTY)) {
 			CosmosUISystem.setTextureColour(this.colour);
 			
 			if (this.width == 20 && this.height == 20) {
-				this.blit(poseStack, this.x, this.y, INFO.BUTTON_STATE_X[1], INFO.BUTTON_STATE_Y[i], this.width, this.height);
+				graphics.blit(CosmosReference.RESOURCE.BASE.BUTTON_COLOUR, this.x, this.y, INFO.BUTTON_STATE_X[1], INFO.BUTTON_STATE_Y[i], this.width, this.height);
 			} else if (this.width == 18 && this.height == 18) {
-				this.blit(poseStack, this.x, this.y, INFO.BUTTON_STATE_X_SMALL[1], INFO.BUTTON_STATE_Y_SMALL[i], this.width, this.height);
+				graphics.blit(CosmosReference.RESOURCE.BASE.BUTTON_COLOUR, this.x, this.y, INFO.BUTTON_STATE_X_SMALL[1], INFO.BUTTON_STATE_Y_SMALL[i], this.width, this.height);
 			}
 		}
+		
+		CosmosUISystem.setTextureColour(ComponentColour.WHITE);
 	}
 	
 	protected int getHoverState(boolean mouseOver) {

@@ -2,7 +2,6 @@ package com.tcn.cosmoslibrary.client.ui.screen;
 
 import java.util.ArrayList;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.tcn.cosmoslibrary.CosmosReference.RESOURCE.BASE;
 import com.tcn.cosmoslibrary.client.container.CosmosContainerMenuBlockEntity;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
@@ -12,6 +11,7 @@ import com.tcn.cosmoslibrary.common.interfaces.blockentity.IBlockEntityUIMode;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -43,13 +43,13 @@ public class CosmosScreenUIModeListBE<J extends CosmosContainerMenuBlockEntity> 
 	}
 	
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		super.render(poseStack, mouseX, mouseY, partialTicks);
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		super.render(graphics, mouseX, mouseY, partialTicks);
 	}
 	
 	@Override
-	protected void renderBg(PoseStack poseStack, float mouseX, int mouseY, int partialTicks) {
-		super.renderBg(poseStack, mouseX, mouseY, partialTicks);
+	protected void renderBg(GuiGraphics graphics, float mouseX, int mouseY, int partialTicks) {
+		super.renderBg(graphics, mouseX, mouseY, partialTicks);
 	}
 	
 	protected void updateWidgetList() {
@@ -58,11 +58,11 @@ public class CosmosScreenUIModeListBE<J extends CosmosContainerMenuBlockEntity> 
 	}
 	
 	@Override
-	public void renderComponents(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderScrollElement(poseStack);
+	public void renderComponents(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		this.renderScrollElement(graphics);
 		this.updateWidgetList();
-		this.renderWidgetList(poseStack, mouseX, mouseY, partialTicks);
-		super.renderComponents(poseStack, mouseX, mouseY, partialTicks);
+		this.renderWidgetList(graphics, mouseX, mouseY, partialTicks);
+		super.renderComponents(graphics, mouseX, mouseY, partialTicks);
 	}
 	
 	@Override
@@ -195,12 +195,12 @@ public class CosmosScreenUIModeListBE<J extends CosmosContainerMenuBlockEntity> 
 		this.widgetList.clear();
 	}
 	
-	private void renderWidgetList(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	private void renderWidgetList(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		for (int i = 0; i < this.widgetList.size(); i++) {
 			CosmosListWidget widget = this.getListWidget(i);
 			
 			if (i >= this.topIndex && i <= this.topIndex + this.widgetCount() && i < this.widgetList.size()) {
-				widget.renderWidget(poseStack, font, this.getScreenCoords(), this.listIndex[0], this.listIndex[1] + ((this.listIndex[4] + this.listIndex[5]) * (i - this.topIndex)), mouseX, mouseY, i, (this.listIndex[1] + this.listIndex[3]));
+				widget.renderWidget(graphics, font, this.getScreenCoords(), this.listIndex[0], this.listIndex[1] + ((this.listIndex[4] + this.listIndex[5]) * (i - this.topIndex)), mouseX, mouseY, i, (this.listIndex[1] + this.listIndex[3]));
 			}
 		}
 	}
@@ -221,9 +221,9 @@ public class CosmosScreenUIModeListBE<J extends CosmosContainerMenuBlockEntity> 
 		}
 	}
 	
-	protected void renderScrollElement(PoseStack poseStack) {
+	protected void renderScrollElement(GuiGraphics graphics) {
 		int[] scrollType = new int[] { 15, 0, 15 };
-		CosmosUISystem.setTextureWithColour(poseStack, BASE.GUI_ELEMENT_MISC_LOC, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
+		CosmosUISystem.setTextureWithColour(graphics.pose(), BASE.GUI_ELEMENT_MISC_LOC, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
 		
 		if (this.widgetList.size() > 0) {
 			int div;
@@ -245,7 +245,7 @@ public class CosmosScreenUIModeListBE<J extends CosmosContainerMenuBlockEntity> 
 			if (entity instanceof IBlockEntityUIMode) {
 				int type = ((IBlockEntityUIMode) entity).getUIMode().equals(EnumUIMode.DARK) ? 0 : 1;
 				
-				CosmosUISystem.renderStaticElementToggled(this, poseStack, this.getScreenCoords(), posX, this.scrollEnabled ? posYUpdated : posY, scrollType[0], scrollType[type + 1], 13, 15, true);
+				CosmosUISystem.renderStaticElementToggled(this, graphics, BASE.GUI_ELEMENT_MISC_LOC, this.getScreenCoords(), posX, this.scrollEnabled ? posYUpdated : posY, scrollType[0], scrollType[type + 1], 13, 15, true);
 			}
 		}
 	}

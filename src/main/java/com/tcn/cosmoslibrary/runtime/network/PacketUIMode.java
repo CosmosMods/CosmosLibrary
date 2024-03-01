@@ -8,7 +8,7 @@ import com.tcn.cosmoslibrary.client.container.CosmosContainerRecipeBookBlockEnti
 import com.tcn.cosmoslibrary.common.interfaces.blockentity.IBlockEntityUIMode;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +28,7 @@ public class PacketUIMode implements ICosmosPacket {
 	public PacketUIMode(FriendlyByteBuf buf) {
 		this.pos = buf.readBlockPos();
 		ResourceLocation location = buf.readResourceLocation();
-		this.dimension = ResourceKey.create(Registry.DIMENSION_REGISTRY, location);
+		this.dimension = ResourceKey.create(Registries.DIMENSION, location);
 	}
 	
 	public PacketUIMode(CosmosContainerMenuBlockEntity containerIn) {

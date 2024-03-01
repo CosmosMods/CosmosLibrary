@@ -24,8 +24,8 @@ public class CosmosReference {
 		 */
 		public static class BASE {
 			public static final String BASE = RESOURCE + "base/";
-			public static final String BLOCKS = BASE + "blocks/";
-			public static final String ITEMS = BASE + "items/";
+			public static final String BLOCKS = BASE + "block/";
+			public static final String ITEMS = BASE + "item/";
 			public static final String GUI = BASE + "gui/";
 			
 			/** Gui */

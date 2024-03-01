@@ -90,6 +90,7 @@
 	"cosmoslibrary.enum.allowed_entities.none": "No Entities",
 	"cosmoslibrary.enum.allowed_entities.entities_only": "Non-Player Entities",
 	"cosmoslibrary.enum.allowed_entities.players_only": "Player Entities",
+	"cosmoslibrary.enum.allowed_entities.items_only": "Item Entities",
 	"cosmoslibrary.enum.allowed_entities.all": "All Entities",
 	
 	"cosmoslibrary.enum.ui_mode.dark": "Dark",
@@ -125,13 +126,13 @@
 	
   	"cosmoslibrary.options.off": "OFF",
 	"cosmoslibrary.options.on": "ON",
-	"cosmoslibrary.options.off.composed": "%s OFF",
-	"cosmoslibrary.options.on.composed": "%s ON",
+	"cosmoslibrary.options.off.composed": " OFF",
+	"cosmoslibrary.options.on.composed": " ON",
 	
   	"cosmoslibrary.options.no": "NO",
 	"cosmoslibrary.options.yes": "YES",
-	"cosmoslibrary.options.no.composed": "%s NO",
-	"cosmoslibrary.options.yes.composed": "%s YES",
+	"cosmoslibrary.options.no.composed": " NO",
+	"cosmoslibrary.options.yes.composed": " YES",
 	
 	"cosmoslibrary.gui.ui_mode.info": "Change UI Theme: ",
 	"cosmoslibrary.gui.ui_mode.value": "Current UI Theme: ",

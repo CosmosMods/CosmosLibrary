@@ -10,6 +10,7 @@ import com.tcn.cosmoslibrary.common.nbt.CosmosNBTHelper.Const;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
+import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Rotation;
@@ -18,13 +19,8 @@ import net.minecraft.world.level.block.Rotation;
 public class CosmosChunkPos extends CosmosVec2 {
 	
 	public static final CosmosChunkPos ZERO = new CosmosChunkPos(0, 0);
-	private static final int NUM_X_BITS = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
-	private static final int NUM_Z_BITS = NUM_X_BITS;
-	private static final int NUM_Y_BITS = 64 - NUM_X_BITS - NUM_Z_BITS;
-	private static final long X_MASK = (1L << NUM_X_BITS) - 1L;
-	private static final long Z_MASK = (1L << NUM_Z_BITS) - 1L;
-	private static final int INVERSE_START_BITS_Z = NUM_Y_BITS;
-	private static final int INVERSE_START_BITS_X = NUM_Y_BITS + NUM_Z_BITS;
+	//private static final int NUM_X_BITS = 1 + Mth.log2(Mth.smallestEncompassingPowerOfTwo(30000000));
+	//private static final int NUM_Z_BITS = NUM_X_BITS;
 
 	public CosmosChunkPos(int x, int y) {
 		super(x, y);
@@ -32,6 +28,10 @@ public class CosmosChunkPos extends CosmosVec2 {
 
 	public CosmosChunkPos(double x, double y) {
 		super(x, y);
+	}
+	
+	public CosmosChunkPos(long longIn) {
+		super((int)longIn, (int)(longIn >> 32));
 	}
 
 	public static CosmosChunkPos convertTo(BlockPos posIn) {
@@ -74,34 +74,17 @@ public class CosmosChunkPos extends CosmosVec2 {
 		this(source.getX(), source.getZ());
 	}
 
-	public static long offset(long pos, Direction direction) {
-		return offset(pos, direction.getStepX(), direction.getStepZ());
-	}
-
-	public static long offset(long pos, int dx, int dz) {
-		return pack(unpackX(pos) + dx, unpackZ(pos) + dz);
-	}
-
-	public static int unpackX(long packedPos) {
-		return (int) (packedPos << 64 - INVERSE_START_BITS_X - NUM_X_BITS >> 64 - NUM_X_BITS);
-	}
-
-	public static int unpackZ(long packedPos) {
-		return (int) (packedPos << 64 - INVERSE_START_BITS_Z - NUM_Z_BITS >> 64 - NUM_Z_BITS);
-	}
-
-	public static CosmosChunkPos fromLong(long packedPos) {
-		return new CosmosChunkPos(unpackX(packedPos), unpackZ(packedPos));
-	}
-
 	public long toLong() {
-		return pack(this.getX(), this.getZ());
+		return asLong(this.x, this.z);
 	}
 
-	public static long pack(int x, int z) {
-		long i = 0L;
-		i = i | ((long) x & X_MASK) << INVERSE_START_BITS_X;
-		return i | ((long) z & Z_MASK) << INVERSE_START_BITS_Z;
+	public static long asLong(int p_45590_, int p_45591_) {
+		return (long) p_45590_ & 4294967295L | ((long) p_45591_ & 4294967295L) << 32;
+	}
+
+	public static long asLong(BlockPos p_151389_) {
+		return asLong(SectionPos.blockToSectionCoord(p_151389_.getX()),
+				SectionPos.blockToSectionCoord(p_151389_.getZ()));
 	}
 
 	public static long atSectionBottomY(long packedPos) {
@@ -277,10 +260,11 @@ public class CosmosChunkPos extends CosmosVec2 {
 			return this.setPos(vec.getX(), vec.getZ());
 		}
 
+		/*
 		public CosmosChunkPos.Mutable setPos(long packedPos) {
 			return this.setPos(unpackX(packedPos), unpackZ(packedPos));
 		}
-
+		 */
 		/*
 		public ChunkPos.Mutable setPos(AxisRotation rotation, int x, int y, int z) {
 			return this.setPos(rotation..getCoordinate(x, y, z, Direction.Axis.X),
@@ -368,5 +352,9 @@ public class CosmosChunkPos extends CosmosVec2 {
 			return new CosmosChunkPos(x, z);
 		}
 		return null;
+	}
+	
+	public CosmosChunkPos copy() {
+		return new CosmosChunkPos(this.getX(), this.getZ());
 	}
 }

@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -44,8 +43,8 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 	protected boolean doesDisplayEnergyInTooltip;
 	private ComponentColour barColour;
 
-	public CosmosEnergyArmourItemElytra(ArmorMaterial materialIn, EquipmentSlot slot, Item.Properties builderIn, boolean damageableIn, CosmosEnergyItem.Properties energyProperties) {
-		super(materialIn, slot, builderIn, damageableIn);
+	public CosmosEnergyArmourItemElytra(ArmorMaterial materialIn, Type typeIn, Item.Properties builderIn, boolean damageableIn, CosmosEnergyItem.Properties energyProperties) {
+		super(materialIn, typeIn, builderIn, damageableIn);
 		
 		this.maxEnergyStored = energyProperties.maxEnergyStored;
 		this.maxExtract = energyProperties.maxExtract;
@@ -93,7 +92,7 @@ public class CosmosEnergyArmourItemElytra extends CosmosArmourItemElytra impleme
 		if (this.isFlyEnabled(stackIn)) {
 			this.extractEnergy(stackIn, (this.getMaxUse(stackIn) / 2) / 20, false);
 		} else {
-			entityIn.hurt(DamageSource.ON_FIRE, 1);
+			entityIn.lavaHurt();
 		}
 		
 		return true;

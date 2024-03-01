@@ -2,12 +2,12 @@ package com.tcn.cosmoslibrary.client.ui.screen.option;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
@@ -34,13 +34,13 @@ public class CosmosOptionTitle extends CosmosOptionInstance<String> {
 		public boolean doRenderBackground;
 		
 		public BlankTileButton(int xPosIn, int yPosIn, int widthIn, int heightIn, Component titleMessageIn, boolean doRenderBackgoundIn) {
-			super(xPosIn, yPosIn, widthIn, heightIn, titleMessageIn, (button) -> {  });
+			super(xPosIn, yPosIn, widthIn, heightIn, titleMessageIn, (button) -> {  }, null);
 			
 			this.doRenderBackground = doRenderBackgoundIn;
 		}
 
 		@Override
-		public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontrenderer = minecraft.font;
 			
@@ -48,24 +48,30 @@ public class CosmosOptionTitle extends CosmosOptionInstance<String> {
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);
 				RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-				int i = this.getYImage(this.isHoveredOrFocused());
+				int i = this.getTextureY();
 				
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
 				RenderSystem.enableDepthTest();
 				
-				this.blit(matrixStack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-				this.blit(matrixStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-				this.renderBg(matrixStack, minecraft, mouseX, mouseY);
+				graphics.blit(WIDGETS_LOCATION, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+				graphics.blit(WIDGETS_LOCATION, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+				//this.renderBg(matrixStack, minecraft, mouseX, mouseY);
 			}
 			
 			int j = getFGColor();
-			drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+			graphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
 		}
 
-		@Override
-		public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
-			this.onTooltip.onTooltip(this, matrixStack, mouseX, mouseY);
+		private int getTextureY() {
+			int i = 1;
+			if (!this.active) {
+				i = 0;
+			} else if (this.isHoveredOrFocused()) {
+				i = 2;
+			}
+
+			return 46 + i * 20;
 		}
 	}
 }

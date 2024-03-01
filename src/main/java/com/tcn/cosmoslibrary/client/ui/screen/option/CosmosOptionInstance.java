@@ -30,7 +30,6 @@ import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.AbstractOptionSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -266,7 +265,7 @@ public class CosmosOptionInstance<T> {
 		public Codec<Integer> codec() {
 			Function<Integer, DataResult<Integer>> function = (p_231596_) -> {
 				int i = this.maxSupplier.getAsInt() + 1;
-				return p_231596_.compareTo(this.minInclusive) >= 0 && p_231596_.compareTo(i) <= 0 ? DataResult.success(p_231596_) : DataResult.error("Value " + p_231596_ + " outside of range [" + this.minInclusive + ":" + i + "]", p_231596_);
+				return p_231596_.compareTo(this.minInclusive) >= 0 && p_231596_.compareTo(i) <= 0 ? DataResult.success(p_231596_) : DataResult.error(() -> { return "Value " + p_231596_ + " outside of range [" + this.minInclusive + ":" + i + "]"; }, p_231596_);
 			};
 			return Codec.INT.flatXmap(function, function);
 		}
@@ -308,12 +307,14 @@ public class CosmosOptionInstance<T> {
 		@Override
 		default Function<CosmosOptionInstance<T>, AbstractWidget> createResetButton(CosmosOptionInstance.TooltipSupplier<T> toolTipIn, CosmosOptions optionsIn, int xPosIn, int yPosIn, int widthIn, int heightIn, MutableComponent messageIn) {
 			return (instance) -> {
-				return new Button(xPosIn, yPosIn, heightIn, heightIn, messageIn, (button) -> {
-					//button.onPress();
-					
-					this.valueSetter().set(instance, instance.defaultValue);
+				Button.Builder builder = new Button.Builder(messageIn, (button) -> {
+					instance.set(instance.defaultValue);
 					optionsIn.save();
 				});
+				builder.pos(xPosIn, yPosIn);
+				builder.size(widthIn, heightIn);
+				
+				return builder.build();
 			};
 		}
 
@@ -430,7 +431,7 @@ public class CosmosOptionInstance<T> {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	static final class OptionInstanceSliderButton<N> extends AbstractOptionSliderButton implements TooltipAccessor {
+	static final class OptionInstanceSliderButton<N> extends AbstractOptionSliderButton {
 		private final CosmosOptionInstance<N> instance;
 		private final CosmosOptionInstance.SliderableValueSet<N> values;
 		private final CosmosOptionInstance.TooltipSupplier<N> tooltip;
@@ -453,11 +454,11 @@ public class CosmosOptionInstance<T> {
 			this.instance.set(this.values.fromSliderValue(this.value));
 			this.options.save();
 		}
-
+		/*
 		@Override
-		public List<FormattedCharSequence> getTooltip() {
+		public List<FormattedCharSequence> tooltip() {
 			return this.tooltip.apply(this.values.fromSliderValue(this.value));
-		}
+		}*/
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -491,10 +492,14 @@ public class CosmosOptionInstance<T> {
 		@Override
 		default Function<CosmosOptionInstance<T>, AbstractWidget> createResetButton(CosmosOptionInstance.TooltipSupplier<T> tooltipIn, CosmosOptions optionsIn, int xPosIn, int yPosIn, int widthIn, int heightIn, MutableComponent messageIn) {
 			return (instance) -> {
-				return new Button(xPosIn, yPosIn, heightIn, heightIn, messageIn, (button) -> {
+				Button.Builder builder = new Button.Builder(messageIn, (button) -> {
 					instance.set(instance.defaultValue);
 					optionsIn.save();
 				});
+				builder.pos(xPosIn, yPosIn);
+				builder.size(widthIn, heightIn);
+				
+				return builder.build();
 			};
 		}
 	}

@@ -9,9 +9,9 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
@@ -125,20 +125,20 @@ public class CosmosOptionsList extends ContainerObjectSelectionList<CosmosOption
 		}
 		
 		@Override
-		public void render(PoseStack poseStackIn, int xPosIn, int yPosIn, int p_94499_, int p_94500_, int p_94501_, int mouseX, int mouseY, boolean p_94504_, float partialTicks) {
+		public void render(GuiGraphics graphics, int xPosIn, int yPosIn, int p_94499_, int p_94500_, int p_94501_, int mouseX, int mouseY, boolean p_94504_, float partialTicks) {
 			this.children.forEach((widget) -> {
-				renderWidget(widget, poseStackIn, xPosIn, yPosIn, mouseX, mouseY, partialTicks);
+				renderWidget(widget, graphics, xPosIn, yPosIn, mouseX, mouseY, partialTicks);
 			});
 		}
 		
-		public void renderWidget(AbstractWidget widgetIn, PoseStack poseStackIn, int xPosIn, int yPosIn, int mouseX, int mouseY, float partialTicks) {
+		public void renderWidget(AbstractWidget widgetIn, GuiGraphics graphics, int xPosIn, int yPosIn, int mouseX, int mouseY, float partialTicks) {
 			if (!(widgetIn instanceof EditBox)) {
-				widgetIn.y = yPosIn;
-				widgetIn.render(poseStackIn, mouseX, mouseY, partialTicks);
+				widgetIn.setY(yPosIn);
+				widgetIn.render(graphics, mouseX, mouseY, partialTicks);
 			}
 			else if (widgetIn instanceof EditBox) {
-				widgetIn.y = yPosIn + 2;
-				widgetIn.render(poseStackIn, mouseX, mouseY, partialTicks);
+				widgetIn.setY(yPosIn + 2);
+				widgetIn.render(graphics, mouseX, mouseY, partialTicks);
 			}
 		}
 

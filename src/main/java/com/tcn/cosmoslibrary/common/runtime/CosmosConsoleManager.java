@@ -154,7 +154,7 @@ public class CosmosConsoleManager {
 		System.out.println("[" + CosmosUtil.getTimeHMS() + "] [Cosmos Thread/" + level.getCapName() + "] [" + this.MOD_ID + "] [" + this.getSimpleCallerCallerClassName() + "] [" + this.getSimpleCallerClassName() + "]: " + object);
 		
 		if (t != null) {
-			System.out.println(t);
+			t.printStackTrace();
 		}
 	}
 	

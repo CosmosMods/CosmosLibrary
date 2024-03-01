@@ -15,8 +15,8 @@ import net.minecraft.world.level.Level;
 
 public class CosmosArmourItemColourable extends ArmorItem implements Vanishable {
 	
-	public CosmosArmourItemColourable(ArmorMaterial materialIn, EquipmentSlot slot, Item.Properties builderIn) {
-		super(materialIn, slot, builderIn);
+	public CosmosArmourItemColourable(ArmorMaterial materialIn, Type typeIn, Item.Properties builderIn) {
+		super(materialIn, typeIn, builderIn);
 	}
 
 	@Override

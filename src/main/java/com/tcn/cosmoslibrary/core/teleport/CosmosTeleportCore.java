@@ -3,6 +3,7 @@ package com.tcn.cosmoslibrary.core.teleport;
 import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -16,7 +17,7 @@ import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class CosmosTeleportCore {
 	
-	public static void shiftPlayerToDimension(Player playerIn, CosmosTeleporter teleporterIn, @Nullable SoundEvent soundIn, float volume) {
+	public static void shiftPlayerToDimension(Player playerIn, CosmosTeleporter teleporterIn, @Nullable Holder<SoundEvent> soundIn, float volume) {
 		if (playerIn instanceof ServerPlayer) {
 			ServerPlayer server_player = (ServerPlayer) playerIn;
 			ResourceKey<Level> dimension_key = teleporterIn.getDimensionKey();

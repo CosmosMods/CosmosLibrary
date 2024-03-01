@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -18,12 +19,14 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
@@ -31,7 +34,6 @@ import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
@@ -52,12 +54,18 @@ public class CosmosBlockDoor extends Block {
 	protected static final VoxelShape NORTH_AABB = Block.box(0.0D, 0.0D, 13.0D, 16.0D, 16.0D, 16.0D);
 	protected static final VoxelShape WEST_AABB = Block.box(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
 	protected static final VoxelShape EAST_AABB = Block.box(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
+	private final BlockSetType type;
 
-	public CosmosBlockDoor(BlockBehaviour.Properties propertiesIn) {
+	public CosmosBlockDoor(BlockBehaviour.Properties propertiesIn, BlockSetType typeIn) {
 		super(propertiesIn);
+		this.type = typeIn;
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH)
 				.setValue(OPEN, Boolean.valueOf(false)).setValue(HINGE, DoorHingeSide.LEFT)
 				.setValue(POWERED, Boolean.valueOf(false)).setValue(HALF, DoubleBlockHalf.LOWER));
+	}
+
+	public BlockSetType type() {
+		return this.type;
 	}
 
 	@Override
@@ -93,9 +101,8 @@ public class CosmosBlockDoor extends Block {
 	@Override
 	public void playerWillDestroy(Level levelIn, BlockPos posIn, BlockState stateIn, Player playerIn) {
 		if (!levelIn.isClientSide && playerIn.isCreative()) {
-			// DoublePlantBlock.preventCreativeDropFromBottomPart(p_52755_, p_52756_, p_52757_, p_52758_);
+			//DoublePlantBlock.preventCreativeDropFromBottomPart(levelIn, posIn, stateIn, playerIn);
 		}
-
 		super.playerWillDestroy(levelIn, posIn, stateIn, playerIn);
 	}
 
@@ -111,14 +118,6 @@ public class CosmosBlockDoor extends Block {
 		default:
 			return false;
 		}
-	}
-
-	private int getCloseSound() {
-		return this.material == Material.METAL ? 1011 : 1012;
-	}
-
-	private int getOpenSound() {
-		return this.material == Material.METAL ? 1005 : 1006;
 	}
 
 	@Nullable
@@ -179,11 +178,15 @@ public class CosmosBlockDoor extends Block {
 
 	@Override
 	public InteractionResult use(BlockState stateIn, Level levelIn, BlockPos posIn, Player playerIn, InteractionHand handIn, BlockHitResult resultIn) {
-		stateIn = stateIn.cycle(OPEN);
-		levelIn.setBlock(posIn, stateIn, 10);
-		levelIn.levelEvent(playerIn, stateIn.getValue(OPEN) ? this.getOpenSound() : this.getCloseSound(), posIn, 0);
-		levelIn.gameEvent(playerIn, this.isOpen(stateIn) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, posIn);
-		return InteractionResult.sidedSuccess(levelIn.isClientSide);
+		 if (!this.type.canOpenByHand()) {
+	         return InteractionResult.PASS;
+	      } else {
+	         stateIn = stateIn.cycle(OPEN);
+	         levelIn.setBlock(posIn, stateIn, 10);
+	         this.playSound(playerIn, levelIn, posIn, stateIn.getValue(OPEN));
+	         levelIn.gameEvent(playerIn, this.isOpen(stateIn) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, posIn);
+	         return InteractionResult.sidedSuccess(levelIn.isClientSide);
+	      }
 	}
 
 	public boolean isOpen(BlockState stateIn) {
@@ -193,7 +196,7 @@ public class CosmosBlockDoor extends Block {
 	public void setOpen(@Nullable Entity entityIn, Level levelIn, BlockState stateIn, BlockPos posIn, boolean valueIn) {
 		if (stateIn.is(this) && stateIn.getValue(OPEN) != valueIn) {
 			levelIn.setBlock(posIn, stateIn.setValue(OPEN, Boolean.valueOf(valueIn)), 10);
-			this.playSound(levelIn, posIn, valueIn);
+			this.playSound(entityIn, levelIn, posIn, valueIn);
 			levelIn.gameEvent(entityIn, valueIn ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, posIn);
 		}
 	}
@@ -204,8 +207,8 @@ public class CosmosBlockDoor extends Block {
 		
 		if (!this.defaultBlockState().is(blockIn) && flag != stateIn.getValue(POWERED)) {
 			if (flag != stateIn.getValue(OPEN)) {
-				this.playSound(levelIn, posIn, flag);
-				levelIn.gameEvent(flag ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, posIn, GameEvent.Context.of(stateIn));
+				this.playSound((Entity)null, levelIn, posIn, flag);
+				levelIn.gameEvent((Entity)null, flag ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, posIn);
 			}
 
 			levelIn.setBlock(posIn,stateIn.setValue(POWERED, Boolean.valueOf(flag)).setValue(OPEN, Boolean.valueOf(flag)), 2);
@@ -219,8 +222,8 @@ public class CosmosBlockDoor extends Block {
 		return stateIn.getValue(HALF) == DoubleBlockHalf.LOWER ? blockstate.isFaceSturdy(levelIn, blockpos, Direction.UP) : blockstate.is(this);
 	}
 
-	private void playSound(Level levelIn, BlockPos posIn, boolean openSound) {
-		levelIn.levelEvent((Player) null, openSound ? this.getOpenSound() : this.getCloseSound(), posIn, 0);
+	private void playSound(@Nullable Entity entityIn, Level levelIn, BlockPos posIn, boolean open) {
+		levelIn.playSound(entityIn, posIn, open ? this.type.doorOpen() : this.type.doorClose(),SoundSource.BLOCKS, 1.0F, levelIn.getRandom().nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override
@@ -247,12 +250,19 @@ public class CosmosBlockDoor extends Block {
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> stateBuilderIn) {
 		stateBuilderIn.add(HALF, FACING, OPEN, HINGE, POWERED);
 	}
-	
-	public static boolean isWoodenDoor(Level levelIn, BlockPos posIn) {
-		return isWoodenDoor(levelIn.getBlockState(posIn));
+
+	public static boolean isWoodenDoor(Level p_52746_, BlockPos p_52747_) {
+		return isWoodenDoor(p_52746_.getBlockState(p_52747_));
 	}
 
-	public static boolean isWoodenDoor(BlockState stateIn) {
-		return stateIn.getBlock() instanceof CosmosBlockDoor && (stateIn.getMaterial() == Material.WOOD || stateIn.getMaterial() == Material.NETHER_WOOD);
+	public static boolean isWoodenDoor(BlockState p_52818_) {
+		Block block = p_52818_.getBlock();
+		if (block instanceof DoorBlock doorblock) {
+			if (doorblock.type().canOpenByHand()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

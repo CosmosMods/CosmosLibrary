@@ -10,7 +10,8 @@ public enum EnumAllowedEntities {
 	NONE(0, "none", "cosmoslibrary.enum.allowed_entities.none", ComponentColour.RED),
 	NON_PLAYERS_ONLY(1, "entities_only", "cosmoslibrary.enum.allowed_entities.entities_only", ComponentColour.YELLOW),
 	PLAYERS_ONLY(2, "players_only", "cosmoslibrary.enum.allowed_entities.players_only", ComponentColour.CYAN),
-	ALL(3, "all", "cosmoslibrary.enum.allowed_entities.all", ComponentColour.GREEN);
+	ITEMS_ONLY(3, "items_only", "cosmoslibrary.enum.allowed_entities.items_only", ComponentColour.ORANGE),
+	ALL(4, "all", "cosmoslibrary.enum.allowed_entities.all", ComponentColour.GREEN);
 	
 	private final int index;
 	private final String name;
@@ -69,6 +70,8 @@ public enum EnumAllowedEntities {
 			case NON_PLAYERS_ONLY:
 				return PLAYERS_ONLY;
 			case PLAYERS_ONLY:
+				return ITEMS_ONLY;
+			case ITEMS_ONLY:
 				return ALL;
 			case ALL:
 				return NONE;
@@ -88,11 +91,35 @@ public enum EnumAllowedEntities {
 			case NON_PLAYERS_ONLY:
 				return PLAYERS_ONLY;
 			case PLAYERS_ONLY:
+				return ITEMS_ONLY;
+			case ITEMS_ONLY:
 				return ALL;
 			case ALL:
 				return NONE;
 			default:
 				throw new IllegalStateException("Unable to obtain state of [" + previous + "]");
+		}
+	}
+
+	/**
+	 * Returns the next state from a given state, in reverse order.
+	 * @param previous [state from]
+	 */
+	public static EnumAllowedEntities getNextStateReverse(EnumAllowedEntities previous) {
+		switch(previous) {
+			case NONE:
+				return ALL;
+			case ALL:
+				return ITEMS_ONLY;
+			case ITEMS_ONLY:
+				return PLAYERS_ONLY;
+			case PLAYERS_ONLY:
+				return NON_PLAYERS_ONLY;
+			case NON_PLAYERS_ONLY:
+				return NONE;
+			default:
+				throw new IllegalStateException("Unable to obtain state of [" + previous + "]");
+			
 		}
 	}
 
@@ -109,6 +136,8 @@ public enum EnumAllowedEntities {
 			case 2:
 				return PLAYERS_ONLY;
 			case 3:
+				return ITEMS_ONLY;
+			case 4:
 				return ALL;
 			default:
 				throw new IllegalStateException("No state exists with index: [" + index + "]");

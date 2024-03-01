@@ -4,10 +4,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
+@SuppressWarnings("resource")
 public class CosmosChatUtil {
 	
 	public static void sendClientPlayerMessage(Player playerIn, Component comp) {
-		if (playerIn.level.isClientSide) {
+		if (playerIn.level().isClientSide) {
 			playerIn.sendSystemMessage(comp);
 		}
 	}
@@ -17,7 +18,7 @@ public class CosmosChatUtil {
 			playerIn.sendSystemMessage(comp);
 		}
 		
-		if (!playerIn.level.isClientSide) {
+		if (!playerIn.level().isClientSide) {
 			//playerIn.sendMessage(comp, UUID.randomUUID());
 		}
 	}

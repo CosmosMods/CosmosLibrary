@@ -4,7 +4,7 @@ import com.tcn.cosmoslibrary.CosmosLibrary;
 import com.tcn.cosmoslibrary.common.crafting.CosmosShieldDecorationRecipe;
 
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -17,7 +17,7 @@ public class ModBusSubscriberCosmos {
 
 	public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, CosmosLibrary.MOD_ID);
 
-	public static final RegistryObject<RecipeSerializer<CosmosShieldDecorationRecipe>> SHIELD_SERIALIZER = RECIPE_SERIALIZERS.register("crafting_special_shielddecoration", () -> new SimpleRecipeSerializer<>(CosmosShieldDecorationRecipe::new));
+	public static final RegistryObject<RecipeSerializer<CosmosShieldDecorationRecipe>> SHIELD_SERIALIZER = RECIPE_SERIALIZERS.register("crafting_special_shielddecoration", () -> new SimpleCraftingRecipeSerializer<>(CosmosShieldDecorationRecipe::new));
 
 	public static void register(IEventBus bus) {
 		RECIPE_SERIALIZERS.register(bus);

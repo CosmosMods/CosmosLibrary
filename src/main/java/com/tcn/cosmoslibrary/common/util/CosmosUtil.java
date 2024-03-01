@@ -206,12 +206,30 @@ public class CosmosUtil {
 		
 		return formatter.format(toFormat);
 	}
-	
+
 	public static String getTimeHMS() {
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+		return getTimeHMS(":");
+	}
+
+	public static String getTimeHMS(String separator) {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH" + separator + "mm" + separator + "ss");
 		LocalDateTime now = LocalDateTime.now();
 		
 		return dtf.format(now).replace("/", "-").replace(" ", " | ");
+	}
+
+	public static String getDateYMD(boolean withTime, String separator) {
+		DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy" + separator + "MM" + separator + "dd");
+		
+		LocalDateTime now = LocalDateTime.now();
+		
+		String return_ = date.format(now).replace("/", "-").replace(" ", " | ");
+		
+		if (withTime) {
+			return_ += "_" + getTimeHMS("-");
+		}
+		
+		return return_;
 	}
 	
     public static boolean isInBounds(VoxelShape shape, BlockPos pos, Vec3 hit) {

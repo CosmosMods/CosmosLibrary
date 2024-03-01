@@ -12,12 +12,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Vanishable;
 import net.minecraft.world.level.Level;
 
+@SuppressWarnings("resource")
 public class CosmosArmourItemElytra extends CosmosArmourItemColourable implements Vanishable {
 	
 	private boolean damageable;
 
-	public CosmosArmourItemElytra(ArmorMaterial materialIn, EquipmentSlot slot, Item.Properties builderIn, boolean damageableIn) {
-		super(materialIn, slot, builderIn);
+	public CosmosArmourItemElytra(ArmorMaterial materialIn, Type typeIn, Item.Properties builderIn, boolean damageableIn) {
+		super(materialIn, typeIn, builderIn);
 	}
 
 	public boolean isFlyEnabled(ItemStack stackIn) {
@@ -51,7 +52,7 @@ public class CosmosArmourItemElytra extends CosmosArmourItemColourable implement
 	@Override
 	public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
 		if (damageable) {
-			if (!entity.level.isClientSide && (flightTicks + 1) % 20 == 0) {
+			if (!entity.level().isClientSide && (flightTicks + 1) % 20 == 0) {
 				stack.hurtAndBreak(1, entity, e -> e.broadcastBreakEvent(EquipmentSlot.CHEST));
 			}
 			return true;

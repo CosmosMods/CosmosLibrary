@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.tcn.cosmoslibrary.client.container.CosmosContainerMenuBlockEntity;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
@@ -40,41 +41,40 @@ public class CosmosScreenBlockEntity<J extends CosmosContainerMenuBlockEntity> e
 	}
 	
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(poseStack);
-		super.render(poseStack, mouseX, mouseY, partialTicks);
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		this.renderBackground(graphics);
+		super.render(graphics, mouseX, mouseY, partialTicks);
 
-		this.renderComponents(poseStack, mouseX, mouseY, partialTicks);
-		this.renderComponentHoverEffect(poseStack, Style.EMPTY, mouseX, mouseY);
-		this.renderTooltip(poseStack, mouseX, mouseY);
+		this.renderComponents(graphics.pose(), mouseX, mouseY, partialTicks);
+		this.renderComponentHoverEffect(graphics, Style.EMPTY, mouseX, mouseY);
+		this.renderTooltip(graphics, mouseX, mouseY);
 	}
 	
 	protected void renderComponents(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) { }
 
 	@Override
-	protected void renderBg(PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
-		CosmosUISystem.renderStaticElement(this, poseStack, this.screenCoords, 0, 0, 0, 0, Mth.clamp(this.imageWidth, 0, 256), this.imageHeight, TEXTURE);
+	protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+		CosmosUISystem.renderStaticElement(this, graphics, this.screenCoords, 0, 0, 0, 0, Mth.clamp(this.imageWidth, 0, 256), this.imageHeight, TEXTURE);
 		
 		if (this.hasDualScreen) {
 			if(this.dualScreenIndex != null && this.DUAL_TEXTURE != null && this.DUAL_TEXTURE != null) {
-				CosmosUISystem.renderStaticElement(this, poseStack, this.screenCoords, this.dualScreenIndex[0], this.dualScreenIndex[1], 0, 0, Mth.clamp(256 + this.dualScreenIndex[2], 0, 256), this.dualScreenIndex[3], DUAL_TEXTURE);
+				CosmosUISystem.renderStaticElement(this, graphics, this.screenCoords, this.dualScreenIndex[0], this.dualScreenIndex[1], 0, 0, Mth.clamp(256 + this.dualScreenIndex[2], 0, 256), this.dualScreenIndex[3], DUAL_TEXTURE);
 			}
 		}
 	}
 
 	@Override
-	protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
+	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
 		if (this.renderTitleLabel) {
-			this.font.draw(poseStack, this.title, (float) this.titleLabelX, (float) this.titleLabelY, CosmosUISystem.DEFAULT_COLOUR_FONT_LIST);
+			graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, CosmosUISystem.DEFAULT_COLOUR_FONT_LIST);
 		}
 		
 		if (this.renderInventoryLabel) {
-			this.font.draw(poseStack, this.playerInventoryTitle, (float) this.inventoryLabelX, (float) this.inventoryLabelY, CosmosUISystem.DEFAULT_COLOUR_FONT_LIST);
+			graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, CosmosUISystem.DEFAULT_COLOUR_FONT_LIST);
 		}
 	}
 	
-	@Override
-	public void renderComponentHoverEffect(PoseStack poseStack, Style style, int mouseX, int mouseY) { }
+	public void renderComponentHoverEffect(GuiGraphics graphics, Style style, int mouseX, int mouseY) { }
 	
 	protected void addButtons() { 
 		this.clearWidgets();

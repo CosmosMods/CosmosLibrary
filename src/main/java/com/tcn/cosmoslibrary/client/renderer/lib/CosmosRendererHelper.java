@@ -1,11 +1,13 @@
 package com.tcn.cosmoslibrary.client.renderer.lib;
 
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import com.mojang.math.MatrixUtil;
 import com.tcn.cosmoslibrary.CosmosLibrary;
 import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 
@@ -13,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,6 +23,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -64,9 +66,9 @@ public class CosmosRendererHelper {
 		matrixStack.pushPose();
 		matrixStack.translate(0.5, 0.5, 0.5);
 		
-		matrixStack.mulPose(Vector3f.YP.rotationDegrees((float) (180 * yaw / Math.PI)));
-		matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (180 * pitch / Math.PI)));
-		matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) rotation));
+		matrixStack.mulPose(Axis.YP.rotationDegrees((float) (180 * yaw / Math.PI)));
+		matrixStack.mulPose(Axis.ZP.rotationDegrees((float) (180 * pitch / Math.PI)));
+		matrixStack.mulPose(Axis.XP.rotationDegrees((float) rotation));
 		
 		Pose matrixstack$entry = matrixStack.last();
 		Matrix4f matrix4f = matrixstack$entry.pose();
@@ -130,23 +132,23 @@ public class CosmosRendererHelper {
 		int alpha = (int)(opacity * 255.0F) << 24;
 		float width = (-fontRendererIn.width(textIn) / 2);
 		
-		fontRendererIn.drawInBatch(textIn, width, 0.0F, 553648127, false, matrix4f, bufferIn, false, -alpha, combinedLightIn);
-		fontRendererIn.drawInBatch(textIn, width, 0.0F, -1, false, matrix4f, bufferIn, true, 0, combinedLightIn);
+		fontRendererIn.drawInBatch(textIn, width, 0.0F, 553648127, false, matrix4f, bufferIn, Font.DisplayMode.NORMAL, -alpha, combinedLightIn);
+		fontRendererIn.drawInBatch(textIn, width, 0.0F, -1, false, matrix4f, bufferIn, Font.DisplayMode.SEE_THROUGH, 0, combinedLightIn);
 		matrixStackIn.popPose();
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public static void render(ItemRenderer renderer, ItemStack stackIn, ItemTransforms.TransformType transformIn, boolean p_229111_3_, PoseStack poseStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, boolean renderFoil) {
+	public static void render(ItemRenderer renderer, ItemStack stackIn, ItemDisplayContext transformIn, boolean p_229111_3_, PoseStack poseStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn, BakedModel modelIn, boolean renderFoil) {
 		if (!stackIn.isEmpty()) {
 			poseStackIn.pushPose();
-			boolean flag = transformIn == ItemTransforms.TransformType.GUI || transformIn == ItemTransforms.TransformType.GROUND || transformIn == ItemTransforms.TransformType.FIXED;
+			boolean flag = transformIn == ItemDisplayContext.GUI || transformIn == ItemDisplayContext.GROUND || transformIn == ItemDisplayContext.FIXED;
 			
 			modelIn = ForgeHooksClient.handleCameraTransforms(poseStackIn, modelIn, transformIn, p_229111_3_);
 			poseStackIn.translate(-0.5D, -0.5D, -0.5D);
 			
 			if ((stackIn.getItem() != Items.TRIDENT || flag)) {
 				boolean flag1;
-				if (transformIn != ItemTransforms.TransformType.GUI && !transformIn.firstPerson() && stackIn.getItem() instanceof BlockItem) {
+				if (transformIn != ItemDisplayContext.GUI && !transformIn.firstPerson() && stackIn.getItem() instanceof BlockItem) {
 					Block block = ((BlockItem) stackIn.getItem()).getBlock();
 					flag1 = !(block instanceof HalfTransparentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
@@ -157,35 +159,37 @@ public class CosmosRendererHelper {
 					for (var rendertype : model.getRenderTypes(stackIn, flag1)) {
 						poseStackIn.pushPose();
 						PoseStack.Pose posestack$pose = poseStackIn.last();
-						if (transformIn == ItemTransforms.TransformType.GUI) {
-							posestack$pose.pose().multiply(0.5F);
+						if (transformIn == ItemDisplayContext.GUI) {
+							MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.5F);
 						} else if (transformIn.firstPerson()) {
-							posestack$pose.pose().multiply(0.75F);
+							MatrixUtil.mulComponentWise(posestack$pose.pose(), 0.75F);
 						}
 			               
 						//if (modelIn.isLayered()) {
 						//	ForgeHooksClient.drawItemLayered(renderer, modelIn, stackIn, poseStackIn, bufferIn, combinedLightIn, combinedOverlayIn, flag1);
 						//} else {
-							VertexConsumer ivertexbuilder;
+						VertexConsumer ivertexbuilder;
 							
-
-				        poseStackIn.popPose();
-							if (flag1) {
-								if (renderFoil) {
-									ivertexbuilder = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, stackIn.hasFoil());
-								} else {
-									ivertexbuilder = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, false);
-								}
+						poseStackIn.popPose();
+						if (flag1) {
+							if (renderFoil) {
+								ivertexbuilder = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true,
+										stackIn.hasFoil());
 							} else {
-								if (renderFoil) {
-									ivertexbuilder = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, stackIn.hasFoil());
-								} else {
-									ivertexbuilder = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, false);
-								}
+								ivertexbuilder = ItemRenderer.getFoilBufferDirect(bufferIn, rendertype, true, false);
 							}
-							renderer.renderModelLists(modelIn, stackIn, combinedLightIn, combinedOverlayIn, poseStackIn, ivertexbuilder);
+						} else {
+							if (renderFoil) {
+								ivertexbuilder = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true,
+										stackIn.hasFoil());
+							} else {
+								ivertexbuilder = ItemRenderer.getFoilBuffer(bufferIn, rendertype, true, false);
+							}
 						}
-					//}
+						renderer.renderModelLists(modelIn, stackIn, combinedLightIn, combinedOverlayIn, poseStackIn,
+								ivertexbuilder);
+					}
+					// }
 				}
 			}
 			poseStackIn.popPose();
@@ -194,7 +198,7 @@ public class CosmosRendererHelper {
 	
 	@OnlyIn(Dist.CLIENT)
 	public static float getMappedTextureHeight(TextureAtlasSprite spriteIn, float inputHeightIn, float inputMinIn, float inputMaxIn) {
-		return ((0.0625F / (512.0F / spriteIn.getHeight())) * (Mth.map(inputHeightIn, inputMinIn, inputMaxIn, 0, 8)));
+		return ((0.0625F / (512.0F / spriteIn.contents().height())) * (Mth.map(inputHeightIn, inputMinIn, inputMaxIn, 0, 8)));
 	}
 
 	@OnlyIn(Dist.CLIENT)

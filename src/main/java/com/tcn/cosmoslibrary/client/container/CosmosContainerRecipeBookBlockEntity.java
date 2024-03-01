@@ -26,7 +26,7 @@ public abstract class CosmosContainerRecipeBookBlockEntity<J extends Container> 
 		super(menuTypeIn, indexIn);
 		
 		this.pos = posIn;
-		this.world = playerInventoryIn.player.level;
+		this.world = playerInventoryIn.player.level();
 		
 		this.access = accessIn;
 		this.player = playerInventoryIn.player;

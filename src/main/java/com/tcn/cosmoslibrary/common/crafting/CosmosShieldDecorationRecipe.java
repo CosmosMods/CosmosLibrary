@@ -3,12 +3,14 @@ package com.tcn.cosmoslibrary.common.crafting;
 import com.tcn.cosmoslibrary.energy.item.CosmosEnergyShield;
 import com.tcn.cosmoslibrary.runtime.ObjectManagerCosmos;
 
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -16,8 +18,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class CosmosShieldDecorationRecipe extends CustomRecipe {
 	
-   public CosmosShieldDecorationRecipe(ResourceLocation locationIn) {
-      super(locationIn);
+   public CosmosShieldDecorationRecipe(ResourceLocation locationIn, CraftingBookCategory categoryIn) {
+      super(locationIn, categoryIn);
    }
 
    @Override
@@ -57,7 +59,7 @@ public class CosmosShieldDecorationRecipe extends CustomRecipe {
    }
    
    @Override
-   public ItemStack assemble(CraftingContainer containerIn) {
+   public ItemStack assemble(CraftingContainer containerIn, RegistryAccess p_267165_) {
       ItemStack itemstack = ItemStack.EMPTY;
       ItemStack itemstack1 = ItemStack.EMPTY;
 
@@ -93,4 +95,5 @@ public class CosmosShieldDecorationRecipe extends CustomRecipe {
    public RecipeSerializer<?> getSerializer() {
       return ObjectManagerCosmos.crafting_special_shielddecoration;
    }
+
 }

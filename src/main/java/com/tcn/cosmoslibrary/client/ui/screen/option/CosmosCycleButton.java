@@ -10,20 +10,19 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.components.TooltipAccessor;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+@SuppressWarnings("unused")
 @OnlyIn(Dist.CLIENT)
-public class CosmosCycleButton<T> extends AbstractButton implements TooltipAccessor {
+public class CosmosCycleButton<T> extends AbstractButton {
 	static final BooleanSupplier DEFAULT_ALT_LIST_SELECTOR = Screen::hasAltDown;
 	private static final List<Boolean> BOOLEAN_OPTIONS = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
 	private final Component name;
@@ -98,8 +97,7 @@ public class CosmosCycleButton<T> extends AbstractButton implements TooltipAcces
 	}
 
 	private Component createLabelForValue(T p_168911_) {
-		return (Component) (this.displayOnlyValue ? this.valueStringifier.apply(p_168911_)
-				: this.createFullName(p_168911_));
+		return (Component) (this.displayOnlyValue ? this.valueStringifier.apply(p_168911_) : this.createFullName(p_168911_));
 	}
 
 	private MutableComponent createFullName(T p_168913_) {
@@ -116,7 +114,7 @@ public class CosmosCycleButton<T> extends AbstractButton implements TooltipAcces
 	}
 
 	@Override
-	public void updateNarration(NarrationElementOutput p_168889_) {
+	public void updateWidgetNarration(NarrationElementOutput p_168889_) {
 		p_168889_.add(NarratedElementType.TITLE, this.createNarrationMessage());
 		
 		if (this.active) {
@@ -131,13 +129,7 @@ public class CosmosCycleButton<T> extends AbstractButton implements TooltipAcces
 	}
 
 	public MutableComponent createDefaultNarrationMessage() {
-		return wrapDefaultNarrationMessage(
-				(Component) (this.displayOnlyValue ? this.createFullName(this.value) : this.getMessage()));
-	}
-
-	@Override
-	public List<FormattedCharSequence> getTooltip() {
-		return this.tooltipSupplier.apply(this.value);
+		return wrapDefaultNarrationMessage((Component) (this.displayOnlyValue ? this.createFullName(this.value) : this.getMessage()));
 	}
 
 	public static <T> CosmosCycleButton.Builder<T> builder(Function<T, Component> p_168895_) {
@@ -191,8 +183,7 @@ public class CosmosCycleButton<T> extends AbstractButton implements TooltipAcces
 			return this.withValues(CosmosCycleButton.ValueListSupplier.create(CosmosCycleButton.DEFAULT_ALT_LIST_SELECTOR, p_168953_, p_168954_));
 		}
 
-		public CosmosCycleButton.Builder<T> withValues(BooleanSupplier p_168956_, List<T> p_168957_,
-				List<T> p_168958_) {
+		public CosmosCycleButton.Builder<T> withValues(BooleanSupplier p_168956_, List<T> p_168957_, List<T> p_168958_) {
 			return this.withValues(CosmosCycleButton.ValueListSupplier.create(p_168956_, p_168957_, p_168958_));
 		}
 
@@ -216,8 +207,7 @@ public class CosmosCycleButton<T> extends AbstractButton implements TooltipAcces
 			return this;
 		}
 
-		public CosmosCycleButton.Builder<T> withCustomNarration(
-				Function<CosmosCycleButton<T>, MutableComponent> p_168960_) {
+		public CosmosCycleButton.Builder<T> withCustomNarration(Function<CosmosCycleButton<T>, MutableComponent> p_168960_) {
 			this.narrationProvider = p_168960_;
 			return this;
 		}

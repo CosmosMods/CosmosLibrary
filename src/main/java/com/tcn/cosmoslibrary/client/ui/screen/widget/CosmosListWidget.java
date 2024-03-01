@@ -3,7 +3,6 @@ package com.tcn.cosmoslibrary.client.ui.screen.widget;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.tcn.cosmoslibrary.CosmosReference;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem.FONT;
@@ -13,11 +12,13 @@ import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class CosmosListWidget extends GuiComponent {
+public class CosmosListWidget extends AbstractWidget {
 
 	private ResourceLocation TEXTURE;
 	private int width;
@@ -30,10 +31,9 @@ public class CosmosListWidget extends GuiComponent {
 	private boolean hovered;
 	private boolean selected;
 	
-	public CosmosListWidget() { }
-	
 	public CosmosListWidget(int posX, int posY, int widthIn, int heightIn, @Nullable ResourceLocation textureIn, String displayComponentIn, ComponentColour displayColourIn) {
-
+		super(posX, posY, widthIn, heightIn, ComponentHelper.style(displayColourIn, displayComponentIn));
+		
 		this.xPosition = posX;
 		this.yPosition = posY;
 		
@@ -46,7 +46,7 @@ public class CosmosListWidget extends GuiComponent {
 	}
 	
 	public CosmosListWidget(int[] screen_coords, int posX, int posY, int widthIn, int heightIn, @Nullable ResourceLocation textureIn, String displayComponentIn, ComponentColour displayColourIn) {
-		
+		this (posX, posY, widthIn, heightIn, textureIn, displayComponentIn, displayColourIn);
 		this.xPosition = screen_coords[0] + posX;
 		this.yPosition = screen_coords[1] + posY;
 		
@@ -69,7 +69,7 @@ public class CosmosListWidget extends GuiComponent {
 		return i;
 	}
 	
-	public void renderWidget(PoseStack stack, Font font_renderer, int[] screen_coords, int mouseX, int mouseY, int indexIn, int boxMaxY) {
+	public void renderWidget(GuiGraphics graphics, Font font_renderer, int[] screen_coords, int mouseX, int mouseY, int indexIn, int boxMaxY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
 		if (this.TEXTURE != null) {
@@ -87,33 +87,32 @@ public class CosmosListWidget extends GuiComponent {
 		if (this.yPosition + this.height <= boxMaxY) {
 			if (this.height == 20) {
 				if (indexIn == 0) {
-					this.blit(stack, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, 42 + (hovered * 20), this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + this.xPosition + screen_coords[1] + this.width / 2, this.yPosition, 256 - this.width / 2, 42 + (hovered * 20), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, 42 + (hovered * 20), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition + screen_coords[1] + this.width / 2, this.yPosition, 256 - this.width / 2, 42 + (hovered * 20), this.width / 2, this.height);
 				} else {
-					this.blit(stack, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + this.xPosition + this.width / 2, screen_coords[1] + this.yPosition, 256 - this.width / 2, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition + this.width / 2, screen_coords[1] + this.yPosition, 256 - this.width / 2, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
 				}
 				
 			} else if (this.height == 14) {
 				if (indexIn == 0) {
-					this.blit(stack, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, 114 + (hovered * 14), this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + this.xPosition + this.width / 2, screen_coords[1] + this.yPosition, 256 - this.width / 2, 114 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, 114 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition + this.width / 2, screen_coords[1] + this.yPosition, 256 - this.width / 2, 114 + (hovered * 14), this.width / 2, this.height);
 				} else {
-					this.blit(stack, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + this.xPosition + this.width / 2, screen_coords[1] + this.yPosition, 256 - this.width / 2, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition, screen_coords[1] + this.yPosition, 56, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + this.xPosition + this.width / 2, screen_coords[1] + this.yPosition, 256 - this.width / 2, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
 				}
 			}
 			
 			if (indexIn == 0) {
-				FONT.drawCenteredString(stack, font_renderer, screen_coords, this.xPosition + this.width / 2, this.yPosition - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, this.getDisplayString()));//.append(ComponentHelper.locComp(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, false, " [Owner]")));
+				FONT.drawCenteredString(graphics,font_renderer, screen_coords, this.xPosition + this.width / 2, this.yPosition - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.WHITE, this.getDisplayString()));//.append(ComponentHelper.locComp(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, false, " [Owner]")));
 			} else {
-				FONT.drawCenteredString(stack, font_renderer, screen_coords, this.xPosition + this.width / 2, this.yPosition - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, this.getDisplayString()));//, "  " + font_renderer.width(this.getDisplayString()) + "  " + this.width));
+				FONT.drawCenteredString(graphics, font_renderer, screen_coords, this.xPosition + this.width / 2, this.yPosition - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.WHITE, this.getDisplayString()));//, "  " + font_renderer.width(this.getDisplayString()) + "  " + this.width));
 			}
 		}
 	}
 	
-
-	public void renderWidget(PoseStack stack, Font font_renderer, int[] screen_coords, int posX, int posY, int mouseX, int mouseY, int indexIn, int boxMaxY) {
+	public void renderWidget(GuiGraphics graphics, Font font_renderer, int[] screen_coords, int posX, int posY, int mouseX, int mouseY, int indexIn, int boxMaxY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
 		if (this.TEXTURE != null) {
@@ -131,27 +130,27 @@ public class CosmosListWidget extends GuiComponent {
 		if (posY + this.height <= boxMaxY) {
 			if (this.height == 20) {
 				if (indexIn == 0) {
-					this.blit(stack, screen_coords[0] + posX, screen_coords[1] + posY, 56, 42 + (hovered * 20), this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + posX + screen_coords[1] + this.width / 2, posY, 256 - this.width / 2, 42 + (hovered * 20), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX, screen_coords[1] + posY, 56, 42 + (hovered * 20), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX + screen_coords[1] + this.width / 2, posY, 256 - this.width / 2, 42 + (hovered * 20), this.width / 2, this.height);
 				} else {
-					this.blit(stack, screen_coords[0] + posX, screen_coords[1] + posY, 56, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + posX + this.width / 2, screen_coords[1] + posY, 256 - this.width / 2, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX, screen_coords[1] + posY, 56, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX + this.width / 2, screen_coords[1] + posY, 256 - this.width / 2, this.selected ? 20 : hovered * 20, this.width / 2, this.height);
 				}
 				
 			} else if (this.height == 14) {
 				if (indexIn == 0) {
-					this.blit(stack, screen_coords[0] + posX, screen_coords[1] + posY, 56, 114 + (hovered * 14), this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + posX + this.width / 2, screen_coords[1] + posY, 256 - this.width / 2, 114 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX, screen_coords[1] + posY, 56, 114 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX + this.width / 2, screen_coords[1] + posY, 256 - this.width / 2, 114 + (hovered * 14), this.width / 2, this.height);
 				} else {
-					this.blit(stack, screen_coords[0] + posX, screen_coords[1] + posY, 56, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
-					this.blit(stack, screen_coords[0] + posX + this.width / 2, screen_coords[1] + posY, 256 - this.width / 2, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX, screen_coords[1] + posY, 56, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
+					graphics.blit(this.TEXTURE != null ? this.TEXTURE : CosmosReference.RESOURCE.BASE.GUI_ELEMENT_MISC_LOC, screen_coords[0] + posX + this.width / 2, screen_coords[1] + posY, 256 - this.width / 2, this.selected ? 84 + 14 : 84 + (hovered * 14), this.width / 2, this.height);
 				}
 			}
 			
 			if (indexIn == 0) {
-				FONT.drawCenteredString(stack, font_renderer, screen_coords, posX + this.width / 2, posY - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, this.getDisplayString()));//.append(ComponentHelper.locComp(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, false, " [Owner]")));
+				FONT.drawCenteredString(graphics, font_renderer, screen_coords, posX + this.width / 2, posY - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.WHITE, this.getDisplayString()));//.append(ComponentHelper.locComp(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, false, " [Owner]")));
 			} else {
-				FONT.drawCenteredString(stack, font_renderer, screen_coords, posX + this.width / 2, posY - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.BLACK, this.getDisplayString()));//, "  " + font_renderer.width(this.getDisplayString()) + "  " + this.width));
+				FONT.drawCenteredString(graphics, font_renderer, screen_coords, posX + this.width / 2, posY - 30, ComponentHelper.style(hovered == 0 ? this.getDisplayColour() : ComponentColour.WHITE, this.getDisplayString()));//, "  " + font_renderer.width(this.getDisplayString()) + "  " + this.width));
 			}
 		}
 	}
@@ -215,11 +214,23 @@ public class CosmosListWidget extends GuiComponent {
 		return this.yPosition;
 	}
 	
+	@Override
 	public int getWidth() {
 		return this.width;
 	}
 	
+	@Override
 	public int getHeight() {
 		return this.height;
+	}
+
+	@Override
+	protected void renderWidget(GuiGraphics p_282139_, int p_268034_, int p_268009_, float p_268085_) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected void updateWidgetNarration(NarrationElementOutput p_259858_) {
+		// TODO Auto-generated method stub
 	}
 }

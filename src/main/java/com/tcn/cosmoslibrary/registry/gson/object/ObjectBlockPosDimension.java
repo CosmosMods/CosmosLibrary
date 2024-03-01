@@ -36,7 +36,7 @@ public class ObjectBlockPosDimension {
 		int x = compound.getInt(Const.NBT_POS_X_KEY);
 		int y = compound.getInt(Const.NBT_POS_Y_KEY);
 		int z = compound.getInt(Const.NBT_POS_Z_KEY);
-
+		
 		BlockPos posOut = new BlockPos(x, y, z);
 		
 		ResourceLocation dimensionOut = new ResourceLocation("");

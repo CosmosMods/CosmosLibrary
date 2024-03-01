@@ -1,12 +1,16 @@
 package com.tcn.cosmoslibrary.client.ui.screen.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.function.Supplier;
+
 import com.tcn.cosmoslibrary.CosmosReference;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 import com.tcn.cosmoslibrary.common.enums.EnumUIMode;
+import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,11 +34,17 @@ public class CosmosButtonUIMode extends Button {
 	public boolean visible = true;
 
 	public CosmosButtonUIMode(EnumUIMode typeIn, int x, int y, boolean enabled, boolean visible, Component title, Button.OnPress pressedAction) {
-		this(typeIn, x, y, 12, enabled, visible, title, pressedAction);
+		this(typeIn, x, y, 12, enabled, visible, title, pressedAction, new Button.CreateNarration() {
+			
+			@Override
+			public MutableComponent createNarrationMessage(Supplier<MutableComponent> p_253695_) {
+				return ComponentHelper.empty();
+			}
+		});
 	}
 
-	public CosmosButtonUIMode(EnumUIMode typeIn, int x, int y, int size, boolean enabled, boolean visible, Component title, Button.OnPress pressedAction) {
-		super(x, y, size, size, title, pressedAction);
+	public CosmosButtonUIMode(EnumUIMode typeIn, int x, int y, int size, boolean enabled, boolean visible, Component title, Button.OnPress pressedAction, Button.CreateNarration narration) {
+		super(x, y, size, size, title, pressedAction, narration);
 		this.buttonType = typeIn;
 		
 		this.x = x;
@@ -47,9 +57,9 @@ public class CosmosButtonUIMode extends Button {
 	}
 
 	@Override
-	public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) { 
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) { 
 		if (this.visible) {
-			this.renderButton(matrixStack, mouseX, mouseY, partialTicks);
+			this.renderWidget(graphics, mouseX, mouseY, partialTicks);
 		}
 	}
 	
@@ -70,17 +80,17 @@ public class CosmosButtonUIMode extends Button {
 	}
 
 	@Override
-	public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.buttonType != null) {
-			CosmosUISystem.setTextureWithColourAlpha(matrixStack, TEXTURE, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
+			CosmosUISystem.setTextureWithColourAlpha(graphics.pose(), TEXTURE, new float[] { 1.0F, 1.0F, 1.0F, 1.0F });
 			
 			this.isHovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 			int i = this.getHoverState(this.isHovered);
 
 		    if (this.buttonType.equals(EnumUIMode.DARK)) {
-		    	this.blit(matrixStack, this.x, this.y, index[i], 0, this.width, this.height);
+		    	graphics.blit(TEXTURE, this.x, this.y, index[i], 0, this.width, this.height);
 		    } else {
-		    	this.blit(matrixStack, this.x, this.y, index[i + 2], 0, this.width, this.height);
+		    	graphics.blit(TEXTURE, this.x, this.y, index[i + 2], 0, this.width, this.height);
 		    }
 		}
 	}

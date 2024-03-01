@@ -2,13 +2,13 @@ package com.tcn.cosmoslibrary.client.ui.screen.option;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.serialization.Codec;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
 import com.tcn.cosmoslibrary.common.lib.ComponentHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -22,13 +22,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class CosmosOptionListTextEntry extends CosmosOptionInstance<String> {
 	
 	private Button.OnPress onPressFunction;
+	private Button.CreateNarration narration;
 	private EditBox editBox;
 	private MutableComponent buttonText;
+	private MutableComponent extraButtonText;
 	
-	public CosmosOptionListTextEntry(MutableComponent captionIn, boolean hasExtraButton, MutableComponent buttonTextIn, Button.OnPress onPressFunctionIn) {
+	public CosmosOptionListTextEntry(MutableComponent captionIn, boolean hasExtraButton, MutableComponent buttonTextIn, MutableComponent extraButtonTextIn, Button.OnPress onPressFunctionIn, Button.CreateNarration narrationIn) {
 		super(captionIn, CosmosOptionInstance.noTooltip(), (component, value) -> { return ComponentHelper.empty(); }, new CosmosOptionInstance.Enum<String>(ImmutableList.of(""), Codec.STRING), "", "", (help) -> {  }, hasExtraButton, "");
 		
 		this.buttonText = buttonTextIn;
+		this.extraButtonText = extraButtonTextIn;
+		this.narration = narrationIn;
 	}
 
 	@Override
@@ -50,7 +54,7 @@ public class CosmosOptionListTextEntry extends CosmosOptionInstance<String> {
 	
 	@Override
 	public AbstractWidget createResetButton(CosmosOptions options, int xPosIn, int yPosIn, int widthIn, int heightIn) {
-		return new BlankTileButton(xPosIn + widthIn - heightIn, yPosIn, heightIn, heightIn, this.buttonText, true, this.onPressFunction);
+		return new BlankTileButton(xPosIn + widthIn - heightIn, yPosIn, heightIn, heightIn, this.buttonText, true, CosmosOptionInstance.cachedConstantTooltip(200, this.extraButtonText), this.onPressFunction, this.narration);
 	}
 	
 	public void setOnPressFunction(Button.OnPress onPressFunctionIn) {
@@ -63,17 +67,19 @@ public class CosmosOptionListTextEntry extends CosmosOptionInstance<String> {
 	
 	@OnlyIn(Dist.CLIENT)
 	public class BlankTileButton extends Button {
-		
+
+		protected final CosmosOptionInstance.TooltipSupplier<Boolean> tooltip;
 		public boolean doRenderBackground;
 		
-		public BlankTileButton(int xPosIn, int yPosIn, int widthIn, int heightIn, Component titleMessageIn, boolean doRenderBackgoundIn, Button.OnPress function) {
-			super(xPosIn, yPosIn, widthIn, heightIn, titleMessageIn, function);
+		public BlankTileButton(int xPosIn, int yPosIn, int widthIn, int heightIn, Component titleMessageIn, boolean doRenderBackgoundIn, CosmosOptionInstance.TooltipSupplierFactory<Boolean> tooltipIn, Button.OnPress function, Button.CreateNarration narration) {
+			super(xPosIn, yPosIn, widthIn, heightIn, titleMessageIn, function, narration);
 			
 			this.doRenderBackground = doRenderBackgoundIn;
+			this.tooltip = tooltipIn.apply(Minecraft.getInstance());
 		}
 
 		@Override
-		public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+		public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 			Minecraft minecraft = Minecraft.getInstance();
 			Font fontrenderer = minecraft.font;
 			
@@ -81,26 +87,32 @@ public class CosmosOptionListTextEntry extends CosmosOptionInstance<String> {
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);
 				RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-				int i = this.getYImage(this.isHoveredOrFocused());
+				int i = this.getTextureY();
 				
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
 				RenderSystem.enableDepthTest();
 				
 				if (this.width == this.height) {
-					this.blit(matrixStack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-					this.blit(matrixStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-					this.renderBg(matrixStack, minecraft, mouseX, mouseY);
+					graphics.blit(WIDGETS_LOCATION, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+					graphics.blit(WIDGETS_LOCATION, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+					//this.renderBg(matrixStack, minecraft, mouseX, mouseY);
 				}
 			}
 			
 			int j = getFGColor();
-			drawCenteredString(matrixStack, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+			graphics.drawCenteredString(fontrenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
 		}
 
-		@Override
-		public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
-			this.onTooltip.onTooltip(this, matrixStack, mouseX, mouseY);
+		private int getTextureY() {
+			int i = 1;
+			if (!this.active) {
+				i = 0;
+			} else if (this.isHoveredOrFocused()) {
+				i = 2;
+			}
+
+			return 46 + i * 20;
 		}
 	}
 }

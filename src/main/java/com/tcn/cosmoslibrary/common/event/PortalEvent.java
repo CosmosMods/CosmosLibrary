@@ -43,11 +43,9 @@ public class PortalEvent extends Event {
 	 */
 	@Cancelable
 	public static class PortalTravel extends PortalEvent {
-
 		public PortalTravel(Entity entityIn, BlockPos entityPosIn, BlockPos destPosIn, ResourceLocation destDimensionIn) {
 			super(entityIn, entityPosIn, destPosIn, destDimensionIn);
 		}
-
 	}
 	
 	/**
@@ -57,11 +55,8 @@ public class PortalEvent extends Event {
 	 */
 	@Cancelable
 	public static class LinkContainer extends PortalEvent {
-
 		public LinkContainer(Entity entityIn, BlockPos entityPosIn, BlockPos destPosIn, ResourceLocation destDimensionIn) {
 			super(entityIn, entityPosIn, destPosIn, destDimensionIn);
 		}
-
 	}
-
 }

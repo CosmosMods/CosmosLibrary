@@ -45,8 +45,8 @@ public class CosmosEnergyArmourItemColourable extends CosmosArmourItemColourable
 	
 	private boolean isEnderMask;
 
-	public CosmosEnergyArmourItemColourable(ArmorMaterial materialIn, EquipmentSlot slot, boolean isEnderMaskIn, Item.Properties builderIn, CosmosEnergyItem.Properties energyProperties) {
-		super(materialIn, slot, builderIn);
+	public CosmosEnergyArmourItemColourable(ArmorMaterial materialIn, Type typeIn, boolean isEnderMaskIn, Item.Properties builderIn, CosmosEnergyItem.Properties energyProperties) {
+		super(materialIn, typeIn, builderIn);
 		
 		this.maxEnergyStored = energyProperties.maxEnergyStored;
 		this.maxExtract = energyProperties.maxExtract;

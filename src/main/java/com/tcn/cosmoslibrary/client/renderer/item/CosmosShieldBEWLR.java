@@ -11,16 +11,16 @@ import com.tcn.cosmoslibrary.energy.item.CosmosEnergyShield;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BannerRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
@@ -29,7 +29,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-@SuppressWarnings("deprecation")
 public class CosmosShieldBEWLR extends BlockEntityWithoutLevelRenderer {
 	
 	private final CosmosShieldModel shieldModel = new CosmosShieldModel();
@@ -38,20 +37,20 @@ public class CosmosShieldBEWLR extends BlockEntityWithoutLevelRenderer {
 	public CosmosShieldBEWLR(ResourceLocation normalIn, ResourceLocation noPatternIn) {
 		super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
 		
-		this.normalMat = new Material(TextureAtlas.LOCATION_BLOCKS, normalIn);
-		this.noPatternMat = new Material(TextureAtlas.LOCATION_BLOCKS, noPatternIn);
+		this.normalMat = new Material(Sheets.SHIELD_SHEET, normalIn);
+		this.noPatternMat = new Material(Sheets.SHIELD_SHEET, noPatternIn);
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void renderByItem(ItemStack stackIn, ItemTransforms.TransformType transformIn, PoseStack poseStack, MultiBufferSource typeBuffer, int combinedLight, int combinedOverlay) {
+	public void renderByItem(ItemStack stackIn, ItemDisplayContext transformIn, PoseStack poseStack, MultiBufferSource typeBuffer, int combinedLight, int combinedOverlay) {
 		Item item = stackIn.getItem();
 		
-		if (item instanceof CosmosEnergyShield) {
+		if (item instanceof CosmosEnergyShield) {			
 			boolean flag = BlockItem.getBlockEntityData(stackIn) != null;
 			poseStack.pushPose();
 			poseStack.scale(1.0F, -1.0F, -1.0F);
-			Material material = flag ? this.normalMat : this.noPatternMat;
+			Material material = flag ? normalMat : noPatternMat;
 			
 			VertexConsumer vertexconsumer = material.sprite().wrap(ItemRenderer.getFoilBufferDirect(typeBuffer, this.shieldModel.renderType(material.atlasLocation()), true, stackIn.hasFoil()));
 			

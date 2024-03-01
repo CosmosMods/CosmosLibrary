@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.tcn.cosmoslibrary.client.container.CosmosContainerMenuBlockEntity;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
+import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonBase;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonUIHelp;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonUILock;
 import com.tcn.cosmoslibrary.client.ui.screen.widget.CosmosButtonUIMode;
@@ -22,8 +22,10 @@ import com.tcn.cosmoslibrary.runtime.network.PacketUIHelp;
 import com.tcn.cosmoslibrary.runtime.network.PacketUILock;
 import com.tcn.cosmoslibrary.runtime.network.PacketUIMode;
 
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -62,7 +64,8 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 	private int uiHelpTitleYOffset = 0;
 	
 	private boolean hasUILock = false;
-
+	private boolean hasEditBox = false;
+	
 	public CosmosScreenUIModeBE(J containerIn, Inventory playerInventoryIn, Component titleIn) {
 		super(containerIn, playerInventoryIn, titleIn);
 	}
@@ -71,28 +74,29 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 	protected void init() {
 		this.setScreenCoords(CosmosUISystem.getScreenCoords(this, this.imageWidth, this.imageHeight));
 		super.init();
+		this.initEditBox();
 		this.addButtons();
 		this.addUIHelpElements();
 	}
 	
 	@Override
-	public void render(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(poseStack);
-		super.render(poseStack, mouseX, mouseY, partialTicks);
+	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+		this.renderBackground(graphics);
+		super.render(graphics, mouseX, mouseY, partialTicks);
 
-		this.renderComponents(poseStack, mouseX, mouseY, partialTicks);
-		this.renderComponentHoverEffect(poseStack, Style.EMPTY, mouseX, mouseY);
-		this.renderTooltip(poseStack, mouseX, mouseY);
+		this.renderComponents(graphics, mouseX, mouseY, partialTicks);
+		this.renderComponentHoverEffect(graphics, Style.EMPTY, mouseX, mouseY);
+		this.renderTooltip(graphics, mouseX, mouseY);
 	}
 	
-	public void renderComponents(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	public void renderComponents(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		this.addButtons();
 		this.addUIHelpElements();
-		this.renderUIHelpElements(poseStack, mouseX, mouseY, partialTicks);
+		this.renderUIHelpElements(graphics, mouseX, mouseY, partialTicks);
 	}
 
 	@Override
-	protected void renderBg(PoseStack poseStack, float mouseX, int mouseY, int partialTicks) {
+	protected void renderBg(GuiGraphics graphics, float mouseX, int mouseY, int partialTicks) {
 		BlockEntity entity = this.getBlockEntity();
 		
 		if (entity instanceof IBlockEntityUIMode) {
@@ -103,61 +107,60 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 				colour = new float[] { 0.5F, 0.5F, 0.5F, 1.0F };
 			}
 			
-			CosmosUISystem.renderStaticElementWithUIMode(this, poseStack, this.screenCoords, 0, 0, 0, 0, Mth.clamp(this.imageWidth, 0, 256), this.imageHeight, colour, entityMode, new ResourceLocation[] { TEXTURE_LIGHT, TEXTURE_DARK });
+			CosmosUISystem.renderStaticElementWithUIMode(this, graphics, this.screenCoords, 0, 0, 0, 0, Mth.clamp(this.imageWidth, 0, 256), this.imageHeight, colour, entityMode.getUIMode(), new ResourceLocation[] { TEXTURE_LIGHT, TEXTURE_DARK });
 			
 			if (this.hasDualScreen) {
 				if(this.dualScreenIndex != null && this.DUAL_TEXTURE_LIGHT != null && this.DUAL_TEXTURE_LIGHT != null) {
-					CosmosUISystem.renderStaticElementWithUIMode(this, poseStack, this.screenCoords, this.dualScreenIndex[0], this.dualScreenIndex[1], 0, 0, 
-							Mth.clamp(256 + this.dualScreenIndex[2], 0, 256), this.dualScreenIndex[3], colour, entityMode, new ResourceLocation[] { DUAL_TEXTURE_LIGHT, DUAL_TEXTURE_DARK });
+					CosmosUISystem.renderStaticElementWithUIMode(this, graphics, this.screenCoords, this.dualScreenIndex[0], this.dualScreenIndex[1], 0, 0, 
+							Mth.clamp(256 + this.dualScreenIndex[2], 0, 256), this.dualScreenIndex[3], colour, entityMode.getUIMode(), new ResourceLocation[] { DUAL_TEXTURE_LIGHT, DUAL_TEXTURE_DARK });
 				}
 			}
 		}
 	}
 
 	@Override
-	protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
+	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
 		BlockEntity entity = this.getBlockEntity();
 		
 		if (entity instanceof IBlockEntityUIMode) {
 			IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
 			
 			if (this.renderTitleLabel) {
-				this.font.draw(poseStack, this.title, (float) this.titleLabelX, (float) this.titleLabelY, blockEntity.getUIMode().equals(EnumUIMode.DARK) ? CosmosUISystem.DEFAULT_COLOUR_FONT_LIST : ComponentColour.BLACK.dec());
+				graphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, blockEntity.getUIMode().equals(EnumUIMode.DARK) ? CosmosUISystem.DEFAULT_COLOUR_FONT_LIST : ComponentColour.SCREEN_LIGHT.dec());
 			}
 			
 			if (this.renderInventoryLabel) {
-				this.font.draw(poseStack, this.playerInventoryTitle, (float) this.inventoryLabelX, (float) this.inventoryLabelY, blockEntity.getUIMode().equals(EnumUIMode.DARK) ? CosmosUISystem.DEFAULT_COLOUR_FONT_LIST : ComponentColour.BLACK.dec());
+				graphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, blockEntity.getUIMode().equals(EnumUIMode.DARK) ? CosmosUISystem.DEFAULT_COLOUR_FONT_LIST : ComponentColour.SCREEN_LIGHT.dec());
 			}
 		}
 	}
 	
 	@Override
-	protected void renderTooltip(PoseStack poseStack, int mouseX, int mouseY) {
+	protected void renderTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
 		if (this.getHasUIHelpShow()) {
 			if (this.hasUIHelpElementDeadzone) {
 				if (!(mouseX > (this.getScreenCoords()[0] + this.uiHelpElementDeadzone[0]) && mouseX < (this.getScreenCoords()[0] + this.uiHelpElementDeadzone[2]) 
 						&& mouseY > (this.getScreenCoords()[1] + this.uiHelpElementDeadzone[1]) && mouseY < (this.getScreenCoords()[1] + this.uiHelpElementDeadzone[3]))) {
-					super.renderTooltip(poseStack, mouseX, mouseY);
+					super.renderTooltip(graphics, mouseX, mouseY);
 				}
 			} else {
-				super.renderTooltip(poseStack, mouseX, mouseY);
+				super.renderTooltip(graphics, mouseX, mouseY);
 			}
 		} else {
-			super.renderTooltip(poseStack, mouseX, mouseY);
+			super.renderTooltip(graphics, mouseX, mouseY);
 		}
 	}
 	
-	@Override
-	public void renderComponentHoverEffect(PoseStack poseStack, Style style, int mouseX, int mouseY) {
+	public void renderComponentHoverEffect(GuiGraphics graphics, Style style, int mouseX, int mouseY) {
 		BlockEntity entity = this.getBlockEntity();
 		
 		if (entity instanceof IBlockEntityUIMode) {
 			IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
 			
 			if (blockEntity.getUIHelp().equals(EnumUIHelp.HIDDEN)) {
-				this.renderStandardHoverEffect(poseStack, style, mouseX, mouseY);
+				this.renderStandardHoverEffect(graphics, style, mouseX, mouseY);
 			} else {
-				this.renderHelpElementHoverEffect(poseStack, mouseX, mouseY);
+				this.renderHelpElementHoverEffect(graphics, mouseX, mouseY);
 			}
 			
 			if (this.uiModeButton.isMouseOver(mouseX, mouseY)) {
@@ -166,7 +169,7 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 					ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.gui.ui_mode.value").append(blockEntity.getUIMode().getColouredComp())
 				};
 				
-				this.renderComponentTooltip(poseStack, Arrays.asList(comp), mouseX, mouseY);
+				graphics.renderComponentTooltip(this.font, Arrays.asList(comp), mouseX, mouseY);
 			}
 			
 			if (this.getHasUIHelp()) {
@@ -176,7 +179,7 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 						ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.gui.ui_help.value").append(blockEntity.getUIHelp().getColouredComp())
 					};
 					
-					this.renderComponentTooltip(poseStack, Arrays.asList(comp), mouseX, mouseY);
+					graphics.renderComponentTooltip(this.font, Arrays.asList(comp), mouseX, mouseY);
 				}
 			}
 			
@@ -187,15 +190,15 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 						ComponentHelper.style(ComponentColour.GRAY, "cosmoslibrary.gui.ui_lock.value").append(blockEntity.getUILock().getColouredComp())
 					};
 					
-					this.renderComponentTooltip(poseStack, Arrays.asList(comp), mouseX, mouseY);
+					graphics.renderComponentTooltip(this.font, Arrays.asList(comp), mouseX, mouseY);
 				}
 			}
 		}
 	}
 	
-	protected void renderStandardHoverEffect(PoseStack poseStack, Style style, int mouseX, int mouseY) { }
+	protected void renderStandardHoverEffect(GuiGraphics graphics, Style style, int mouseX, int mouseY) { }
 	
-	protected void renderHelpElementHoverEffect(PoseStack poseStack, int mouseX, int mouseY) {
+	protected void renderHelpElementHoverEffect(GuiGraphics graphics, int mouseX, int mouseY) {
 		BlockEntity entity = this.getBlockEntity();
 		
 		if (entity instanceof IBlockEntityUIMode) {
@@ -207,7 +210,7 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 						if (element.isMouseOver(mouseX, mouseY)) {
 							RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 							
-							this.renderComponentTooltip(poseStack, element.getHoverElement(), mouseX, mouseY);
+							graphics.renderComponentTooltip(this.font, element.getHoverElement(), mouseX, mouseY);
 						}
 					}
 					
@@ -215,19 +218,19 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 					
 					Component title = ComponentHelper.style(ComponentColour.GREEN, "cosmoslibrary.gui_help_title");
 					//this.font.draw(poseStack, title, ((this.getScreenCoords()[0] * 2) / 2) + (this.imageWidth / 2) - (this.font.width(title) / 2), this.getScreenCoords()[1] - 8, CosmosColour.WHITE.dec());
-					this.renderComponentTooltip(poseStack, Arrays.asList(title), ((this.getScreenCoords()[0] * 2) / 2) + (this.imageWidth / 2) - (this.font.width(title) / 2) - 13, this.getScreenCoords()[1] - 2 + this.uiHelpTitleYOffset);
+					graphics.renderComponentTooltip(this.font, Arrays.asList(title), ((this.getScreenCoords()[0] * 2) / 2) + (this.imageWidth / 2) - (this.font.width(title) / 2) - 13, this.getScreenCoords()[1] - 2 + this.uiHelpTitleYOffset);
 				}
 			}
 		}
 	}
 	
-	protected void renderUIHelpElements(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
+	protected void renderUIHelpElements(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		if (this.getHasUIHelpShow()) {
 			for (CosmosUIHelpElement element : this.uiHelpElements) {
-				element.render(poseStack, mouseX, mouseY, partialTicks);
+				element.render(graphics, mouseX, mouseY, partialTicks);
 			}
 			
-			for (Widget widget : this.renderables) {
+			for (Renderable widget : this.renderables) {
 				if (!(widget instanceof CosmosUIHelpElement) && !(widget instanceof CosmosButtonUIHelp) && !(widget instanceof CosmosButtonUIMode)) {
 					if (widget instanceof Button) {
 						Button button = (Button) widget;
@@ -248,42 +251,48 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 		if (entity instanceof IBlockEntityUIMode) {
 			IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
 			
-			this.addUIModeButton(blockEntity, screen_coords, uiModeButtonIndex, (button) -> { this.pushButton(this.uiModeButton); });
+			this.addUIModeButton(blockEntity, screen_coords, uiModeButtonIndex, (button) -> { this.clickButton(this.uiModeButton, true); });
 			
 			if (this.getHasUIHelp()) {
-				this.addUIHelpButton(blockEntity, screen_coords, uiHelpButtonIndex, (button) -> { this.pushButton(this.uiHelpButton); });
+				this.addUIHelpButton(blockEntity, screen_coords, uiHelpButtonIndex, (button) -> { this.clickButton(this.uiHelpButton, true); });
 			}
 			
 			if (this.getHasUILock()) {
-				this.addUILockButton(blockEntity, screen_coords, uiLockButtonIndex, (button) -> { this.pushButton(this.uiLockButton); });
+				this.addUILockButton(blockEntity, screen_coords, uiLockButtonIndex, (button) -> { this.clickButton(this.uiLockButton, true); });
 			}
 		}
 	}
 	
-	protected void pushButton(Button button) {
+	protected void clickButton(Button buttonIn, boolean isLeftClick) {
 		BlockEntity entity = this.getBlockEntity();
 		
-		if (entity instanceof IBlockEntityUIMode) {
-			IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
-			
-			if (button.equals(this.uiModeButton)) {
-				NetworkManagerCosmos.sendToServer(new PacketUIMode(this.menu));
-				blockEntity.cycleUIMode();
-			}
-			
-			else if (button.equals(this.uiHelpButton)) {
-				NetworkManagerCosmos.sendToServer(new PacketUIHelp(this.menu));
-				blockEntity.cycleUIHelp();
-			}
-			
-			else if (button.equals(this.uiLockButton)) {
-				NetworkManagerCosmos.sendToServer(new PacketUILock(this.menu));
-				if (blockEntity.checkIfOwner(this.menu.getPlayer())) {
-					blockEntity.cycleUILock();
+		if (isLeftClick) {
+			if (entity instanceof IBlockEntityUIMode) {
+				IBlockEntityUIMode blockEntity = (IBlockEntityUIMode) entity;
+				
+				if (buttonIn.equals(this.uiModeButton)) {
+					NetworkManagerCosmos.sendToServer(new PacketUIMode(this.menu));
+					blockEntity.cycleUIMode();
+				}
+				
+				else if (buttonIn.equals(this.uiHelpButton)) {
+					NetworkManagerCosmos.sendToServer(new PacketUIHelp(this.menu));
+					blockEntity.cycleUIHelp();
+				}
+				
+				else if (buttonIn.equals(this.uiLockButton)) {
+					NetworkManagerCosmos.sendToServer(new PacketUILock(this.menu));
+					if (blockEntity.checkIfOwner(this.menu.getPlayer())) {
+						blockEntity.cycleUILock();
+					}
 				}
 			}
+		} else {
+			//Do right click
 		}
 	}
+		
+	protected void initEditBox() { }
 	
 	protected void addUIModeButton(IBlockEntityUIMode entityIn, int[] screen_coords, int[] indexIn, Button.OnPress pressAction) {
 		this.uiModeButton = this.addRenderableWidget(new CosmosButtonUIMode(entityIn.getUIMode(), screen_coords[0] + indexIn[0], screen_coords[1] + indexIn[1], true, true, ComponentHelper.empty(), pressAction));
@@ -423,6 +432,14 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 		this.inventoryLabelY = posY;
 	}
 	
+	protected void setHasEditBox() {
+		this.hasEditBox = true;
+	}
+	
+	public boolean getHasEditBox() {
+		return this.hasEditBox;
+	}
+	
 	protected void setScreenCoords(int[] coordsIn) {
 		this.screenCoords = coordsIn;
 	}
@@ -439,4 +456,21 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 		return level.getBlockEntity(pos);
 	}
 	
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+		for (GuiEventListener list : this.children()) {
+			if (list instanceof CosmosButtonBase) {
+				CosmosButtonBase button = (CosmosButtonBase) list;
+				
+				if (button.isMouseOver(mouseX, mouseY) && button.isActive() && button.visible) {
+					if (mouseButton == 1) {
+						button.onClick(false);
+					} else if (mouseButton == 0) {
+						button.onClick(true);
+					}
+				}
+			}
+		}
+		return super.mouseClicked(mouseX, mouseY, mouseButton);
+	}
 }

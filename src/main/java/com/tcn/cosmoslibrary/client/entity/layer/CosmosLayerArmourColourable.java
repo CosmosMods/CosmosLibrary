@@ -64,7 +64,7 @@ public class CosmosLayerArmourColourable<E extends LivingEntity, M extends Human
 		if (stackIn.getItem() instanceof CosmosArmourItemColourable) {
 			CosmosArmourItemColourable armoritem = (CosmosArmourItemColourable) stackIn.getItem();
 
-			if (armoritem.getSlot() == slotTypeIn) {
+			if (armoritem.getEquipmentSlot() == slotTypeIn) {
 				this.getParentModel().copyPropertiesTo(modelIn);
 				Model model = this.getArmorModelHook(livingEntityIn, stackIn, slotTypeIn, modelIn);
 				this.setPartVisibility(modelIn, slotTypeIn);
