@@ -1,7 +1,7 @@
-![Version](https://img.shields.io/badge/VERSION-1.19.2-success?style=for-the-badge) ![Repo Size](https://img.shields.io/github/repo-size/TheCosmicNebula/Cosmos-Library?label=REPO%20SIZE&style=for-the-badge) ![Open Issues](https://img.shields.io/github/issues/TheCosmicNebula/Cosmos-Library?style=for-the-badge) ![Closed Issues](https://img.shields.io/github/issues-closed/TheCosmicNebula/Cosmos-Library?color=green&style=for-the-badge)
+![Version](https://img.shields.io/badge/VERSION-1.20.1-success?style=for-the-badge) ![Repo Size](https://img.shields.io/github/repo-size/TheCosmicNebula/Cosmos-Library?label=REPO%20SIZE&style=for-the-badge) ![Open Issues](https://img.shields.io/github/issues/TheCosmicNebula/Cosmos-Library?style=for-the-badge) ![Closed Issues](https://img.shields.io/github/issues-closed/TheCosmicNebula/Cosmos-Library?color=green&style=for-the-badge)
 
 # CosmosLibrary
-Main required library for all my mods. Currently using Forge for MinecraftForge 1.19.2.
+Main required library for all my mods. Currently using Forge for MinecraftForge 1.20.1.
 
 ## Licence
 This repo does not have a licence. This means that by default, it is All Rights Reserved. However, due to having complete control over what rights that includes, here is a list of what you can and cannot do:
