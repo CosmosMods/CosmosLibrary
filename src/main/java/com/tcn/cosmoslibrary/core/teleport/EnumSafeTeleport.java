@@ -3,7 +3,9 @@ package com.tcn.cosmoslibrary.core.teleport;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
+@SuppressWarnings("deprecation")
 public enum EnumSafeTeleport {
 	ZERO(0, 0, 0),
 	UP(0, 1, 0),
@@ -36,7 +38,8 @@ public enum EnumSafeTeleport {
 	SOUTHWEST_THREE(-3, 0, 3), SOUTHWEST_MINUS_ONE_THREE(-3, -3, 3),
 	SOUTHEAST_THREE(3, 0, 3), SOUTHEAST_MINUS_ONE_THREE(3, -3, 3),
 	
-	UNKNOWN(0, 0, 0);
+	UNKNOWN(0, 0, 0),
+	UNSAFE(0, 0, 0);
 
 	public static final EnumSafeTeleport[] VALID_DIRECTIONS = {
 			ZERO, UP, NORTH, SOUTH, WEST, EAST,
@@ -64,23 +67,53 @@ public enum EnumSafeTeleport {
 		offsetY = y;
 		offsetZ = z;
 	}
-
-	private static boolean isAir(Level worldIn, BlockPos posIn) {
-		return worldIn.getBlockState(posIn).isAir();
+	
+	private static boolean isAir(Level levelIn, BlockPos posIn) {
+		BlockState state = levelIn.getBlockState(posIn);
+		
+		return state.isAir();
+	}
+	
+	private static boolean isLiquid(Level levelIn, BlockPos posIn) {
+		BlockState state = levelIn.getBlockState(posIn);
+		
+		return state.liquid();
 	}
 
-	public static EnumSafeTeleport getValidTeleportLocation(Level worldIn, BlockPos posIn) {
+	private static boolean isAirOrLiquid(Level levelIn, BlockPos posIn) {
+		BlockState state = levelIn.getBlockState(posIn);
+		
+		return state.isAir() || state.liquid();
+	}
+	
+	public static EnumSafeTeleport getValidTeleportLocation(Level levelIn, BlockPos posIn) {
 		for (EnumSafeTeleport direction : VALID_DIRECTIONS) {
 			BlockPos testPos = new BlockPos(posIn.getX() + direction.offsetX, posIn.getY() + direction.offsetY, posIn.getZ() + direction.offsetZ);
 			
-			if (isAir(worldIn, testPos)) {
-				if (isAir(worldIn, testPos.offset(Direction.UP.getNormal()))){
+			if (isAirOrLiquid(levelIn, testPos)) {
+				if (isAirOrLiquid(levelIn, testPos) && isAirOrLiquid(levelIn, testPos.offset(Direction.UP.getNormal()))) {
 					return direction;
 				}
 			}
 		}
-		
 		return UNKNOWN;
+	}
+
+	public static boolean isSafeTeleportLocation(Level levelIn, BlockPos posIn) {
+		for (EnumSafeTeleport direction : VALID_DIRECTIONS) {
+			BlockPos testPos = new BlockPos(posIn.getX() + direction.offsetX, posIn.getY() + direction.offsetY, posIn.getZ() + direction.offsetZ);
+			
+			if (isAirOrLiquid(levelIn, testPos)) {
+				if (isAirOrLiquid(levelIn, testPos) && isAirOrLiquid(levelIn, testPos.offset(Direction.UP.getNormal()))) {
+					if ((isLiquid(levelIn, testPos) && !isAir(levelIn, testPos)) || (isLiquid(levelIn, testPos.offset(Direction.UP.getNormal())) && !isAir(levelIn, testPos.offset(Direction.UP.getNormal())))) {
+						return false;
+					} else {
+						return true;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	public BlockPos toBlockPos() {

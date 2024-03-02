@@ -122,7 +122,7 @@ public class CosmosRendererHelper {
     }
 	
 	@SuppressWarnings("resource")
-	public static void renderLabelInWorld(Font fontRendererIn, PoseStack matrixStackIn, MutableComponent textIn, MultiBufferSource bufferIn, int combinedLightIn) {
+	public static void renderLabelInWorld(Font fontRendererIn, PoseStack matrixStackIn, MutableComponent textIn, MultiBufferSource bufferIn, int combinedLightIn, boolean boxOn, boolean shadowOn) {
 		matrixStackIn.pushPose();
 		matrixStackIn.scale(-0.025F, -0.025F, -0.025F);
 		
@@ -132,8 +132,10 @@ public class CosmosRendererHelper {
 		int alpha = (int)(opacity * 255.0F) << 24;
 		float width = (-fontRendererIn.width(textIn) / 2);
 		
-		fontRendererIn.drawInBatch(textIn, width, 0.0F, 553648127, false, matrix4f, bufferIn, Font.DisplayMode.NORMAL, -alpha, combinedLightIn);
-		fontRendererIn.drawInBatch(textIn, width, 0.0F, -1, false, matrix4f, bufferIn, Font.DisplayMode.SEE_THROUGH, 0, combinedLightIn);
+		if (boxOn) {
+			fontRendererIn.drawInBatch(textIn, width, 0.0F, 553648127, false, matrix4f, bufferIn, Font.DisplayMode.NORMAL, -alpha, combinedLightIn);
+		}
+		fontRendererIn.drawInBatch(textIn, width, 0.0F, -1, shadowOn, matrix4f, bufferIn, Font.DisplayMode.POLYGON_OFFSET, 0, combinedLightIn);
 		matrixStackIn.popPose();
 	}
 

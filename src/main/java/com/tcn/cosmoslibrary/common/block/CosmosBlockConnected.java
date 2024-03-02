@@ -4,6 +4,10 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,12 +26,13 @@ public class CosmosBlockConnected extends CosmosBlock {
 	public CosmosBlockConnected(Block.Properties properties) {
 		super(properties);
 		this.registerDefaultState(this.defaultBlockState()
-				 .setValue(DOWN, Boolean.FALSE)
-                 .setValue(EAST, Boolean.FALSE)
-                 .setValue(NORTH, Boolean.FALSE)
-                 .setValue(SOUTH, Boolean.FALSE)
-                 .setValue(UP, Boolean.FALSE)
-                 .setValue(WEST, Boolean.FALSE));
+			 .setValue(DOWN, Boolean.FALSE)
+             .setValue(EAST, Boolean.FALSE)
+             .setValue(NORTH, Boolean.FALSE)
+             .setValue(SOUTH, Boolean.FALSE)
+             .setValue(UP, Boolean.FALSE)
+             .setValue(WEST, Boolean.FALSE)
+		);
 	}
 	
 	private boolean canSideConnect(LevelAccessor world, BlockPos pos, Direction facing) {
@@ -40,10 +45,10 @@ public class CosmosBlockConnected extends CosmosBlock {
 	protected boolean canConnect(@Nonnull BlockState orig, @Nonnull BlockState conn) {
 		return orig.getBlock() == conn.getBlock();
 	}
-	
-	@SuppressWarnings("deprecation")
+
+	@Override
 	public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos pos, BlockPos facingPos) {
-		super.updateShape(stateIn, facing, facingState, worldIn, pos, facingPos);
+		//super.updateShape(stateIn, facing, facingState, worldIn, pos, facingPos);
 		
 		return stateIn.setValue(DOWN,  this.canSideConnect(worldIn, pos, Direction.DOWN))
 				.setValue(EAST,  this.canSideConnect(worldIn, pos, Direction.EAST))
@@ -56,5 +61,13 @@ public class CosmosBlockConnected extends CosmosBlock {
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(DOWN, EAST, NORTH, SOUTH, UP, WEST);
+	}
+	
+	@Override
+	public BlockState getStateForPlacement(BlockPlaceContext contextIn) {
+		Level level = contextIn.getLevel();
+		BlockPos clickedPos = contextIn.getClickedPos();
+		
+		return this.defaultBlockState().updateShape(Direction.DOWN, level.getBlockState(clickedPos), level, clickedPos, clickedPos.offset(Direction.DOWN.getNormal()));
 	}
 }
