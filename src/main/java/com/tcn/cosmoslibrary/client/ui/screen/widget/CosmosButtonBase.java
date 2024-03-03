@@ -1,5 +1,6 @@
 package com.tcn.cosmoslibrary.client.ui.screen.widget;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -72,7 +73,7 @@ public class CosmosButtonBase extends Button {
 
 	@Override
 	public void onPress() {
-		if (this.active && this.visible) {
+		if (this.active || this.visible) {
 			//this.onClick.onClick(this, true);
 		}
 	}
@@ -80,13 +81,15 @@ public class CosmosButtonBase extends Button {
 	public void onClick(boolean isLeftClick) {
 		if (this.active && this.visible) {
 			this.onClick.onClick(this, isLeftClick);
+			
+			if (!isLeftClick) {
+				this.playDownSound(Minecraft.getInstance().getSoundManager());
+			}
 		}
 	}
 	
 	@Override
-	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		
-	}
+	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) { }
 	
 	protected int getHoverState(boolean mouseOver) {
 		int i = 0;

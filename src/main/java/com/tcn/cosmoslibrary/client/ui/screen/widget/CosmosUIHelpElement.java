@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.tcn.cosmoslibrary.CosmosReference;
 import com.tcn.cosmoslibrary.client.ui.lib.CosmosUISystem;
+import com.tcn.cosmoslibrary.common.lib.ComponentColour;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -14,13 +15,18 @@ import net.minecraft.network.chat.Component;
 public class CosmosUIHelpElement extends AbstractWidget {
 	
 	private Component[] desc;
-	
 	public boolean visible;
-	
-	public CosmosUIHelpElement(int xIn, int yIn, int widthIn, int heightIn, Component... descIn) {
+	private ComponentColour colour;
+
+	public CosmosUIHelpElement(int xIn, int yIn, int widthIn, int heightIn, ComponentColour colourIn, Component... descIn) {
 		super(xIn, yIn, widthIn, heightIn, descIn[0]);
 		
+		this.colour = colourIn;
 		this.desc = descIn;
+	}
+
+	public CosmosUIHelpElement(int xIn, int yIn, int widthIn, int heightIn, Component... descIn) {
+		this(xIn, yIn, widthIn, heightIn, ComponentColour.GREEN, descIn);
 	}
 
 	@Override
@@ -41,7 +47,7 @@ public class CosmosUIHelpElement extends AbstractWidget {
 			CosmosUISystem.setTextureWithColourAlpha(graphics.pose(), CosmosReference.RESOURCE.BASE.UI_LIGHTEN_HIGHLIGHT, new float[] { 1.0F, 1.0F, 1.0F, 0.6F });
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN_HIGHLIGHT, this.getX(), this.getY(), 0, 0, this.width, this.height);
 
-			CosmosUISystem.setTextureColour(0.0F, 1.0F, 0.0F, 1.0F);
+			CosmosUISystem.setTextureColour(this.colour);
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN_HIGHLIGHT, this.getX(), this.getY(), 0, 0, this.width, 1);
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN_HIGHLIGHT, this.getX(), this.getY() + this.height - 1, 0, 0, this.width, 1);
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN_HIGHLIGHT, this.getX(), this.getY() + 1, 0, 0, 1, this.height - 2);
@@ -50,7 +56,7 @@ public class CosmosUIHelpElement extends AbstractWidget {
 			CosmosUISystem.setTextureWithColourAlpha(graphics.pose(), CosmosReference.RESOURCE.BASE.UI_LIGHTEN, new float[] { 1.0F, 1.0F, 1.0F, 0.4F });
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN, this.getX(), this.getY(), 0, 0, this.width, this.height);
 			
-			CosmosUISystem.setTextureColour(0.0F, 0.8F, 0.0F, 1.0F);
+			CosmosUISystem.setTextureColour(this.colour);
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN, this.getX(), this.getY(), 0, 0, this.width, 1);
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN, this.getX(), this.getY() + this.height - 1, 0, 0, this.width, 1);
 			graphics.blit(CosmosReference.RESOURCE.BASE.UI_LIGHTEN, this.getX(), this.getY() + 1, 0, 0, 1, this.height - 2);

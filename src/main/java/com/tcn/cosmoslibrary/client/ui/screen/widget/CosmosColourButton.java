@@ -26,25 +26,28 @@ public class CosmosColourButton extends CosmosButtonBase {
 	public int y;
 	protected boolean isHovered;
 
-	public CosmosColourButton(ComponentColour startingColour, int x, int y, int size, boolean enabled, boolean visible, Component title, CosmosButtonBase.OnClick clickedAction) {
-		super(x, y, size, size, enabled, visible, title, clickedAction, new Button.CreateNarration() {
+	public CosmosColourButton(ComponentColour startingColourIn, int x, int y, int sizeX, int sizeY, boolean enabled, boolean visible, Component title, CosmosButtonBase.OnClick clickedAction) {
+		super(x, y, sizeX, sizeY, enabled, visible, title, clickedAction, new Button.CreateNarration() {
 			
 			@Override
 			public MutableComponent createNarrationMessage(Supplier<MutableComponent> p_253695_) {
-				// TODO Auto-generated method stub
 				return ComponentHelper.empty();
 			}
 		});
 		
-		this.colour = startingColour;
+		this.colour = startingColourIn;
 		
 		this.x = x;
 		this.y = y;
-		this.width = size;
-		this.height = size;
+		this.width = sizeX;
+		this.height = sizeY;
 
 		this.active = enabled;
 		this.visible = visible;
+	}
+
+	public CosmosColourButton(ComponentColour startingColourIn, int x, int y, int size, boolean enabled, boolean visible, Component title, CosmosButtonBase.OnClick clickedAction) {
+		this(startingColourIn, x, y, size, size, enabled, visible, title, clickedAction);
 	}
 
 	public CosmosColourButton(ComponentColour startingColourIn, int x, int y, boolean enabled, boolean visible, Component title, CosmosButtonBase.OnClick clickedAction) {
@@ -100,6 +103,7 @@ public class CosmosColourButton extends CosmosButtonBase {
 		CosmosUISystem.setTextureColour(ComponentColour.WHITE);
 	}
 	
+	@Override
 	protected int getHoverState(boolean mouseOver) {
 		int i = 0;
 

@@ -314,8 +314,16 @@ public class CosmosScreenUIModeBE<J extends CosmosContainerMenuBlockEntity> exte
 		this.addRenderableUIHelpElement(screenCoords, xIn, yIn, widthIn, heightIn, true, descIn);
 	}
 	
+	protected void addRenderableUIHelpElement(int[] screenCoords, int xIn, int yIn, int widthIn, int heightIn, ComponentColour colourIn, Component... descIn) {
+		this.addRenderableUIHelpElement(screenCoords, xIn, yIn, widthIn, heightIn, true, colourIn, descIn);
+	}
+	
 	protected void addRenderableUIHelpElement(int[] screenCoords, int xIn, int yIn, int widthIn, int heightIn, boolean isVisible, Component... descIn) {
 		this.addUIHelpElement(new CosmosUIHelpElement(screenCoords[0] + xIn, screenCoords[1] + yIn, widthIn, heightIn, descIn).setVisible(isVisible));
+	}
+
+	protected void addRenderableUIHelpElement(int[] screenCoords, int xIn, int yIn, int widthIn, int heightIn, boolean isVisible, ComponentColour colourIn, Component... descIn) {
+		this.addUIHelpElement(new CosmosUIHelpElement(screenCoords[0] + xIn, screenCoords[1] + yIn, widthIn, heightIn, colourIn, descIn).setVisible(isVisible));
 	}
 	
 	private CosmosUIHelpElement addUIHelpElement(CosmosUIHelpElement elementIn) {
